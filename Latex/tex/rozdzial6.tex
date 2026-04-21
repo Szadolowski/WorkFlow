@@ -1,0 +1,17 @@
+\section{Podsumowanie i wnioski}
+
+\subsection{Realizacja celów ćwiczenia}
+W ramach niniejszego sprawozdania z powodzeniem przeprowadzono pełny cykl wdrożenia i wykorzystania kryptografii asymetrycznej. Począwszy od instalacji pakietu GPG4win, poprzez generowanie i bezpieczne zarządzanie osobistymi kluczami kryptograficznymi, aż po nawiązanie sieci zaufania (Web of Trust) z innym użytkownikiem. Udane operacje szyfrowania pliku tekstowego oraz jego późniejszego deszyfrowania z weryfikacją podpisu cyfrowego, ostatecznie potwierdziły poprawność konfiguracji całego środowiska.
+
+\subsection{Ocena użyteczności środowiska GPG4win}
+Zastosowane oprogramowanie, a w szczególności jego graficzny interfejs Kleopatra, znacznie upraszcza zarządzanie certyfikatami w standardzie OpenPGP. Ukrywa ono przed użytkownikiem złożoność operacji wiersza poleceń silnika GnuPG, oferując intuicyjne kreatory i przejrzystą listę kluczy. Narzędzia te udowadniają, że silne mechanizmy ochrony danych mogą być z powodzeniem i stosunkowo łatwo zintegrowane w codziennej pracy z systemem operacyjnym Windows, bez wymogu posiadania zaawansowanej, specjalistycznej wiedzy informatycznej.
+
+\subsection{Znaczenie dla bezpieczeństwa informacji}
+Kryptografia asymetryczna rozwiązuje fundamentalny problem bezpiecznej dystrybucji kluczy, który jest główną słabością klasycznych algorytmów symetrycznych. Przeprowadzone ćwiczenie praktycznie zademonstrowało trzy kluczowe filary bezpieczeństwa informacji:
+\begin{itemize}
+    \item \textbf{Poufność} – dzięki szyfrowaniu kluczem publicznym odbiorcy, nikt poza nim nie był w stanie odczytać informacji zawartych w pliku.
+    \item \textbf{Integralność} – weryfikacja podpisu cyfrowego zagwarantowała, że plik nie uległ najmniejszej modyfikacji podczas transmisji lub składowania na nośniku.
+    \item \textbf{Niezaprzeczalność} – użycie klucza prywatnego w celu podpisania pliku jednoznacznie poświadcza tożsamość nadawcy, co uniemożliwia wyparcie się autorstwa.
+\end{itemize}
+
+Oparte na otwartym kodzie źródłowym standardy, takie jak GnuPG, pozostają jednym z najpotężniejszych, w pełni darmowych i niezależnych narzędzi do ochrony prywatności w dobie globalnej i często narażonej na ataki komunikacji cyfrowej.

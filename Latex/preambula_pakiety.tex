@@ -1,0 +1,113 @@
+% ------------------------------------------------------------------------
+% PAKIETY – WERSJA STABILNA (RAFMAT / WINDOWS SERVER)
+% ------------------------------------------------------------------------
+
+% --- Kodowanie i język ---
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[polish]{babel}
+\usepackage{csquotes}
+
+% --- Matematyka (zostawione, nie przeszkadzają) ---
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathrsfs}
+
+% --- Grafika i układ strony ---
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{geometry}
+\geometry{
+  a4paper,
+  left=3cm,
+  right=2.5cm,
+  top=3cm,
+  bottom=3cm
+}
+
+% --- Kolory i listingi ---
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage[normalem]{ulem} % <--- DODANO (do podkreślania linków w pkt 11)
+
+% --- Bibliografia ---
+\usepackage[
+  backend=biber,
+  style=numeric,
+  sorting=none
+]{biblatex}
+\addbibresource{bibliografia.bib}
+
+% --- Linki (ZAWSZE po biblatex!) ---
+
+\usepackage{xurl}      % ← MUSI BYĆ WCZEŚNIEJ (lamanie linkow)
+\usepackage[
+  colorlinks=true,
+  urlcolor=blue,
+  linkcolor=black,
+  citecolor=blue,
+  breaklinks=true,
+  draft=false,   % ← linki zawsze niebieskie
+  bookmarksopen=true   % linkowanie zdjec
+]{hyperref}
+
+% --- Spisy i sekcje ---
+\usepackage{tocloft}
+\usepackage{titlesec}
+\usepackage{enumitem} % -> do ściskania list - żeby się na 1 stronie zmieścił rozdział 1
+
+% --- Strona tytułowa (uczelniany pakiet) ---
+\usepackage{strona_tytulowa}
+
+% --- TODO (do wyłączenia przed oddaniem) ---
+\usepackage[hide]{todo}
+
+% --- Tabele ---
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{booktabs}
+
+% --- Nagłówki i stopki ---
+\usepackage{fancyhdr}
+\setlength{\headheight}{24pt}
+
+% --- Listing styl ---
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+	backgroundcolor=\color{backcolour},
+	commentstyle=\color{codegreen},
+	keywordstyle=\color{blue},
+	numberstyle=\tiny\color{codegray},
+	stringstyle=\color{codepurple},
+	basicstyle=\ttfamily\footnotesize,
+	breaklines=true,
+	numbers=left,
+	numbersep=5pt,
+	showstringspaces=false,
+	tabsize=2
+}
+
+\lstset{style=mystyle}
+
+
+
+% ============================
+% Definicja języka PowerShell dla listings
+% ============================
+\lstdefinelanguage{PowerShell}{
+  morekeywords={
+    Add-ADUser, New-ADUser, New-ADGroup, New-ADOrganizationalUnit,
+    Get-ADUser, Get-ADGroup, Import-Csv, ForEach-Object,
+    If, Else, Foreach, While, Function, Param
+  },
+  sensitive=true,
+  morecomment=[l]{\#},
+  morestring=[b]"
+}
+
+
+\usepackage{placeins}

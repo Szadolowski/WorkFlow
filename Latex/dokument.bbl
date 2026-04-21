@@ -1,0 +1,500 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.3 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{none/global//global/global/global}
+    \entry{sap}{online}{}{}
+      \name{author}{1}{}{%
+        {{hash=a8fdc4d4089d2e7c3046b1da9fa45a47}{%
+           family={{SAP SE}},
+           familyi={S\bibinitperiod}}}%
+      }
+      \strng{namehash}{a8fdc4d4089d2e7c3046b1da9fa45a47}
+      \strng{fullhash}{a8fdc4d4089d2e7c3046b1da9fa45a47}
+      \strng{fullhashraw}{a8fdc4d4089d2e7c3046b1da9fa45a47}
+      \strng{bibnamehash}{a8fdc4d4089d2e7c3046b1da9fa45a47}
+      \strng{authorbibnamehash}{a8fdc4d4089d2e7c3046b1da9fa45a47}
+      \strng{authornamehash}{a8fdc4d4089d2e7c3046b1da9fa45a47}
+      \strng{authorfullhash}{a8fdc4d4089d2e7c3046b1da9fa45a47}
+      \strng{authorfullhashraw}{a8fdc4d4089d2e7c3046b1da9fa45a47}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Na czym polega transformacja cyfrowa?}
+      \field{urlday}{21}
+      \field{urlmonth}{4}
+      \field{urlyear}{2026}
+      \field{year}{2023}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://www.sap.com/poland/resources/what-is-digital-transformation
+      \endverb
+      \verb{url}
+      \verb https://www.sap.com/poland/resources/what-is-digital-transformation
+      \endverb
+    \endentry
+    \entry{erp_mfiles}{online}{}{}
+      \name{author}{1}{}{%
+        {{hash=469cb4f30dce242034355d5d406e0ec9}{%
+           family={{Tomasz Małkus, Małgorzata Dziedzic}},
+           familyi={T\bibinitperiod}}}%
+      }
+      \strng{namehash}{469cb4f30dce242034355d5d406e0ec9}
+      \strng{fullhash}{469cb4f30dce242034355d5d406e0ec9}
+      \strng{fullhashraw}{469cb4f30dce242034355d5d406e0ec9}
+      \strng{bibnamehash}{469cb4f30dce242034355d5d406e0ec9}
+      \strng{authorbibnamehash}{469cb4f30dce242034355d5d406e0ec9}
+      \strng{authornamehash}{469cb4f30dce242034355d5d406e0ec9}
+      \strng{authorfullhash}{469cb4f30dce242034355d5d406e0ec9}
+      \strng{authorfullhashraw}{469cb4f30dce242034355d5d406e0ec9}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{System ERP}
+      \field{urlday}{21}
+      \field{urlmonth}{4}
+      \field{urlyear}{2026}
+      \field{year}{2025}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://mfiles.pl/pl/index.php/System_ERP
+      \endverb
+      \verb{url}
+      \verb https://mfiles.pl/pl/index.php/System_ERP
+      \endverb
+    \endentry
+    \entry{bpmn_doskonalenieprodukcji}{online}{}{}
+      \name{author}{1}{}{%
+        {{hash=c5925ba872f22020c9423d4032fd83f4}{%
+           family={Produkcji},
+           familyi={P\bibinitperiod},
+           given={Instytut\bibnamedelima Doskonalenia},
+           giveni={I\bibinitperiod\bibinitdelim D\bibinitperiod}}}%
+      }
+      \strng{namehash}{c5925ba872f22020c9423d4032fd83f4}
+      \strng{fullhash}{c5925ba872f22020c9423d4032fd83f4}
+      \strng{fullhashraw}{c5925ba872f22020c9423d4032fd83f4}
+      \strng{bibnamehash}{c5925ba872f22020c9423d4032fd83f4}
+      \strng{authorbibnamehash}{c5925ba872f22020c9423d4032fd83f4}
+      \strng{authornamehash}{c5925ba872f22020c9423d4032fd83f4}
+      \strng{authorfullhash}{c5925ba872f22020c9423d4032fd83f4}
+      \strng{authorfullhashraw}{c5925ba872f22020c9423d4032fd83f4}
+      \field{sortinit}{3}
+      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{BPMN w praktyce, czyli jak czytać i tworzyć modele procesów biznesowych, które naprawdę działają!}
+      \field{urlday}{21}
+      \field{urlmonth}{4}
+      \field{urlyear}{2026}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://www.doskonalenieprodukcji.pl/blog/bpmn-w-praktyce-czyli-jak-czytac-i-tworzyc-modele-procesow-biznesowych-ktore-naprawde-dzialaja
+      \endverb
+      \verb{url}
+      \verb https://www.doskonalenieprodukcji.pl/blog/bpmn-w-praktyce-czyli-jak-czytac-i-tworzyc-modele-procesow-biznesowych-ktore-naprawde-dzialaja
+      \endverb
+    \endentry
+    \entry{czysta_architektura_helion}{book}{}{}
+      \name{author}{1}{}{%
+        {{hash=6f41df64eb0dc4855be70172368604c2}{%
+           family={Martin},
+           familyi={M\bibinitperiod},
+           given={Robert\bibnamedelima C.},
+           giveni={R\bibinitperiod\bibinitdelim C\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Helion}%
+      }
+      \strng{namehash}{6f41df64eb0dc4855be70172368604c2}
+      \strng{fullhash}{6f41df64eb0dc4855be70172368604c2}
+      \strng{fullhashraw}{6f41df64eb0dc4855be70172368604c2}
+      \strng{bibnamehash}{6f41df64eb0dc4855be70172368604c2}
+      \strng{authorbibnamehash}{6f41df64eb0dc4855be70172368604c2}
+      \strng{authornamehash}{6f41df64eb0dc4855be70172368604c2}
+      \strng{authorfullhash}{6f41df64eb0dc4855be70172368604c2}
+      \strng{authorfullhashraw}{6f41df64eb0dc4855be70172368604c2}
+      \field{sortinit}{5}
+      \field{sortinithash}{20e9b4b0b173788c5dace24730f47d8c}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Czysta architektura. Struktura i design oprogramowania. Przewodnik dla profesjonalistów}
+      \field{year}{2018}
+    \endentry
+    \entry{czysty_kod}{online}{}{}
+      \name{author}{1}{}{%
+        {{hash=2c9c34664ba8a2190f929bf3c9bc23ee}{%
+           family={Pruchnicki},
+           familyi={P\bibinitperiod},
+           given={Witek},
+           giveni={W\bibinitperiod}}}%
+      }
+      \strng{namehash}{2c9c34664ba8a2190f929bf3c9bc23ee}
+      \strng{fullhash}{2c9c34664ba8a2190f929bf3c9bc23ee}
+      \strng{fullhashraw}{2c9c34664ba8a2190f929bf3c9bc23ee}
+      \strng{bibnamehash}{2c9c34664ba8a2190f929bf3c9bc23ee}
+      \strng{authorbibnamehash}{2c9c34664ba8a2190f929bf3c9bc23ee}
+      \strng{authornamehash}{2c9c34664ba8a2190f929bf3c9bc23ee}
+      \strng{authorfullhash}{2c9c34664ba8a2190f929bf3c9bc23ee}
+      \strng{authorfullhashraw}{2c9c34664ba8a2190f929bf3c9bc23ee}
+      \field{sortinit}{6}
+      \field{sortinithash}{b33bc299efb3c36abec520a4c896a66d}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Jak Pisać Czysty Kod?}
+      \field{urlday}{21}
+      \field{urlmonth}{4}
+      \field{urlyear}{2026}
+      \field{year}{2024}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://witekpruchnicki.com/jak-pisac-czysty-kod
+      \endverb
+      \verb{url}
+      \verb https://witekpruchnicki.com/jak-pisac-czysty-kod
+      \endverb
+    \endentry
+    \entry{Nazewnictwo_sowa}{online}{}{}
+      \name{author}{1}{}{%
+        {{hash=0150f3304af542776fe43eed168ce806}{%
+           family={SowaProgramuje},
+           familyi={S\bibinitperiod}}}%
+      }
+      \strng{namehash}{0150f3304af542776fe43eed168ce806}
+      \strng{fullhash}{0150f3304af542776fe43eed168ce806}
+      \strng{fullhashraw}{0150f3304af542776fe43eed168ce806}
+      \strng{bibnamehash}{0150f3304af542776fe43eed168ce806}
+      \strng{authorbibnamehash}{0150f3304af542776fe43eed168ce806}
+      \strng{authornamehash}{0150f3304af542776fe43eed168ce806}
+      \strng{authorfullhash}{0150f3304af542776fe43eed168ce806}
+      \strng{authorfullhashraw}{0150f3304af542776fe43eed168ce806}
+      \field{sortinit}{6}
+      \field{sortinithash}{b33bc299efb3c36abec520a4c896a66d}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Nazewnictwo w programowaniu – 20 cennych wskazówek}
+      \field{urlday}{21}
+      \field{urlmonth}{4}
+      \field{urlyear}{2026}
+      \field{year}{2017}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://sowaprogramuje.pl/nazewnictwo-w-programowaniu-20-cennych-wskazowek/
+      \endverb
+      \verb{url}
+      \verb https://sowaprogramuje.pl/nazewnictwo-w-programowaniu-20-cennych-wskazowek/
+      \endverb
+    \endentry
+    \entry{PMI_vs_OGC}{online}{}{}
+      \name{author}{1}{}{%
+        {{hash=12cd0c9d8082dad3767682437efeb193}{%
+           family={Hrytsiuk},
+           familyi={H\bibinitperiod},
+           given={Hanna},
+           giveni={H\bibinitperiod}}}%
+      }
+      \strng{namehash}{12cd0c9d8082dad3767682437efeb193}
+      \strng{fullhash}{12cd0c9d8082dad3767682437efeb193}
+      \strng{fullhashraw}{12cd0c9d8082dad3767682437efeb193}
+      \strng{bibnamehash}{12cd0c9d8082dad3767682437efeb193}
+      \strng{authorbibnamehash}{12cd0c9d8082dad3767682437efeb193}
+      \strng{authornamehash}{12cd0c9d8082dad3767682437efeb193}
+      \strng{authorfullhash}{12cd0c9d8082dad3767682437efeb193}
+      \strng{authorfullhashraw}{12cd0c9d8082dad3767682437efeb193}
+      \field{sortinit}{7}
+      \field{sortinithash}{108d0be1b1bee9773a1173443802c0a3}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Porównanie PRINCE2 i PMBOK}
+      \field{urlday}{21}
+      \field{urlmonth}{4}
+      \field{urlyear}{2026}
+      \field{year}{2023}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://mfiles.pl/pl/index.php/Por%C3%B3wnanie_PRINCE2_i_PMBOK
+      \endverb
+      \verb{url}
+      \verb https://mfiles.pl/pl/index.php/Por%C3%B3wnanie_PRINCE2_i_PMBOK
+      \endverb
+    \endentry
+    \entry{SSoT_dropbox}{online}{}{}
+      \name{author}{1}{}{%
+        {{hash=f92aa92725095d5531f54b4589d99264}{%
+           family={Dropbox},
+           familyi={D\bibinitperiod}}}%
+      }
+      \strng{namehash}{f92aa92725095d5531f54b4589d99264}
+      \strng{fullhash}{f92aa92725095d5531f54b4589d99264}
+      \strng{fullhashraw}{f92aa92725095d5531f54b4589d99264}
+      \strng{bibnamehash}{f92aa92725095d5531f54b4589d99264}
+      \strng{authorbibnamehash}{f92aa92725095d5531f54b4589d99264}
+      \strng{authornamehash}{f92aa92725095d5531f54b4589d99264}
+      \strng{authorfullhash}{f92aa92725095d5531f54b4589d99264}
+      \strng{authorfullhashraw}{f92aa92725095d5531f54b4589d99264}
+      \field{sortinit}{9}
+      \field{sortinithash}{0a5ebc79d83c96b6579069544c73c7d4}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Czym jest single source of truth (SSOT)?}
+      \field{urlday}{21}
+      \field{urlmonth}{4}
+      \field{urlyear}{2026}
+      \field{year}{2025}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://www.dropbox.com/pl/resources/source-of-truth
+      \endverb
+      \verb{url}
+      \verb https://www.dropbox.com/pl/resources/source-of-truth
+      \endverb
+    \endentry
+    \entry{cobit_itwiz}{online}{}{}
+      \name{author}{1}{}{%
+        {{hash=a248f090b606a8b33a6cf8e221c541eb}{%
+           family={Wiatr},
+           familyi={W\bibinitperiod},
+           given={Michał},
+           giveni={M\bibinitperiod}}}%
+      }
+      \strng{namehash}{a248f090b606a8b33a6cf8e221c541eb}
+      \strng{fullhash}{a248f090b606a8b33a6cf8e221c541eb}
+      \strng{fullhashraw}{a248f090b606a8b33a6cf8e221c541eb}
+      \strng{bibnamehash}{a248f090b606a8b33a6cf8e221c541eb}
+      \strng{authorbibnamehash}{a248f090b606a8b33a6cf8e221c541eb}
+      \strng{authornamehash}{a248f090b606a8b33a6cf8e221c541eb}
+      \strng{authorfullhash}{a248f090b606a8b33a6cf8e221c541eb}
+      \strng{authorfullhashraw}{a248f090b606a8b33a6cf8e221c541eb}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{COBIT i jego wykorzystanie dla zwiększania efektywności działania funkcji IT}
+      \field{urlday}{21}
+      \field{urlmonth}{4}
+      \field{urlyear}{2026}
+      \field{year}{2017}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://itwiz.pl/cobit-jego-wykorzystanie-dla-zwiekszania-efektywnosci-dzialania-funkcji/
+      \endverb
+      \verb{url}
+      \verb https://itwiz.pl/cobit-jego-wykorzystanie-dla-zwiekszania-efektywnosci-dzialania-funkcji/
+      \endverb
+    \endentry
+    \entry{rodo}{online}{}{}
+      \name{author}{1}{}{%
+        {{hash=742a2c926f556d7f8e016fcc7e8d2c58}{%
+           family={10\bibnamedelima maja\bibnamedelimb 2018\bibnamedelimb r.\bibnamedelimi o\bibnamedelimb ochronie\bibnamedelimb danych\bibnamedelima osobowych},
+           familyi={1\bibinitperiod\bibinitdelim m\bibinitperiod\bibinitdelim 2\bibinitperiod\bibinitdelim r\bibinitperiod\bibinitdelim o\bibinitperiod\bibinitdelim o\bibinitperiod\bibinitdelim d\bibinitperiod\bibinitdelim o\bibinitperiod},
+           given={Ustawa},
+           giveni={U\bibinitperiod},
+           prefix={z\bibnamedelima dnia},
+           prefixi={z\bibinitperiod\bibinitdelim d\bibinitperiod}}}%
+      }
+      \strng{namehash}{742a2c926f556d7f8e016fcc7e8d2c58}
+      \strng{fullhash}{742a2c926f556d7f8e016fcc7e8d2c58}
+      \strng{fullhashraw}{742a2c926f556d7f8e016fcc7e8d2c58}
+      \strng{bibnamehash}{742a2c926f556d7f8e016fcc7e8d2c58}
+      \strng{authorbibnamehash}{742a2c926f556d7f8e016fcc7e8d2c58}
+      \strng{authornamehash}{742a2c926f556d7f8e016fcc7e8d2c58}
+      \strng{authorfullhash}{742a2c926f556d7f8e016fcc7e8d2c58}
+      \strng{authorfullhashraw}{742a2c926f556d7f8e016fcc7e8d2c58}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{RODO}
+      \field{urlday}{21}
+      \field{urlmonth}{4}
+      \field{urlyear}{2026}
+      \field{year}{2018}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://isap.sejm.gov.pl/isap.nsf/DocDetails.xsp?id=WDU20180001000
+      \endverb
+      \verb{url}
+      \verb https://isap.sejm.gov.pl/isap.nsf/DocDetails.xsp?id=WDU20180001000
+      \endverb
+    \endentry
+    \entry{RBAC_kapitanhack}{online}{}{}
+      \name{author}{1}{}{%
+        {{hash=e073136e21fa310eebf94e11dc4f2d67}{%
+           family={Hack},
+           familyi={H\bibinitperiod},
+           given={Kapitan},
+           giveni={K\bibinitperiod}}}%
+      }
+      \strng{namehash}{e073136e21fa310eebf94e11dc4f2d67}
+      \strng{fullhash}{e073136e21fa310eebf94e11dc4f2d67}
+      \strng{fullhashraw}{e073136e21fa310eebf94e11dc4f2d67}
+      \strng{bibnamehash}{e073136e21fa310eebf94e11dc4f2d67}
+      \strng{authorbibnamehash}{e073136e21fa310eebf94e11dc4f2d67}
+      \strng{authornamehash}{e073136e21fa310eebf94e11dc4f2d67}
+      \strng{authorfullhash}{e073136e21fa310eebf94e11dc4f2d67}
+      \strng{authorfullhashraw}{e073136e21fa310eebf94e11dc4f2d67}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Co to jest RBAC? Porównanie RBAC z ABAC}
+      \field{urlday}{21}
+      \field{urlmonth}{4}
+      \field{urlyear}{2026}
+      \field{year}{2023}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://kapitanhack.pl/co-to-jest-rbac-porownanie-rbac-z-abac
+      \endverb
+      \verb{url}
+      \verb https://kapitanhack.pl/co-to-jest-rbac-porownanie-rbac-z-abac
+      \endverb
+    \endentry
+    \entry{ISO2701}{online}{}{}
+      \name{author}{1}{}{%
+        {{hash=0828a8408614177181026ea908d5594a}{%
+           family={ISO/IEC},
+           familyi={I\bibinitperiod}}}%
+      }
+      \strng{namehash}{0828a8408614177181026ea908d5594a}
+      \strng{fullhash}{0828a8408614177181026ea908d5594a}
+      \strng{fullhashraw}{0828a8408614177181026ea908d5594a}
+      \strng{bibnamehash}{0828a8408614177181026ea908d5594a}
+      \strng{authorbibnamehash}{0828a8408614177181026ea908d5594a}
+      \strng{authornamehash}{0828a8408614177181026ea908d5594a}
+      \strng{authorfullhash}{0828a8408614177181026ea908d5594a}
+      \strng{authorfullhashraw}{0828a8408614177181026ea908d5594a}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{ISO/IEC 27001 - Information security management}
+      \field{urlday}{21}
+      \field{urlmonth}{4}
+      \field{urlyear}{2026}
+      \field{year}{2025}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://www.iso.org/isoiec-27001-information-security.html
+      \endverb
+      \verb{url}
+      \verb https://www.iso.org/isoiec-27001-information-security.html
+      \endverb
+    \endentry
+    \entry{iso_resilia}{online}{}{}
+      \name{author}{1}{}{%
+        {{hash=3a7adbf797ae975a0f430c603fc1b3d9}{%
+           family={resilia},
+           familyi={r\bibinitperiod}}}%
+      }
+      \strng{namehash}{3a7adbf797ae975a0f430c603fc1b3d9}
+      \strng{fullhash}{3a7adbf797ae975a0f430c603fc1b3d9}
+      \strng{fullhashraw}{3a7adbf797ae975a0f430c603fc1b3d9}
+      \strng{bibnamehash}{3a7adbf797ae975a0f430c603fc1b3d9}
+      \strng{authorbibnamehash}{3a7adbf797ae975a0f430c603fc1b3d9}
+      \strng{authornamehash}{3a7adbf797ae975a0f430c603fc1b3d9}
+      \strng{authorfullhash}{3a7adbf797ae975a0f430c603fc1b3d9}
+      \strng{authorfullhashraw}{3a7adbf797ae975a0f430c603fc1b3d9}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Co to jest norma ISO 27001 i dlaczego jest tak ważna dla organizacji?}
+      \field{urlday}{21}
+      \field{urlmonth}{4}
+      \field{urlyear}{2026}
+      \field{year}{2024}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://resilia.pl/blog/iso-27001-czym-jest-jakie-daje-korzysci/
+      \endverb
+      \verb{url}
+      \verb https://resilia.pl/blog/iso-27001-czym-jest-jakie-daje-korzysci/
+      \endverb
+    \endentry
+    \entry{struktura_dokumentow}{online}{}{}
+      \name{author}{1}{}{%
+        {{hash=e130ef076df6526170bb8c7151a3cdf8}{%
+           family={Wolski},
+           familyi={W\bibinitperiod},
+           given={Michał},
+           giveni={M\bibinitperiod}}}%
+      }
+      \strng{namehash}{e130ef076df6526170bb8c7151a3cdf8}
+      \strng{fullhash}{e130ef076df6526170bb8c7151a3cdf8}
+      \strng{fullhashraw}{e130ef076df6526170bb8c7151a3cdf8}
+      \strng{bibnamehash}{e130ef076df6526170bb8c7151a3cdf8}
+      \strng{authorbibnamehash}{e130ef076df6526170bb8c7151a3cdf8}
+      \strng{authornamehash}{e130ef076df6526170bb8c7151a3cdf8}
+      \strng{authorfullhash}{e130ef076df6526170bb8c7151a3cdf8}
+      \strng{authorfullhashraw}{e130ef076df6526170bb8c7151a3cdf8}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Struktura dokumentów wymagań – część 1}
+      \field{urlday}{21}
+      \field{urlmonth}{4}
+      \field{urlyear}{2026}
+      \field{year}{2015}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://wolski.pro/2015/04/struktura-dokumentw-wymagan-cz-1/
+      \endverb
+      \verb{url}
+      \verb https://wolski.pro/2015/04/struktura-dokumentw-wymagan-cz-1/
+      \endverb
+    \endentry
+    \entry{kontenery_i_zalety}{online}{}{}
+      \name{author}{1}{}{%
+        {{hash=f7b6cc1f718e7f381bd615e8c0388590}{%
+           family={gigacloud},
+           familyi={g\bibinitperiod}}}%
+      }
+      \strng{namehash}{f7b6cc1f718e7f381bd615e8c0388590}
+      \strng{fullhash}{f7b6cc1f718e7f381bd615e8c0388590}
+      \strng{fullhashraw}{f7b6cc1f718e7f381bd615e8c0388590}
+      \strng{bibnamehash}{f7b6cc1f718e7f381bd615e8c0388590}
+      \strng{authorbibnamehash}{f7b6cc1f718e7f381bd615e8c0388590}
+      \strng{authornamehash}{f7b6cc1f718e7f381bd615e8c0388590}
+      \strng{authorfullhash}{f7b6cc1f718e7f381bd615e8c0388590}
+      \strng{authorfullhashraw}{f7b6cc1f718e7f381bd615e8c0388590}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Konteneryzacja i jej zalety}
+      \field{urlday}{21}
+      \field{urlmonth}{4}
+      \field{urlyear}{2026}
+      \field{year}{2024}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://gigacloud.eu/pl/articles/containerization-and-its-benefits/
+      \endverb
+      \verb{url}
+      \verb https://gigacloud.eu/pl/articles/containerization-and-its-benefits/
+      \endverb
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+

@@ -1,0 +1,109 @@
+\documentclass[12pt,twoside,a4paper]{article} % z obrazami
+% \documentclass[12pt,twoside,a4paper,openany,draft]{article} % bez obrazów, kodu, podświetleń linków
+
+% ================= PREAMBUŁA =================
+\input{preambula_pakiety.tex}
+\input{preambula_ustawienia.tex}
+
+
+% Dodatkowe pakiety naprawcze
+    \usepackage{xurl} % Łamanie długich linków
+    \usepackage{enumitem} % Listy numerowane
+
+% ===== Dane do strony tytułowej (pakiet strona_tytulowa.sty) =====
+
+
+ \title{} % Tytuł zostawiamy pusty, bo jest "Temat projektu" w sty
+
+% --- DANE STUDENTA ---
+    \author{Curzydło Rafał} % Twoje imię
+    \authorI{}
+    \authorII{}
+
+    \grupa{}
+
+\uczelnia{AKADEMIA NAUK STOSOWANYCH W NOWYM SĄCZU}
+\instytut{Wydział Nauk Inżynieryjnych}
+\kierunek{}
+\praca{Bazy danych}
+\przedmiot{studia niestacjonarne \\ semestr letni 2025/2026 }
+\prowadzacy{dr hab. Surówka Grzegorz}
+\rok{2026}
+
+% ================= ŚRODOWISKA DODATKOWE =================
+% (pozostawione – nie przeszkadzają w projekcie)
+\usepackage{fancyvrb}
+\DefineVerbatimEnvironment{MT}{Verbatim}%
+{commandchars=\+\[\],fontsize=\small,frame=lines,baselinestretch=1}
+\let\mt\verb
+
+\usepackage{fancyhdr}
+
+
+% ================= USTAWIENIA SPISU TREŚCI =================
+\setcounter{tocdepth}{2}
+
+
+% ================= DOKUMENT =================
+\begin{document}
+
+% --- Nazwy rysunków i tabel (po babel!) ---
+\renewcommand{\figurename}{Rys.}
+\renewcommand{\tablename}{Tab.}
+
+% --- Strona tytułowa ---
+\thispagestyle{empty}
+\stronatytulowa
+
+% --- Nagłówki ---
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{Kleopatra}
+\fancyhead[R]{\thepage}
+% --- Spis treści ---
+\newpage
+\tableofcontents
+\thispagestyle{fancy}
+\newpage
+
+% ================= TREŚĆ GŁÓWNA =================
+\input{tex/rozdzial1.tex}
+\input{tex/rozdzial2.tex}
+\input{tex/rozdzial3.tex}
+\input{tex/rozdzial4.tex}
+\input{tex/rozdzial5.tex}
+\input{tex/rozdzial6.tex}
+
+% ================= BIBLIOGRAFIA =================
+\clearpage
+\FloatBarrier
+\addcontentsline{toc}{section}{Literatura}
+\nocite{*}
+\printbibliography
+
+% ================= SPIS RYSUNKÓW =================
+\clearpage
+\FloatBarrier
+\addcontentsline{toc}{section}{Spis rysunków}
+\listoffigures
+\thispagestyle{fancy}
+
+% ================= SPIS TABEL =================
+\clearpage
+\FloatBarrier
+\addcontentsline{toc}{section}{Spis tabel}
+\listoftables
+\thispagestyle{fancy}
+
+% ================= SPIS LISTINGÓW =================
+\clearpage
+\FloatBarrier
+\renewcommand\lstlistlistingname{Spis listingów}
+\addcontentsline{toc}{section}{Spis listingów}
+\lstlistoflistings
+\thispagestyle{fancy}
+
+% % ================= TODO (DO USUNIĘCIA PRZED ODDANIEM) =================
+% % \todos
+
+\end{document}

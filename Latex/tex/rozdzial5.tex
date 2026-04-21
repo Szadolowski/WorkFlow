@@ -1,0 +1,31 @@
+\section{Proces deszyfrowania i odczytu wiadomości}
+
+\subsection{Autoryzacja dostępu do klucza prywatnego}
+Proces odwrócenia operacji kryptograficznej, czyli deszyfrowanie, może zostać przeprowadzony wyłącznie przez prawowitego odbiorcę, który znajduje się w posiadaniu odpowiedniego klucza prywatnego. Próba otwarcia pliku \texttt{.gpg} w środowisku GPG4win automatycznie uruchamia moduł deszyfrujący. Ponieważ klucz prywatny jest zabezpieczony na dysku za pomocą symetrycznego hasła (ustanowionego podczas jego generowania), system natychmiast wywołuje bezpieczne okno dialogowe Pinentry, żądając od użytkownika uwierzytelnienia operacji.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.6\textwidth]{rys/haslo-do-odszyfrowania.png}
+    \caption{Moduł Pinentry żądający hasła w celu odblokowania klucza prywatnego niezbędnego do odszyfrowania danych.}
+    \label{fig:haslo_deszyfrowanie}
+\end{figure}
+
+\subsection{Weryfikacja kryptograficzna i sprawdzanie podpisów}
+Po prawidłowym wprowadzeniu hasła, silnik GnuPG uzyskuje dostęp do klucza prywatnego, odszyfrowuje klucz sesyjny, a następnie odzyskuje oryginalną treść pliku. W tym samym czasie program Kleopatra analizuje metadane pliku pod kątem obecności podpisów cyfrowych. Zrzut ekranu przedstawia okno podsumowujące operację, w którym zielony komunikat informuje nie tylko o udanym odszyfrowaniu, ale również o poprawnej weryfikacji podpisu nadawcy. Gwarantuje to zachowanie integralności danych (plik nie został zmieniony w locie) oraz niezaprzeczalności (nadawcą na pewno jest osoba posiadająca dany klucz).
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.85\textwidth]{rys/okno-odszyfrowane.png}
+    \caption{Raport z operacji deszyfrowania potwierdzający integralność pliku oraz poprawność weryfikacji podpisu cyfrowego nadawcy.}
+    \label{fig:okno_raportu}
+\end{figure}
+
+\subsection{Odzyskanie danych jawnych}
+Ostatnim etapem procesu jest zapisanie na dysku zdeszyfrowanego pliku wynikowego lub wyświetlenie jego zawartości bezpośrednio w bezpiecznym wbudowanym notatniku (w zależności od użytej opcji w programie Kleopatra). Jak można zaobserwować, odzyskany tekst jest identyczny z oryginalnym plikiem jawnym utworzonym przed procesem szyfrowania. Cykl bezpiecznej komunikacji asymetrycznej został tym samym z powodzeniem zakończony.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.75\textwidth]{rys/odszyfrowany-tekst.png}
+    \caption{Zawartość pomyślnie odszyfrowanego pliku – dane jawne wróciły do swojej pierwotnej, czytelnej formy.}
+    \label{fig:odszyfrowany_tekst}
+\end{figure}

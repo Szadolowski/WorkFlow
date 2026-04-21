@@ -1,0 +1,4 @@
+\babel@toc {polish}{}\relax 
+\contentsline {figure}{\numberline {{5}.1}{\ignorespaces Moduł Pinentry żądający hasła w celu odblokowania klucza prywatnego niezbędnego do odszyfrowania danych.}}{10}{figure.5.1}%
+\contentsline {figure}{\numberline {{5}.2}{\ignorespaces Raport z operacji deszyfrowania potwierdzający integralność pliku oraz poprawność weryfikacji podpisu cyfrowego nadawcy.}}{11}{figure.5.2}%
+\contentsline {figure}{\numberline {{5}.3}{\ignorespaces Zawartość pomyślnie odszyfrowanego pliku – dane jawne wróciły do swojej pierwotnej, czytelnej formy.}}{11}{figure.5.3}%

@@ -1,0 +1,36 @@
+% ================= ROZDZIAŁ 4.1 =================
+\subsection{Wymagania niefunkcyjne}
+
+Wymagania niefunkcyjne określają parametry jakościowe, standardy bezpieczeństwa oraz ograniczenia technologiczne systemu \texttt{WorkFlow}. Zgodnie z wytycznymi IEEE 830-1998, definiują one ramy, w jakich musi operować oprogramowanie, aby zapewnić stabilność i niezawodność w środowisku produkcyjnym \cite{struktura_dokumentow}.
+
+\subsubsection{Bezpieczeństwo (Priorytet Krytyczny)}
+Ze względu na charakter przetwarzanych informacji kadrowo-finansowych, system musi spełniać rygorystyczne normy ochrony danych na poziomie architektonicznym.
+\begin{itemize}
+    \item \textbf{Izolacja danych (RBAC):} Architektura systemu musi bezwzględnie wymuszać autoryzację każdego żądania w oparciu o model \textit{Role-Based Access Control}, zapobiegając horyzontalnej i wertykalnej eskalacji uprawnień \cite{RBAC_kapitanhack}.
+    \item \textbf{Szyfrowanie i kryptografia:} Całość komunikacji sieciowej musi być szyfrowana z wykorzystaniem protokołu TLS (wersja 1.2 lub wyższa). Wrażliwe dane w spoczynku (w tym hasła użytkowników haszowane algorytmem np. Argon2) muszą być kryptograficznie zabezpieczone.
+    \item \textbf{Odporność na ataki:} Infrastruktura sieciowa i aplikacyjna musi implementować mechanizmy obronne przeciwko najczęstszym podatnościom (m.in. CSRF, XSS, SQL Injection) oraz posiadać zabezpieczenia typu \textit{rate limiting} ograniczające ryzyko ataków \textit{brute-force}.
+\end{itemize}
+
+\subsubsection{Zgodność prawna i audytowalność (Compliance)}
+\begin{itemize}
+    \item \textbf{Polityka RODO:} Przetwarzanie i przechowywanie danych musi odbywać się zgodnie z obowiązującymi przepisami prawa, z narzuconymi z góry okresami retencji dla poszczególnych typów dokumentów \cite{rodo}.
+    \item \textbf{Ślad rewizyjny:} Baza danych musi być zaprojektowana w sposób uniemożliwiający bezśladową modyfikację lub usunięcie rekordu finansowego, co jest zgodne ze standardami kontroli wewnętrznej \cite{cobit_itwiz}.
+\end{itemize}
+
+\subsubsection{Wydajność i ograniczenia architektoniczne}
+\begin{itemize}
+    \item \textbf{Czas odpowiedzi:} Wydajność zapytań serwera musi gwarantować czas odpowiedzi API dla kluczowych operacji synchronicznych poniżej 300 ms.
+    \item \textbf{Konteneryzacja jako wymóg:} Całość rozwiązania musi być wdrożona w architekturze kontenerowej (np. \textit{Docker}). Jest to narzucone ograniczenie projektowe mające na celu zapewnienie przenośności (\textit{portability}) oraz izolacji usług na poziomie systemu operacyjnego \cite{kontenery_i_zalety}.
+    \item \textbf{Skalowalność pozioma:} Środowisko uruchomieniowe musi pozwalać na płynne powielanie instancji kontenerów (np. węzłów API) w przypadku gwałtownego wzrostu obciążenia sieciowego \cite{kontenery_i_zalety}.
+\end{itemize}
+
+\subsubsection{Niezawodność i dostępność (SLA)}
+\begin{itemize}
+    \item \textbf{Gwarancja dostępności:} System musi być zaprojektowany tak, aby spełniać warunki SLA (Service Level Agreement) na poziomie minimalnym 99\% w skali roku.
+    \item \textbf{Tolerancja na błędy:} Architektura kontenerowa musi być wyposażona w mechanizmy automatycznego restartu uszkodzonych usług, minimalizując czas niedostępności systemu (\textit{downtime}) bez ingerencji administratora \cite{kontenery_i_zalety}.
+\end{itemize}
+
+\subsubsection{Kompatybilność i UX}
+\begin{itemize}
+    \item \textbf{Wymagania klienckie:} Dostęp do systemu nie może wymagać instalacji oprogramowania trzeciego. Aplikacja musi być w pełni kompatybilna i responsywna na wiodących przeglądarkach internetowych (Chrome, Edge, Firefox) zarówno na stacjach roboczych, jak i urządzeniach mobilnych.
+\end{itemize}
