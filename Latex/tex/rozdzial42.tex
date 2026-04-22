@@ -1,0 +1,40 @@
+% ================= ROZDZIAŁ 4.2 =================
+\subsection{Wymagania funkcjonalne}
+
+Wymagania funkcjonalne definiują zestaw operacji, usług oraz procesów biznesowych, które system \texttt{WorkFlow} musi realizować. Zostały one pogrupowane w logiczne moduły biznesowe, co ułatwia ich późniejsze mapowanie na punkty końcowe interfejsu programistycznego (API).
+
+\subsubsection{Zarządzanie systemem, tożsamością i audytem (Core)}
+\begin{itemize}
+    \item \textbf{Zarządzanie użytkownikami (CRUD):} System musi umożliwiać administratorowi rejestrację, edycję danych oraz dezaktywację kont użytkowników.
+    \item \textbf{Zarządzanie uprawnieniami:} Możliwość przypisywania ról systemowych (Administrator, Brygadzista, Weryfikator, HR, Księgowość), co determinuje zakres widocznych funkcji i danych w interfejsie.
+    \item \textbf{Rejestr zdarzeń (Audit Log):} System musi automatycznie zapisywać historię operacji na danych (edycje, zatwierdzenia, usunięcia) uwzględniając identyfikator użytkownika, precyzyjny znacznik czasu oraz zakres wprowadzonych modyfikacji.
+    \item \textbf{Moduł powiadomień:} Aplikacja musi generować i wysyłać powiadomienia (poprzez e-mail oraz wewnątrz systemu) o nowych danych do weryfikacji, odrzuconych wpisach roboczogodzin oraz zbliżających się terminach wygaśnięcia dokumentów.
+\end{itemize}
+
+\subsubsection{Panel Terenowy (Moduł Brygadzisty)}
+\begin{itemize}
+    \item \textbf{Ewidencja czasu pracy:} Możliwość wprowadzania liczby przepracowanych godzin dla poszczególnych członków brygady z uwzględnieniem konkretnej daty oraz miejsca pracy (projektu).
+    \item \textbf{Digitalizacja z terenu:} Funkcjonalność pozwalająca na bezpośrednie wykonanie i wgranie zdjęcia lub skanu dokumentu (np. zwolnienia lekarskiego) do bazy systemu z poziomu urządzenia mobilnego.
+    \item \textbf{Dostosowanie interfejsu:} Moduł musi posiadać uproszczony, responsywny interfejs operacyjny dostosowany do pracy w warunkach terenowych (obsługa mobilna).
+\end{itemize}
+
+\subsubsection{Obieg Pracy i Weryfikacja (Moduł Biurowy)}
+\begin{itemize}
+    \item \textbf{Silnik \textit{Workflow}:} System musi obsługiwać maszynę stanów dla wprowadzonych rekordów czasu pracy, wspierając przejścia między statusami: \textit{surowe} $\rightarrow$ \textit{w trakcie weryfikacji} $\rightarrow$ \textit{zatwierdzone} lub \textit{odrzucone}.
+    \item \textbf{Korekta danych:} Pracownik biurowy musi mieć możliwość edycji błędnie wprowadzonych danych przez brygadzistę przed ich ostatecznym zatwierdzeniem.
+    \item \textbf{Mechanizm odrzuceń:} Funkcja cofnięcia rekordu do statusu poprawy wraz z obowiązkowym komentarzem i wygenerowaniem powiadomienia dla twórcy wpisu.
+\end{itemize}
+
+\subsubsection{Zarządzanie Zasobami Ludzkimi i Dokumentacją (Moduł HR)}
+\begin{itemize}
+    \item \textbf{Cyfrowa teczka pracownika:} System musi umożliwiać budowanie profilu pracownika zawierającego dane osobowe, historię zatrudnienia, zajmowane stanowisko oraz wykaz nabytych uprawnień i odbytych szkoleń.
+    \item \textbf{Repozytorium dokumentów:} Funkcja centralnego przechowywania, podglądu i wersjonowania wgranych dokumentów, z podziałem na kategorie (tożsamość, pozwolenia, zwolnienia lekarskie).
+    \item \textbf{Monitorowanie terminów ważności:} System musi automatycznie rejestrować daty ważności certyfikatów/pozwoleń i z wyprzedzeniem generować alerty ostrzegawcze dla działu kadr.
+    \item \textbf{Dashboard analityczny:} Generowanie bieżących zestawień dla HR, w tym statystyk frekwencji, wykorzystania urlopów oraz rocznego i miesięcznego zestawienia czasu pracy.
+\end{itemize}
+
+\subsubsection{Rozliczenia i Raportowanie (Moduł Księgowości)}
+\begin{itemize}
+    \item \textbf{Kalkulator płacowy:} System musi umożliwiać przypisywanie stawek godzinowych do profili pracowników, a następnie automatycznie przemnażać je przez zatwierdzone zbiory roboczogodzin z silnika \textit{workflow}.
+    \item \textbf{Generowanie eksportów finansowych:} Możliwość tworzenia ustrukturyzowanych raportów wynagrodzeń i czasu pracy, z funkcją eksportu do popularnych formatów (PDF, CSV) w celu zaczytania w zewnętrznych systemach księgowych.
+\end{itemize}

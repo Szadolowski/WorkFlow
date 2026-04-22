@@ -2402,7 +2402,7 @@
     <bcf:citekey order="25" intorder="1">cobit_itwiz</bcf:citekey>
     <bcf:citekey order="26" intorder="1">kontenery_i_zalety</bcf:citekey>
     <bcf:citekey order="27" intorder="1">kontenery_i_zalety</bcf:citekey>
-    <bcf:citekey order="28" intorder="1">kontenery_i_zalety</bcf:citekey>
+    <bcf:citekey order="28" intorder="1">adapter</bcf:citekey>
     <bcf:citekey order="29" intorder="1" nocite="1">*</bcf:citekey>
   </bcf:section>
   <!-- SORTING TEMPLATES -->

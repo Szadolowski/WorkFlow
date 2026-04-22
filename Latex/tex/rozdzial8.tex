@@ -1,0 +1,32 @@
+% ================= SEKCJA 8 =================
+\section{Model danych i Diagram ERD}
+
+Prawidłowe zaprojektowanie struktury bazy danych jest fundamentem wydajności, integralności i bezpieczeństwa systemu \texttt{WorkFlow}. W celu zobrazowania struktury przechowywanych danych oraz relacji między nimi, przygotowano diagram związków encji (UML ERD -- \textit{Entity-Relationship Diagram}).
+
+\begin{figure}[H]
+    \centering
+    % Upewnij się, że plik nazywa się odpowiednio, np. erd_diagram.png
+    \includegraphics[width=0.95\textwidth]{rys/erd.png} 
+    \caption{Logiczny model danych (Diagram ERD) systemu \texttt{WorkFlow}}
+    \label{fig:erd_diagram}
+\end{figure}
+
+\subsection{Słownik głównych encji biznesowych}
+Zaproponowany model w pełni realizuje założenia biznesowe zdefiniowane w analizie wymagań. 
+
+\begin{itemize}
+    \item \textbf{User (Użytkownik systemu):} Tabela przechowująca dane autoryzacyjne oraz przypisaną rolę systemową (np. Brygadzista, Księgowość). Obsługuje mechanizm kontroli dostępu RBAC.
+    \item \textbf{Employee (Pracownik):} Stanowi centrum cyfrowej teczki pracowniczej. Tabela ta jest oddzielona od użytkownika systemu, ponieważ nie każdy pracownik fizyczny musi posiadać konto do logowania.
+    \item \textbf{TimeEntry (Ewidencja czasu):} Kluczowa tabela realizująca maszynę stanów (\textit{workflow}). Przechowuje datę, liczbę godzin oraz obecny status rekordu. Jest powiązana dwoma kluczami obcymi z tabelą \texttt{User} w celu zachowania zasady rozliczalności: rejestruje, kto utworzył wpis (\textit{creates}) oraz kto go zatwierdził (\textit{approvedBy}).
+    \item \textbf{Document (Dokument):} Tabela integrująca aplikację z zewnętrznym magazynem plików (\textit{storage}). Przechowuje bezpieczny link (\texttt{fileUrl}) oraz datę ważności, która jest podstawą dla skryptów generujących alerty (Scheduler).
+    \item \textbf{SalaryRate (Stawka):} Zaimplementowana jako tzw. wymiar wolnozmieniający się (\textit{Slowly Changing Dimension}). Dzięki polom \texttt{validFrom} oraz \texttt{validTo}, system zachowuje pełną historię zmian wynagrodzenia pracownika w czasie, co jest niezbędne do poprawnego generowania raportów wstecznych.
+    \item \textbf{AuditLog (Rejestr audytowy):} Tabela przechowująca niezmienny ślad rewizyjny (kto i jaką akcję wykonał), spełniająca wymogi zgodności prawnej i bezpieczeństwa (RODO).
+\end{itemize}
+
+\subsection{Strategia komunikacji z warstwą danych}
+Architektura aplikacji zakłada hybrydowe podejście do warstwy dostępu do danych (DAL -- \textit{Data Access Layer}). W celu zbalansowania tempa wytwarzania oprogramowania oraz maksymalnej wydajności dla skomplikowanych raportów biznesowych, przyjęto następujące ograniczenie architektoniczne:
+
+\begin{itemize}
+    \item \textbf{Zapytania ORM (50\% operacji):} Mapowanie obiektowo-relacyjne (np. \textit{Entity Framework, Hibernate} lub \textit{Prisma}) zostanie użyte do obsługi standardowych operacji CRUD (tworzenie użytkowników, proste edycje profili, dodawanie dokumentów). ORM zapewnia wysokie bezpieczeństwo przed atakami SQL Injection i przyspiesza cykl deweloperski.
+    \item \textbf{RAW QUERY (50\% operacji):} Surowe zapytania w języku SQL zostaną wykorzystane w miejscach, gdzie wydajność i precyzja są krytyczne. Obejmuje to proces generowania skomplikowanych raportów płacowych (\texttt{Payroll}), które wymagają wielokrotnego łączenia tabel (JOIN) z zaawansowanym grupowaniem i filtrowaniem po dacie ważności stawek (\texttt{SalaryRate}). Wykorzystanie \textit{Raw Queries} gwarantuje optymalny czas wykonania zapytań do bazy zgodnie z wymogami niefunkcyjnymi ($<300$ ms).
+\end{itemize}

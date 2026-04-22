@@ -1,17 +1,174 @@
-\section{Podsumowanie i wnioski}
+% ================= SEKCJA 6 =================
+\section{Scenariusze}
 
-\subsection{Realizacja celów ćwiczenia}
-W ramach niniejszego sprawozdania z powodzeniem przeprowadzono pełny cykl wdrożenia i wykorzystania kryptografii asymetrycznej. Począwszy od instalacji pakietu GPG4win, poprzez generowanie i bezpieczne zarządzanie osobistymi kluczami kryptograficznymi, aż po nawiązanie sieci zaufania (Web of Trust) z innym użytkownikiem. Udane operacje szyfrowania pliku tekstowego oraz jego późniejszego deszyfrowania z weryfikacją podpisu cyfrowego, ostatecznie potwierdziły poprawność konfiguracji całego środowiska.
+Poniżej przedstawiono szczegółowe scenariusze wybranych przypadków użycia, definiujące krok po kroku logikę biznesową, warunki brzegowe oraz interakcje użytkowników i procesów automatycznych z systemem \texttt{WorkFlow}.
 
-\subsection{Ocena użyteczności środowiska GPG4win}
-Zastosowane oprogramowanie, a w szczególności jego graficzny interfejs Kleopatra, znacznie upraszcza zarządzanie certyfikatami w standardzie OpenPGP. Ukrywa ono przed użytkownikiem złożoność operacji wiersza poleceń silnika GnuPG, oferując intuicyjne kreatory i przejrzystą listę kluczy. Narzędzia te udowadniają, że silne mechanizmy ochrony danych mogą być z powodzeniem i stosunkowo łatwo zintegrowane w codziennej pracy z systemem operacyjnym Windows, bez wymogu posiadania zaawansowanej, specjalistycznej wiedzy informatycznej.
-
-\subsection{Znaczenie dla bezpieczeństwa informacji}
-Kryptografia asymetryczna rozwiązuje fundamentalny problem bezpiecznej dystrybucji kluczy, który jest główną słabością klasycznych algorytmów symetrycznych. Przeprowadzone ćwiczenie praktycznie zademonstrowało trzy kluczowe filary bezpieczeństwa informacji:
+\subsection{SC-01: Wprowadzenie czasu pracy}
 \begin{itemize}
-    \item \textbf{Poufność} – dzięki szyfrowaniu kluczem publicznym odbiorcy, nikt poza nim nie był w stanie odczytać informacji zawartych w pliku.
-    \item \textbf{Integralność} – weryfikacja podpisu cyfrowego zagwarantowała, że plik nie uległ najmniejszej modyfikacji podczas transmisji lub składowania na nośniku.
-    \item \textbf{Niezaprzeczalność} – użycie klucza prywatnego w celu podpisania pliku jednoznacznie poświadcza tożsamość nadawcy, co uniemożliwia wyparcie się autorstwa.
+    \item \textbf{Numer:} SC-01
+    \item \textbf{Nazwa:} Wprowadzenie czasu pracy
+    \item \textbf{Aktor:} Brygadzista
+    \item \textbf{Stan wejścia:}
+    \begin{itemize}
+        \item Użytkownik jest poprawnie zalogowany w systemie.
+        \item Użytkownik posiada przypisaną rolę Brygadzisty.
+        \item Do profilu Brygadzisty przypisani są pracownicy tworzący zespół.
+    \end{itemize}
+    \item \textbf{Przebieg:}
+    \begin{enumerate}
+        \item Brygadzista wybiera datę oraz odpowiedni projekt (miejsce pracy).
+        \item Wprowadza liczbę przepracowanych godzin dla każdego przypisanego pracownika.
+        \item System waliduje wprowadzone dane (np. sprawdza brak wartości ujemnych oraz przekroczeń dobowych).
+        \item System zapisuje poprawne dane w bazie.
+    \end{enumerate}
+    \item \textbf{Zakończenie lub przebieg alternatywny:}
+    \begin{itemize}
+        \item \textbf{Zakończenie pozytywne:} Dane zostają zapisane w systemie ze statusem \textit{,,surowe''}.
+        \item \textbf{Przebieg alternatywny (Błąd walidacji):} W przypadku wykrycia błędnych danych, system wyświetla komunikat ostrzegawczy i przerywa proces zapisu do momentu wniesienia poprawek.
+    \end{itemize}
 \end{itemize}
 
-Oparte na otwartym kodzie źródłowym standardy, takie jak GnuPG, pozostają jednym z najpotężniejszych, w pełni darmowych i niezależnych narzędzi do ochrony prywatności w dobie globalnej i często narażonej na ataki komunikacji cyfrowej.
+\subsection{SC-02: Weryfikacja i zatwierdzenie czasu pracy}
+\begin{itemize}
+    \item \textbf{Numer:} SC-02
+    \item \textbf{Nazwa:} Weryfikacja i zatwierdzenie czasu pracy
+    \item \textbf{Aktor:} Pracownik biurowy
+    \item \textbf{Stan wejścia:}
+    \begin{itemize}
+        \item W bazie systemu istnieją nieprzetworzone dane ze statusem \textit{,,surowe''}.
+        \item Użytkownik jest zalogowany i posiada rolę Pracownika biurowego (weryfikatora).
+    \end{itemize}
+    \item \textbf{Przebieg:}
+    \begin{enumerate}
+        \item Użytkownik przegląda zgłoszone z terenu raporty czasu pracy.
+        \item Konfrontuje wprowadzone wartości z rzeczywistym stanem i dokumentacją.
+        \item W razie wykrycia drobnych nieścisłości, użytkownik samodzielnie edytuje dane.
+        \item Użytkownik wybiera akcję ,,Zatwierdź'' dla sprawdzonych rekordów.
+        \item System automatycznie zmienia status danych na \textit{,,zatwierdzone''}.
+        \item Dane stają się widoczne dla modułu rozliczeń (Księgowości).
+    \end{enumerate}
+    \item \textbf{Zakończenie lub przebieg alternatywny:}
+    \begin{itemize}
+        \item \textbf{Zakończenie pozytywne:} Dane uzyskują status \textit{,,zatwierdzone''} i przechodzą do kolejnego etapu procesu.
+        \item \textbf{Przebieg alternatywny (Odrzucenie danych):} W przypadku poważnych błędów, użytkownik odrzuca dane. Status zmienia się na \textit{,,odrzucone''}, a rekord wraca do Brygadzisty z odpowiednim powiadomieniem.
+    \end{itemize}
+\end{itemize}
+
+\subsection{SC-03: Dodanie dokumentu pracownika}
+\begin{itemize}
+    \item \textbf{Numer:} SC-03
+    \item \textbf{Nazwa:} Dodanie dokumentu pracownika
+    \item \textbf{Aktor:} Brygadzista
+    \item \textbf{Stan wejścia:}
+    \begin{itemize}
+        \item Użytkownik jest poprawnie zalogowany.
+        \item Urządzenie (smartfon/komputer) posiada aktywny dostęp do aparatu lub lokalnego systemu plików.
+    \end{itemize}
+    \item \textbf{Przebieg:}
+    \begin{enumerate}
+        \item Użytkownik wyszukuje i wybiera profil konkretnego pracownika.
+        \item Uruchamia moduł aparatu, wykonuje zdjęcie dokumentu lub wybiera gotowy plik z pamięci urządzenia.
+        \item Wybiera z listy odpowiedni typ dokumentu (np. zwolnienie lekarskie, uprawnienia).
+        \item System przesyła plik do odizolowanego magazynu danych (\textit{storage}).
+        \item Dokument zostaje na stałe powiązany z cyfrową teczką wybranego pracownika.
+    \end{enumerate}
+    \item \textbf{Zakończenie lub przebieg alternatywny:}
+    \begin{itemize}
+        \item \textbf{Zakończenie pozytywne:} Dokument zostaje bezpiecznie zapisany i jest natychmiast dostępny do podglądu w systemie.
+        \item \textbf{Przebieg alternatywny (Błąd transferu):} Występuje problem z siecią lub błąd zapisu (\textit{uploadu}). System wyświetla komunikat błędu i zachęca do ponownej próby przesłania pliku.
+    \end{itemize}
+\end{itemize}
+
+\subsection{SC-04: Monitorowanie ważności dokumentów}
+\begin{itemize}
+    \item \textbf{Numer:} SC-04
+    \item \textbf{Nazwa:} Monitorowanie ważności dokumentów
+    \item \textbf{Aktor:} System / HR (Kadry)
+    \item \textbf{Stan wejścia:}
+    \begin{itemize}
+        \item W bazie danych znajdują się przypisane do pracowników dokumenty posiadające atrybut ,,data ważności'' (np. karty pobytu, badania lekarskie).
+    \end{itemize}
+    \item \textbf{Przebieg:}
+    \begin{enumerate}
+        \item System (moduł harmonogramowania) cyklicznie skanuje bazę w poszukiwaniu dat ważności.
+        \item Moduł identyfikuje dokumenty, których termin wygaśnięcia mieści się w zdefiniowanym oknie czasowym (np. 30 dni).
+        \item System automatycznie generuje systemowy alert ostrzegawczy.
+        \item Komunikat powiadomienia jest dystrybuowany do użytkowników z rolą Kadry (HR).
+    \end{enumerate}
+    \item \textbf{Zakończenie lub przebieg alternatywny:}
+    \begin{itemize}
+        \item \textbf{Zakończenie pozytywne:} Dział HR otrzymuje wyprzedzającą informację o konieczności podjęcia działań legalizacyjnych.
+        \item \textbf{Przebieg alternatywny (Brak dokumentów):} System nie wykrywa żadnych dokumentów bliskich wygaśnięcia. Proces kończy się bez generowania powiadomień.
+    \end{itemize}
+\end{itemize}
+
+\subsection{SC-05: Generowanie raportu płacowego}
+\begin{itemize}
+    \item \textbf{Numer:} SC-05
+    \item \textbf{Nazwa:} Generowanie raportu płacowego
+    \item \textbf{Aktor:} Księgowość
+    \item \textbf{Stan wejścia:}
+    \begin{itemize}
+        \item W systemie istnieją przetworzone rekordy czasu pracy posiadające status \textit{,,zatwierdzone''}.
+        \item Wszyscy objęci raportem pracownicy posiadają zdefiniowane stawki godzinowe w swoich profilach.
+    \end{itemize}
+    \item \textbf{Przebieg:}
+    \begin{enumerate}
+        \item Użytkownik z rolą Księgowość przechodzi do modułu raportowego i definiuje pożądany okres rozliczeniowy.
+        \item System agreguje zatwierdzony czas pracy z wybranego okresu.
+        \item Algorytm obliczeniowy krzyżuje roboczogodziny z indywidualnymi stawkami, wyliczając należne wynagrodzenia.
+        \item System generuje kompleksowy raport płacowy.
+        \item Użytkownik inicjuje eksport wygenerowanych danych na urządzenie lokalne.
+    \end{enumerate}
+    \item \textbf{Zakończenie lub przebieg alternatywny:}
+    \begin{itemize}
+        \item \textbf{Zakończenie pozytywne:} Wygenerowany raport (np. w formacie CSV/PDF) jest gotowy do wykorzystania w procesie realizacji przelewów.
+        \item \textbf{Przebieg alternatywny (Brak danych wejściowych):} System nie znajduje zatwierdzonych godzin lub brakuje stawek przypisanych do pracowników. Zwracany jest błąd informacyjny, a raport nie zostaje wygenerowany.
+    \end{itemize}
+\end{itemize}
+
+\subsection{SC-06: Zarządzanie profilem pracownika}
+\begin{itemize}
+    \item \textbf{Numer:} SC-06
+    \item \textbf{Nazwa:} Zarządzanie profilem pracownika
+    \item \textbf{Aktor:} HR (Kadry)
+    \item \textbf{Stan wejścia:}
+    \begin{itemize}
+        \item Profil danego pracownika figuruje w cyfrowej ewidencji systemu.
+    \end{itemize}
+    \item \textbf{Przebieg:}
+    \begin{enumerate}
+        \item Pracownik działu HR wyszukuje i otwiera szczegółowy profil (cyfrową teczkę) zatrudnionego.
+        \item Wprowadza modyfikacje danych osobowych lub kontaktowych.
+        \item Rejestruje w systemie informacje o nowo nabytej kompetencji (dodaje ukończone szkolenie lub uprawnienie z datą ważności).
+        \item Inicjuje zapis wprowadzonych zmian.
+    \end{enumerate}
+    \item \textbf{Zakończenie lub przebieg alternatywny:}
+    \begin{itemize}
+        \item \textbf{Zakończenie pozytywne:} Baza danych zostaje zaktualizowana o nowe informacje profilowe.
+        \item \textbf{Przebieg alternatywny (Błąd zapisu):} Wpisane dane nie przechodzą procesu walidacji formularza. System przerywa operację zapisu i podświetla błędne pola.
+    \end{itemize}
+\end{itemize}
+
+\subsection{SC-07: Logowanie użytkownika}
+\begin{itemize}
+    \item \textbf{Numer:} SC-07
+    \item \textbf{Nazwa:} Logowanie użytkownika
+    \item \textbf{Aktor:} Każdy użytkownik
+    \item \textbf{Stan wejścia:}
+    \begin{itemize}
+        \item Użytkownik posiada aktywne, zarejestrowane konto w systemie \texttt{WorkFlow}.
+    \end{itemize}
+    \item \textbf{Przebieg:}
+    \begin{enumerate}
+        \item Użytkownik wprowadza swój login (adres e-mail) oraz hasło w formularzu autoryzacji.
+        \item System weryfikuje poświadczenia z zaszyfrowanymi danymi w bazie.
+        \item W przypadku pozytywnej weryfikacji, system generuje kryptograficzny token sesyjny (np. JWT).
+        \item Użytkownik zostaje poprawnie zalogowany i przekierowany do panelu zgodnego ze swoimi uprawnieniami (RBAC).
+    \end{enumerate}
+    \item \textbf{Zakończenie lub przebieg alternatywny:}
+    \begin{itemize}
+        \item \textbf{Zakończenie pozytywne:} Użytkownik zyskuje bezpieczny dostęp do funkcjonalności systemu.
+        \item \textbf{Przebieg alternatywny (Błąd autoryzacji):} Poświadczenia są nieprawidłowe. System odrzuca żądanie, nie przyznaje tokenu i wyświetla ogólny komunikat o błędnym logowaniu.
+    \end{itemize}
+\end{itemize}

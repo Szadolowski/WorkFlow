@@ -1,36 +1,36 @@
 % ================= ROZDZIAŁ 4.1 =================
 \subsection{Wymagania niefunkcyjne}
 
-Wymagania niefunkcyjne określają parametry jakościowe, standardy bezpieczeństwa oraz ograniczenia technologiczne systemu \texttt{WorkFlow}. Zgodnie z wytycznymi IEEE 830-1998, definiują one ramy, w jakich musi operować oprogramowanie, aby zapewnić stabilność i niezawodność w środowisku produkcyjnym \cite{struktura_dokumentow}.
+Wymagania niefunkcyjne określają parametry jakościowe, standardy bezpieczeństwa oraz rygorystyczne ograniczenia technologiczne systemu \texttt{WorkFlow}. Zgodnie z wytycznymi inżynierii wymagań, definiują one architektoniczne ramy, w jakich musi operować oprogramowanie, aby zapewnić stabilność, skalowalność i niezawodność w środowisku produkcyjnym \cite{struktura_dokumentow}.
 
-\subsubsection{Bezpieczeństwo (Priorytet Krytyczny)}
-Ze względu na charakter przetwarzanych informacji kadrowo-finansowych, system musi spełniać rygorystyczne normy ochrony danych na poziomie architektonicznym.
+\subsubsection{Bezpieczeństwo infrastruktury i aplikacji (Priorytet Krytyczny)}
+Ze względu na charakter przetwarzanych informacji kadrowo-finansowych, system musi realizować mechanizmy ochrony danych na poziomie fundamentów architektury (\textit{Security by Design}).
 \begin{itemize}
-    \item \textbf{Izolacja danych (RBAC):} Architektura systemu musi bezwzględnie wymuszać autoryzację każdego żądania w oparciu o model \textit{Role-Based Access Control}, zapobiegając horyzontalnej i wertykalnej eskalacji uprawnień \cite{RBAC_kapitanhack}.
-    \item \textbf{Szyfrowanie i kryptografia:} Całość komunikacji sieciowej musi być szyfrowana z wykorzystaniem protokołu TLS (wersja 1.2 lub wyższa). Wrażliwe dane w spoczynku (w tym hasła użytkowników haszowane algorytmem np. Argon2) muszą być kryptograficznie zabezpieczone.
-    \item \textbf{Odporność na ataki:} Infrastruktura sieciowa i aplikacyjna musi implementować mechanizmy obronne przeciwko najczęstszym podatnościom (m.in. CSRF, XSS, SQL Injection) oraz posiadać zabezpieczenia typu \textit{rate limiting} ograniczające ryzyko ataków \textit{brute-force}.
+    \item \textbf{Izolacja danych (RBAC):} Architektura systemu musi bezwzględnie wymuszać autoryzację każdego żądania w oparciu o model \textit{Role-Based Access Control}. Mechanizm ten musi zapobiegać horyzontalnej i wertykalnej eskalacji uprawnień, gwarantując separację danych operacyjnych od finansowych \cite{RBAC_kapitanhack}.
+    \item \textbf{Kryptografia i komunikacja sieciowa:} Całość transmisji danych klient-serwer oraz serwer-baza danych musi być szyfrowana z wykorzystaniem protokołu TLS (wersja 1.2 lub wyższa). Wrażliwe dane w spoczynku muszą być zabezpieczone, a hasła użytkowników bezwzględnie haszowane przy użyciu algorytmów odpornych na ataki sprzętowe (np. Argon2, bcrypt).
+    \item \textbf{Odporność na cyberataki:} Aplikacja webowa i interfejsy API muszą implementować mechanizmy obronne przeciwko najczęstszym wektorom ataków (m.in. CSRF, XSS, SQL Injection). Dodatkowo, na poziomie bramy sieciowej (\textit{API Gateway}) musi funkcjonować mechanizm \textit{rate limiting} w celu mitygacji ataków typu \textit{brute-force}.
 \end{itemize}
 
 \subsubsection{Zgodność prawna i audytowalność (Compliance)}
 \begin{itemize}
-    \item \textbf{Polityka RODO:} Przetwarzanie i przechowywanie danych musi odbywać się zgodnie z obowiązującymi przepisami prawa, z narzuconymi z góry okresami retencji dla poszczególnych typów dokumentów \cite{rodo}.
-    \item \textbf{Ślad rewizyjny:} Baza danych musi być zaprojektowana w sposób uniemożliwiający bezśladową modyfikację lub usunięcie rekordu finansowego, co jest zgodne ze standardami kontroli wewnętrznej \cite{cobit_itwiz}.
+    \item \textbf{Polityka RODO:} Architektura składowania danych musi natywnie wspierać mechanizmy zarządzania retencją dokumentów oraz umożliwiać trwałe anonimizowanie lub usuwanie rekordów w ramach realizacji „prawa do bycia zapomnianym” \cite{rodo}.
+    \item \textbf{Niezaprzeczalność i ślad rewizyjny:} System bazy danych musi być zaprojektowany tak, aby każda modyfikacja krytycznych danych (np. stawek godzinowych, zatwierdzonego czasu pracy) generowała niezmienny log systemowy (\textit{audit log}). Spełnia to wymagania kontroli wewnętrznej zgodne z ramami COBIT \cite{cobit_itwiz}.
 \end{itemize}
 
-\subsubsection{Wydajność i ograniczenia architektoniczne}
+\subsubsection{Wydajność i ograniczenia technologiczne}
 \begin{itemize}
-    \item \textbf{Czas odpowiedzi:} Wydajność zapytań serwera musi gwarantować czas odpowiedzi API dla kluczowych operacji synchronicznych poniżej 300 ms.
-    \item \textbf{Konteneryzacja jako wymóg:} Całość rozwiązania musi być wdrożona w architekturze kontenerowej (np. \textit{Docker}). Jest to narzucone ograniczenie projektowe mające na celu zapewnienie przenośności (\textit{portability}) oraz izolacji usług na poziomie systemu operacyjnego \cite{kontenery_i_zalety}.
-    \item \textbf{Skalowalność pozioma:} Środowisko uruchomieniowe musi pozwalać na płynne powielanie instancji kontenerów (np. węzłów API) w przypadku gwałtownego wzrostu obciążenia sieciowego \cite{kontenery_i_zalety}.
+    \item \textbf{Efektywność czasowa API:} Wydajność zapytań serwera oraz optymalizacja bazy danych (indeksowanie) muszą gwarantować czas odpowiedzi dla kluczowych, synchronicznych operacji sieciowych poniżej 300 ms przy standardowym obciążeniu.
+    \item \textbf{Konteneryzacja jako wymóg:} Całość rozwiązania (frontend, backend, środowisko bazy danych) musi zostać zaimplementowana i wdrożona z wykorzystaniem technologii kontenerowej (np. \textit{Docker}). Jest to obligatoryjne ograniczenie architektoniczne gwarantujące piaskowanie (\textit{sandboxing}) usług i niezależność od systemu operacyjnego gospodarza \cite{kontenery_i_zalety}.
+    \item \textbf{Skalowalność pozioma:} Zastosowana architektura musi pozwalać na horyzontalne skalowanie instancji obliczeniowych w środowisku chmurowym, aby zapobiec degradacji usług w okresach wzmożonego ruchu (np. podczas generowania raportów na koniec miesiąca) \cite{kontenery_i_zalety}.
 \end{itemize}
 
 \subsubsection{Niezawodność i dostępność (SLA)}
 \begin{itemize}
-    \item \textbf{Gwarancja dostępności:} System musi być zaprojektowany tak, aby spełniać warunki SLA (Service Level Agreement) na poziomie minimalnym 99\% w skali roku.
-    \item \textbf{Tolerancja na błędy:} Architektura kontenerowa musi być wyposażona w mechanizmy automatycznego restartu uszkodzonych usług, minimalizując czas niedostępności systemu (\textit{downtime}) bez ingerencji administratora \cite{kontenery_i_zalety}.
+    \item \textbf{Gwarancja dostępności:} System musi być zaprojektowany w oparciu o architekturę wysokiej dostępności (\textit{High Availability}), która umożliwi utrzymanie wskaźnika SLA na poziomie minimum 99\% w ujęciu rocznym.
+    \item \textbf{Tolerancja na awarie:} Wdrożone środowisko kontenerowe musi natywnie obsługiwać mechanizmy monitorowania stanu zdrowia aplikacji (\textit{health checks}) i automatycznego restartu usług, aby zminimalizować czas niedostępności (\textit{downtime}) w przypadku awarii pojedynczego węzła.
 \end{itemize}
 
-\subsubsection{Kompatybilność i UX}
+\subsubsection{Kompatybilność środowiskowa}
 \begin{itemize}
-    \item \textbf{Wymagania klienckie:} Dostęp do systemu nie może wymagać instalacji oprogramowania trzeciego. Aplikacja musi być w pełni kompatybilna i responsywna na wiodących przeglądarkach internetowych (Chrome, Edge, Firefox) zarówno na stacjach roboczych, jak i urządzeniach mobilnych.
+    \item \textbf{Wymagania dla klienta końcowego:} Architektura interfejsu użytkownika nie może wymagać instalacji oprogramowania natywnego. System musi działać w pełni poprawnie we współczesnych przeglądarkach internetowych (Chrome, Edge, Firefox) i implementować zasady \textit{Responsive Web Design} (RWD) dla obsługi paneli terenowych na urządzeniach mobilnych.
 \end{itemize}

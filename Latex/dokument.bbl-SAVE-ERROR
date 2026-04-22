@@ -430,6 +430,100 @@
       \verb https://resilia.pl/blog/iso-27001-czym-jest-jakie-daje-korzysci/
       \endverb
     \endentry
+    \entry{struktura_dokumentow}{online}{}{}
+      \name{author}{1}{}{%
+        {{hash=e130ef076df6526170bb8c7151a3cdf8}{%
+           family={Wolski},
+           familyi={W\bibinitperiod},
+           given={Michał},
+           giveni={M\bibinitperiod}}}%
+      }
+      \strng{namehash}{e130ef076df6526170bb8c7151a3cdf8}
+      \strng{fullhash}{e130ef076df6526170bb8c7151a3cdf8}
+      \strng{fullhashraw}{e130ef076df6526170bb8c7151a3cdf8}
+      \strng{bibnamehash}{e130ef076df6526170bb8c7151a3cdf8}
+      \strng{authorbibnamehash}{e130ef076df6526170bb8c7151a3cdf8}
+      \strng{authornamehash}{e130ef076df6526170bb8c7151a3cdf8}
+      \strng{authorfullhash}{e130ef076df6526170bb8c7151a3cdf8}
+      \strng{authorfullhashraw}{e130ef076df6526170bb8c7151a3cdf8}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Struktura dokumentów wymagań – część 1}
+      \field{urlday}{21}
+      \field{urlmonth}{4}
+      \field{urlyear}{2026}
+      \field{year}{2015}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://wolski.pro/2015/04/struktura-dokumentw-wymagan-cz-1/
+      \endverb
+      \verb{url}
+      \verb https://wolski.pro/2015/04/struktura-dokumentw-wymagan-cz-1/
+      \endverb
+    \endentry
+    \entry{kontenery_i_zalety}{online}{}{}
+      \name{author}{1}{}{%
+        {{hash=f7b6cc1f718e7f381bd615e8c0388590}{%
+           family={gigacloud},
+           familyi={g\bibinitperiod}}}%
+      }
+      \strng{namehash}{f7b6cc1f718e7f381bd615e8c0388590}
+      \strng{fullhash}{f7b6cc1f718e7f381bd615e8c0388590}
+      \strng{fullhashraw}{f7b6cc1f718e7f381bd615e8c0388590}
+      \strng{bibnamehash}{f7b6cc1f718e7f381bd615e8c0388590}
+      \strng{authorbibnamehash}{f7b6cc1f718e7f381bd615e8c0388590}
+      \strng{authornamehash}{f7b6cc1f718e7f381bd615e8c0388590}
+      \strng{authorfullhash}{f7b6cc1f718e7f381bd615e8c0388590}
+      \strng{authorfullhashraw}{f7b6cc1f718e7f381bd615e8c0388590}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Konteneryzacja i jej zalety}
+      \field{urlday}{21}
+      \field{urlmonth}{4}
+      \field{urlyear}{2026}
+      \field{year}{2024}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://gigacloud.eu/pl/articles/containerization-and-its-benefits/
+      \endverb
+      \verb{url}
+      \verb https://gigacloud.eu/pl/articles/containerization-and-its-benefits/
+      \endverb
+    \endentry
+    \entry{adapter}{online}{}{}
+      \name{author}{1}{}{%
+        {{hash=f45752a23e197e3d61b052fa482bf38e}{%
+           family={Refactoring.Guru},
+           familyi={R\bibinitperiod}}}%
+      }
+      \strng{namehash}{f45752a23e197e3d61b052fa482bf38e}
+      \strng{fullhash}{f45752a23e197e3d61b052fa482bf38e}
+      \strng{fullhashraw}{f45752a23e197e3d61b052fa482bf38e}
+      \strng{bibnamehash}{f45752a23e197e3d61b052fa482bf38e}
+      \strng{authorbibnamehash}{f45752a23e197e3d61b052fa482bf38e}
+      \strng{authornamehash}{f45752a23e197e3d61b052fa482bf38e}
+      \strng{authorfullhash}{f45752a23e197e3d61b052fa482bf38e}
+      \strng{authorfullhashraw}{f45752a23e197e3d61b052fa482bf38e}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Adapter}
+      \field{urlday}{21}
+      \field{urlmonth}{4}
+      \field{urlyear}{2026}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://refactoring.guru/pl/design-patterns/adapter
+      \endverb
+      \verb{url}
+      \verb https://refactoring.guru/pl/design-patterns/adapter
+      \endverb
+    \endentry
   \enddatalist
 \endrefsection
 \endinput

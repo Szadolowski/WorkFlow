@@ -1,0 +1,37 @@
+% ================= SEKCJA 9 =================
+\section{Stos technologiczny (Tech Stack)}
+
+Wybór technologii dla systemu \texttt{WorkFlow} został podyktowany rygorystycznymi wymaganiami niefunkcyjnymi, takimi jak wymóg konteneryzacji, bezpieczeństwo danych osobowych (RODO) oraz wysoka dostępność (SLA na poziomie 99\%). Zastosowany stos technologiczny opiera się na nowoczesnych, sprawdzonych rozwiązaniach, zapewniających wysoką wydajność, bezpieczeństwo oraz skalowalność.
+
+\subsection{Warstwa Prezentacji (Frontend)}
+Aplikacja kliencka zostanie zrealizowana w sposób zapewniający najwyższą ergonomię (\textit{UX}) oraz optymalizację pod kątem urządzeń mobilnych i stacji roboczych.
+\begin{itemize}
+    \item \textbf{Framework bazowy:} \textbf{Next.js} (React) w środowisku TypeScript. Narzędzie to gwarantuje wysoką wydajność renderowania interfejsu oraz doskonałe zarządzanie routingiem aplikacji.
+    \item \textbf{Zarządzanie stanem i komunikacja API:} \textbf{TanStack Query} (React Query). Odpowiada za asynchroniczne pobieranie, buforowanie (\textit{caching}) i synchronizację danych z serwerem, co znacząco zmniejsza obciążenie sieciowe i poprawia płynność działania paneli (np. przy wczytywaniu dużych list pracowników).
+    \item \textbf{Interfejs graficzny (UI/UX):} \textbf{Tailwind CSS} w połączeniu z biblioteką \textbf{shadcn/ui}. Zapewnia to dostęp do wysoce reużywalnych, bezbłędnie ostylowanych i dostępnych (A11y) komponentów, co przyspiesza dewelopment przy jednoczesnym zachowaniu pełnej kontroli nad wyglądem.
+\end{itemize}
+
+\subsection{Warstwa Logiki Biznesowej i Autoryzacji (Backend)}
+Serce systemu odpowiadające za maszyny stanów (\textit{workflow}), procesy obliczeniowe i bezpieczeństwo.
+\begin{itemize}
+    \item \textbf{Środowisko i Framework:} \textbf{NestJS} (Node.js / TypeScript). Architektura tego frameworka wymusza ścisły, modularny podział kodu (np. separację domeny kadr od księgowości), co jest kluczowe dla łatwości utrzymania tak złożonego systemu.
+    \item \textbf{Autoryzacja:} Architektura uwierzytelniania oparta na standardzie \textbf{JWT} (JSON Web Token). Weryfikacja uprawnień odbywa się na poziomie dedykowanych \textit{Guardów} w NestJS, które przed wykonaniem jakiejkolwiek operacji sprawdzają rolę przypisaną do tokenu (realizacja modelu RBAC).
+\end{itemize}
+
+\subsection{Warstwa Danych i Przechowywania (Data \& Storage)}
+\begin{itemize}
+    \item \textbf{Baza Danych:} \textbf{PostgreSQL} -- zaawansowana, relacyjna baza danych zapewniająca pełną zgodność z modelem transakcyjności ACID, co jest absolutnie krytyczne przy operacjach na roboczogodzinach i stawkach finansowych.
+    \item \textbf{Dostęp do danych (50/50 Rule):} Do komunikacji z bazą wybrany został nowoczesny \textbf{Prisma ORM}.
+    \begin{itemize}
+        \item 50\% operacji (standardowe operacje CRUD, takie jak dodawanie pracowników) realizowanych będzie przez wbudowane metody Prisma, co zapewnia bezpieczeństwo przed atakami \textit{SQL Injection} i silne typowanie.
+        \item Pozostałe 50\% operacji (złożone raporty płacowe, kalkulacje wydajnościowe) obsługiwanych będzie za pomocą czystych zapytań SQL (\texttt{\$queryRaw} w Prisma). Umożliwia to maksymalną optymalizację czasu zapytań ($<300$ ms) z zachowaniem pełnej kontroli dewelopera nad planem zapytania.
+    \end{itemize}
+    \item \textbf{Magazyn Plików:} \textbf{MinIO} -- wydajny serwer obiektowy kompatybilny z API Amazon S3. Zapewnia bezpieczne, odizolowane środowisko do przechowywania szyfrowanych skanów dokumentów pracowniczych i generowania tymczasowych linków pobierania.
+\end{itemize}
+
+\subsection{Infrastruktura, Kolejkowanie i Monitoring (DevOps)}
+\begin{itemize}
+    \item \textbf{Konteneryzacja i Sieć:} Całość infrastruktury uruchamiana jest w środowisku \textbf{Docker}. Dodatkowo, na wejściu do systemu zastosowano serwer \textbf{Nginx}, pełniący rolę \textit{Reverse Proxy} i \textit{Load Balancera}, który zarządza ruchem HTTP/HTTPS i zwiększa bezpieczeństwo środowiska.
+    \item \textbf{Kolejkowanie (Zadania asynchroniczne):} Baza \textbf{Redis} w połączeniu z systemem \textbf{BullMQ}. Taki zestaw odciąża główny wątek serwera poprzez przerzucenie wysyłki e-maili oraz zadań cyklicznych (np. nocne skanowanie wygasających dokumentów przez Scheduler) do procesów działających w tle.
+    \item \textbf{Monitorowanie i SLA:} Zastosowanie duetu \textbf{Prometheus} (do zbierania metryk wydajnościowych z kontenerów i bazy danych) oraz \textbf{Grafana} (do wizualizacji danych w czasie rzeczywistym). Środowisko to pozwala na proaktywne wykrywanie awarii i jest inżynieryjnym gwarantem utrzymania dostępności systemu na zadeklarowanym poziomie 99\%.
+\end{itemize}

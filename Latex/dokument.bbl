@@ -494,6 +494,36 @@
       \verb https://gigacloud.eu/pl/articles/containerization-and-its-benefits/
       \endverb
     \endentry
+    \entry{adapter}{online}{}{}
+      \name{author}{1}{}{%
+        {{hash=f45752a23e197e3d61b052fa482bf38e}{%
+           family={Refactoring.Guru},
+           familyi={R\bibinitperiod}}}%
+      }
+      \strng{namehash}{f45752a23e197e3d61b052fa482bf38e}
+      \strng{fullhash}{f45752a23e197e3d61b052fa482bf38e}
+      \strng{fullhashraw}{f45752a23e197e3d61b052fa482bf38e}
+      \strng{bibnamehash}{f45752a23e197e3d61b052fa482bf38e}
+      \strng{authorbibnamehash}{f45752a23e197e3d61b052fa482bf38e}
+      \strng{authornamehash}{f45752a23e197e3d61b052fa482bf38e}
+      \strng{authorfullhash}{f45752a23e197e3d61b052fa482bf38e}
+      \strng{authorfullhashraw}{f45752a23e197e3d61b052fa482bf38e}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Adapter}
+      \field{urlday}{21}
+      \field{urlmonth}{4}
+      \field{urlyear}{2026}
+      \field{urldateera}{ce}
+      \verb{urlraw}
+      \verb https://refactoring.guru/pl/design-patterns/adapter
+      \endverb
+      \verb{url}
+      \verb https://refactoring.guru/pl/design-patterns/adapter
+      \endverb
+    \endentry
   \enddatalist
 \endrefsection
 \endinput

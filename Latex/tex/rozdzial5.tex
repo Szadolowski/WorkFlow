@@ -1,31 +1,26 @@
-\section{Proces deszyfrowania i odczytu wiadomości}
+% ================= SEKCJA 5 =================
+\section{Diagram przypadków użycia}
 
-\subsection{Autoryzacja dostępu do klucza prywatnego}
-Proces odwrócenia operacji kryptograficznej, czyli deszyfrowanie, może zostać przeprowadzony wyłącznie przez prawowitego odbiorcę, który znajduje się w posiadaniu odpowiedniego klucza prywatnego. Próba otwarcia pliku \texttt{.gpg} w środowisku GPG4win automatycznie uruchamia moduł deszyfrujący. Ponieważ klucz prywatny jest zabezpieczony na dysku za pomocą symetrycznego hasła (ustanowionego podczas jego generowania), system natychmiast wywołuje bezpieczne okno dialogowe Pinentry, żądając od użytkownika uwierzytelnienia operacji.
+Diagram przypadków użycia (UML \textit{Use Case Diagram}) stanowi graficzną reprezentację interakcji pomiędzy aktorami zewnętrznymi (użytkownikami oraz systemami) a aplikacją \texttt{WorkFlow}. Jego głównym celem jest zdefiniowanie granic systemu oraz zobrazowanie zakresu funkcjonalnego dostępnego dla poszczególnych ról operacyjnych. 
 
-\begin{figure}[h!]
+Zastosowany na diagramie model bezpośrednio odzwierciedla zdefiniowaną w wymaganiach niefunkcyjnych architekturę kontroli dostępu opartej na rolach (RBAC).
+
+\begin{figure}[H]
     \centering
-    \includegraphics[width=0.6\textwidth]{rys/haslo-do-odszyfrowania.png}
-    \caption{Moduł Pinentry żądający hasła w celu odblokowania klucza prywatnego niezbędnego do odszyfrowania danych.}
-    \label{fig:haslo_deszyfrowanie}
+    \includegraphics[height=1.60\textwidth]{rys/plantuml.pdf}
+    \caption{Diagram przypadków użycia systemu \texttt{WorkFlow}}
+    \label{fig:use_case_diagram}
 \end{figure}
 
-\subsection{Weryfikacja kryptograficzna i sprawdzanie podpisów}
-Po prawidłowym wprowadzeniu hasła, silnik GnuPG uzyskuje dostęp do klucza prywatnego, odszyfrowuje klucz sesyjny, a następnie odzyskuje oryginalną treść pliku. W tym samym czasie program Kleopatra analizuje metadane pliku pod kątem obecności podpisów cyfrowych. Zrzut ekranu przedstawia okno podsumowujące operację, w którym zielony komunikat informuje nie tylko o udanym odszyfrowaniu, ale również o poprawnej weryfikacji podpisu nadawcy. Gwarantuje to zachowanie integralności danych (plik nie został zmieniony w locie) oraz niezaprzeczalności (nadawcą na pewno jest osoba posiadająca dany klucz).
+\subsection{Analiza aktorów systemu}
+Architektura uprawnień została oparta na strukturze dziedziczenia. Głównym aktorem uogólnionym jest \textbf{Użytkownik}, co wymusza implementację wspólnych funkcji bazowych (takich jak autoryzacja -- \textit{Zaloguj się} oraz \textit{Odbieraj powiadomienia}) dla wszystkich kont w systemie, niezależnie od ich poziomu dostępu.
 
-\begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.85\textwidth]{rys/okno-odszyfrowane.png}
-    \caption{Raport z operacji deszyfrowania potwierdzający integralność pliku oraz poprawność weryfikacji podpisu cyfrowego nadawcy.}
-    \label{fig:okno_raportu}
-\end{figure}
+W obrębie systemu zidentyfikowano następujących aktorów specyficznych:
 
-\subsection{Odzyskanie danych jawnych}
-Ostatnim etapem procesu jest zapisanie na dysku zdeszyfrowanego pliku wynikowego lub wyświetlenie jego zawartości bezpośrednio w bezpiecznym wbudowanym notatniku (w zależności od użytej opcji w programie Kleopatra). Jak można zaobserwować, odzyskany tekst jest identyczny z oryginalnym plikiem jawnym utworzonym przed procesem szyfrowania. Cykl bezpiecznej komunikacji asymetrycznej został tym samym z powodzeniem zakończony.
-
-\begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.75\textwidth]{rys/odszyfrowany-tekst.png}
-    \caption{Zawartość pomyślnie odszyfrowanego pliku – dane jawne wróciły do swojej pierwotnej, czytelnej formy.}
-    \label{fig:odszyfrowany_tekst}
-\end{figure}
+\begin{itemize}
+    \item \textbf{Brygadzista (Panel Terenowy):} Aktor operujący na danych wejściowych. Jego przypadki użycia ograniczają się do zarządzania składem podległej brygady, wprowadzania surowych roboczogodzin oraz digitalizacji (przesyłania) dokumentacji w terenie.
+    \item \textbf{Pracownik biurowy (Panel Weryfikacji):} Stanowi pierwszą linię kontroli merytorycznej. Aktor ten weryfikuje wprowadzony czas pracy i dokumenty, zanim trafią one do dalszego procesowania. Posiada również możliwość wysyłania powiadomień zwrotnych (np. w przypadku odrzucenia danych).
+    \item \textbf{Kadry / HR (Panel Kadrowy):} Aktor o najwyższych uprawnieniach w module zasobów ludzkich. Zarządza globalnie pracownikami, oddziałami oraz odpowiada za nadzór nad dokumentacją pracowniczą i tworzenie raportów kadrowych.
+    \item \textbf{Księgowość (Panel Księgowy):} Aktor operujący wyłącznie na danych zatwierdzonych przez biuro. Do jego zadań należy pobieranie przetworzonych roboczogodzin, obliczanie na ich podstawie wynagrodzeń oraz generowanie technicznych eksportów do zewnętrznych systemów ERP.
+    \item \textbf{System zewnętrzny / Scheduler (Procesy automatyczne):} Aktor nieosobowy (maszynowy). Reprezentuje usługi działające w tle (ang. \textit{background jobs}), które odpowiadają za cykliczne operacje, takie jak ciągłe monitorowanie ważności umów, pozwoleń czy badań lekarskich.
+\end{itemize}

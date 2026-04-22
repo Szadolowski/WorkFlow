@@ -1,4 +1,7 @@
 \babel@toc {polish}{}\relax 
-\contentsline {figure}{\numberline {{5}.1}{\ignorespaces Moduł Pinentry żądający hasła w celu odblokowania klucza prywatnego niezbędnego do odszyfrowania danych.}}{10}{figure.5.1}%
-\contentsline {figure}{\numberline {{5}.2}{\ignorespaces Raport z operacji deszyfrowania potwierdzający integralność pliku oraz poprawność weryfikacji podpisu cyfrowego nadawcy.}}{11}{figure.5.2}%
-\contentsline {figure}{\numberline {{5}.3}{\ignorespaces Zawartość pomyślnie odszyfrowanego pliku – dane jawne wróciły do swojej pierwotnej, czytelnej formy.}}{11}{figure.5.3}%
+\contentsline {figure}{\numberline {{5}.1}{\ignorespaces Diagram przypadków użycia systemu \texttt {WorkFlow}}}{16}{figure.5.1}%
+\contentsline {figure}{\numberline {{7}.1}{\ignorespaces Widok desktopowy (1920px) -- Pulpit główny Pracownika Biurowego}}{24}{figure.7.1}%
+\contentsline {figure}{\numberline {{7}.2}{\ignorespaces Widok mobilny (390px) -- Pulpit główny}}{24}{figure.7.2}%
+\contentsline {figure}{\numberline {{7}.3}{\ignorespaces Widok desktopowy (1920px) -- Cyfrowa Teczka Pracownika}}{25}{figure.7.3}%
+\contentsline {figure}{\numberline {{7}.4}{\ignorespaces Widok mobilny (390px) -- Profil Pracownika}}{26}{figure.7.4}%
+\contentsline {figure}{\numberline {{8}.1}{\ignorespaces Logiczny model danych (Diagram ERD) systemu \texttt {WorkFlow}}}{27}{figure.8.1}%
