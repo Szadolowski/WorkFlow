@@ -11,11 +11,11 @@ INPUT C:\Program Files\MiKTeX\fonts\tfm\public\cm\cmr12.tfm
 INPUT .\preambula_pakiety.tex
 INPUT .\preambula_pakiety.tex
 INPUT preambula_pakiety.tex
+INPUT C:\Program Files\MiKTeX\tex\latex\base\inputenc.sty
+INPUT C:\Program Files\MiKTeX\tex\latex\base\inputenc.sty
 INPUT C:\Program Files\MiKTeX\tex\latex\base\fontenc.sty
 INPUT C:\Program Files\MiKTeX\tex\latex\base\fontenc.sty
 INPUT C:\Program Files\MiKTeX\fonts\tfm\jknappen\ec\ecrm1200.tfm
-INPUT C:\Program Files\MiKTeX\tex\latex\base\inputenc.sty
-INPUT C:\Program Files\MiKTeX\tex\latex\base\inputenc.sty
 INPUT C:\Program Files\MiKTeX\tex\generic\babel\babel.sty
 INPUT C:\Program Files\MiKTeX\tex\generic\babel\babel.sty
 INPUT C:\Program Files\MiKTeX\tex\generic\babel\txtbabel.def
@@ -214,6 +214,9 @@ INPUT .\preambula_ustawienia.tex
 INPUT preambula_ustawienia.tex
 INPUT C:\Users\rafal.c\AppData\Roaming\MiKTeX\tex\latex\fancyvrb\fancyvrb.sty
 INPUT C:\Users\rafal.c\AppData\Roaming\MiKTeX\tex\latex\fancyvrb\fancyvrb.sty
+INPUT .\dokument.aux
+INPUT .\dokument.aux
+INPUT dokument.aux
 OUTPUT dokument.aux
 INPUT C:\Program Files\MiKTeX\tex\context\base\mkii\supp-pdf.mkii
 INPUT C:\Program Files\MiKTeX\tex\context\base\mkii\supp-pdf.mkii
@@ -233,8 +236,14 @@ INPUT .\dokument.bbl
 INPUT .\dokument.bbl
 INPUT dokument.bbl
 INPUT C:\Program Files\MiKTeX\tex\latex\graphics\color.sty
-OUTPUT dokument.out
+INPUT .\dokument.out
+INPUT .\dokument.out
+INPUT dokument.out
+INPUT dokument.out
 OUTPUT dokument.pdf
+INPUT .\dokument.out
+INPUT .\dokument.out
+OUTPUT dokument.out
 INPUT C:\Program Files\MiKTeX\fonts\tfm\jknappen\ec\ecrm1728.tfm
 INPUT C:\Program Files\MiKTeX\fonts\tfm\jknappen\ec\ecrm1440.tfm
 INPUT C:\Program Files\MiKTeX\fonts\tfm\jknappen\ec\ecrm2488.tfm
@@ -273,13 +282,16 @@ INPUT C:\Users\rafal.c\AppData\Local\MiKTeX\fonts\tfm\public\rsfs\rsfs10.tfm
 INPUT C:\Users\rafal.c\AppData\Local\MiKTeX\fonts\tfm\public\rsfs\rsfs5.tfm
 INPUT C:\Users\rafal.c\AppData\Local\MiKTeX\fonts\map\pdftex\pdftex.map
 INPUT C:\Program Files\MiKTeX\fonts\tfm\jknappen\ec\ecbx1728.tfm
+INPUT .\dokument.toc
+INPUT .\dokument.toc
+INPUT dokument.toc
+INPUT C:\Program Files\MiKTeX\fonts\tfm\jknappen\ec\ecti1200.tfm
 OUTPUT dokument.toc
 INPUT .\tex\rozdzial1.tex
 INPUT .\tex\rozdzial1.tex
 INPUT tex\rozdzial1.tex
 INPUT C:\Program Files\MiKTeX\fonts\tfm\jknappen\ec\ecbx1440.tfm
 INPUT C:\Program Files\MiKTeX\fonts\tfm\jknappen\ec\tcrm1200.tfm
-INPUT C:\Program Files\MiKTeX\fonts\tfm\jknappen\ec\ecti1200.tfm
 INPUT .\tex\rozdzial2.tex
 INPUT .\tex\rozdzial2.tex
 INPUT tex\rozdzial2.tex
@@ -357,7 +369,19 @@ INPUT C:\Program Files\MiKTeX\fonts\tfm\jknappen\ec\ecrm0600.tfm
 INPUT .\tex\rozdzial9.tex
 INPUT .\tex\rozdzial9.tex
 INPUT tex\rozdzial9.tex
+INPUT .\rys\stack.pdf
+INPUT .\rys\stack.pdf
+INPUT .\rys\stack.pdf
+INPUT .\rys\stack.pdf
+INPUT .\rys\stack.pdf
+INPUT .\rys\stack.pdf
+INPUT .\dokument.lof
+INPUT .\dokument.lof
+INPUT dokument.lof
 OUTPUT dokument.lof
+INPUT .\dokument.lot
+INPUT .\dokument.lot
+INPUT dokument.lot
 OUTPUT dokument.lot
 INPUT .\dokument.lol
 INPUT .\dokument.lol
@@ -366,6 +390,7 @@ OUTPUT dokument.lol
 INPUT dokument.aux
 INPUT .\dokument.out
 INPUT .\dokument.out
+INPUT dokument.run.xml
 OUTPUT dokument.run.xml
 INPUT C:\Users\rafal.c\AppData\Local\MiKTeX\fonts\pk\ljfour\jknappen\ec\dpi600\ectt1000.pk
 INPUT C:\Users\rafal.c\AppData\Local\MiKTeX\fonts\pk\ljfour\jknappen\ec\dpi600\ectt1000.pk
@@ -375,12 +400,12 @@ INPUT C:\Users\rafal.c\AppData\Local\MiKTeX\fonts\pk\ljfour\jknappen\ec\dpi600\e
 INPUT C:\Users\rafal.c\AppData\Local\MiKTeX\fonts\pk\ljfour\jknappen\ec\dpi600\ecbi1200.pk
 INPUT C:\Users\rafal.c\AppData\Local\MiKTeX\fonts\pk\ljfour\jknappen\ec\dpi600\ecbi1440.pk
 INPUT C:\Users\rafal.c\AppData\Local\MiKTeX\fonts\pk\ljfour\jknappen\ec\dpi600\ecbi1440.pk
-INPUT C:\Users\rafal.c\AppData\Local\MiKTeX\fonts\pk\ljfour\jknappen\ec\dpi600\ecti1200.pk
-INPUT C:\Users\rafal.c\AppData\Local\MiKTeX\fonts\pk\ljfour\jknappen\ec\dpi600\ecti1200.pk
 INPUT C:\Users\rafal.c\AppData\Local\MiKTeX\fonts\pk\ljfour\jknappen\ec\dpi600\tcrm1200.pk
 INPUT C:\Users\rafal.c\AppData\Local\MiKTeX\fonts\pk\ljfour\jknappen\ec\dpi600\tcrm1200.pk
 INPUT C:\Users\rafal.c\AppData\Local\MiKTeX\fonts\pk\ljfour\jknappen\ec\dpi600\ecbx1440.pk
 INPUT C:\Users\rafal.c\AppData\Local\MiKTeX\fonts\pk\ljfour\jknappen\ec\dpi600\ecbx1440.pk
+INPUT C:\Users\rafal.c\AppData\Local\MiKTeX\fonts\pk\ljfour\jknappen\ec\dpi600\ecti1200.pk
+INPUT C:\Users\rafal.c\AppData\Local\MiKTeX\fonts\pk\ljfour\jknappen\ec\dpi600\ecti1200.pk
 INPUT C:\Users\rafal.c\AppData\Local\MiKTeX\fonts\pk\ljfour\jknappen\ec\dpi600\ecbx1728.pk
 INPUT C:\Users\rafal.c\AppData\Local\MiKTeX\fonts\pk\ljfour\jknappen\ec\dpi600\ecbx1728.pk
 INPUT C:\Users\rafal.c\AppData\Local\MiKTeX\fonts\pk\ljfour\jknappen\ec\dpi600\ectt1200.pk

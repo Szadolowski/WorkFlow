@@ -5,8 +5,7 @@ Prawidłowe zaprojektowanie struktury bazy danych jest fundamentem wydajności, 
 
 \begin{figure}[H]
     \centering
-    % Upewnij się, że plik nazywa się odpowiednio, np. erd_diagram.png
-    \includegraphics[width=1.1\textwidth]{rys/erd.pdf} 
+    \includegraphics[width=\textwidth, height=0.8\textheight, keepaspectratio]{rys/erd.pdf} 
     \caption{Logiczny model danych (Diagram ERD) systemu \texttt{WorkFlow}}
     \label{fig:erd_diagram}
 \end{figure}
@@ -88,7 +87,7 @@ JOIN "TimeEntry" t ON e."id" = t."employeeId"
 JOIN "SalaryRate" r ON e."id" = r."employeeId"
 WHERE t."date" BETWEEN '2026-04-01' AND '2026-04-30'
   AND t."status" = 'APPROVED'
-  -- Połączenie odpowiedniej stawki z datą wykonania pracy
+  -- Polaczenie odpowiedniej stawki z data wykonania pracy
   AND t."date" BETWEEN r."validFrom" AND COALESCE(r."validTo", '9999-12-31')
 GROUP BY e."id", e."firstName", e."lastName", r."rate";
 \end{lstlisting}

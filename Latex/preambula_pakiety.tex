@@ -3,8 +3,8 @@
 % ------------------------------------------------------------------------
 
 % --- Kodowanie i język ---
-\usepackage[T1]{fontenc}
-\usepackage[utf8]{inputenc}
+\usepackage[utf8]{inputenc} % To jest standard dla UTF-8
+\usepackage[T1]{fontenc}    % Poprawne wyświetlanie polskich znaków w PDF
 \usepackage[polish]{babel}
 \usepackage{csquotes}
 
@@ -70,6 +70,9 @@
 % --- Nagłówki i stopki ---
 \usepackage{fancyhdr}
 \setlength{\headheight}{24pt}
+
+% --- Nagłówki i stopki ---
+\pdfminorversion=7
 
 % --- Listing styl ---
 \definecolor{codegreen}{rgb}{0,0.6,0}

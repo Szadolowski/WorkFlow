@@ -1,7 +1,8 @@
 \babel@toc {polish}{}\relax 
-\contentsline {figure}{\numberline {{5}.1}{\ignorespaces Diagram przypadków użycia systemu \texttt {WorkFlow}}}{15}{figure.5.1}%
-\contentsline {figure}{\numberline {{7}.1}{\ignorespaces Widok desktopowy (1920px) -- Pulpit główny Pracownika Biurowego}}{23}{figure.7.1}%
-\contentsline {figure}{\numberline {{7}.2}{\ignorespaces Widok mobilny (390px) -- Pulpit główny}}{23}{figure.7.2}%
-\contentsline {figure}{\numberline {{7}.3}{\ignorespaces Widok desktopowy (1920px) -- Cyfrowa Teczka Pracownika}}{24}{figure.7.3}%
-\contentsline {figure}{\numberline {{7}.4}{\ignorespaces Widok mobilny (390px) -- Profil Pracownika}}{25}{figure.7.4}%
-\contentsline {figure}{\numberline {{8}.1}{\ignorespaces Logiczny model danych (Diagram ERD) systemu \texttt {WorkFlow}}}{27}{figure.8.1}%
+\contentsline {figure}{\numberline {{5}.1}{\ignorespaces Diagram przypadków użycia systemu \texttt {WorkFlow}}}{16}{figure.5.1}%
+\contentsline {figure}{\numberline {{7}.1}{\ignorespaces Widok desktopowy (1920px) -- Pulpit główny Pracownika Biurowego}}{24}{figure.7.1}%
+\contentsline {figure}{\numberline {{7}.2}{\ignorespaces Widok mobilny (390px) -- Pulpit główny}}{24}{figure.7.2}%
+\contentsline {figure}{\numberline {{7}.3}{\ignorespaces Widok desktopowy (1920px) -- Cyfrowa Teczka Pracownika}}{25}{figure.7.3}%
+\contentsline {figure}{\numberline {{7}.4}{\ignorespaces Widok mobilny (390px) -- Profil Pracownika}}{26}{figure.7.4}%
+\contentsline {figure}{\numberline {{8}.1}{\ignorespaces Logiczny model danych (Diagram ERD) systemu \texttt {WorkFlow}}}{28}{figure.8.1}%
+\contentsline {figure}{\numberline {{9}.1}{\ignorespaces Architektura wdrożeniowa i topologia sieciowa systemu \texttt {WorkFlow} (środowisko Docker)}}{32}{figure.9.1}%
