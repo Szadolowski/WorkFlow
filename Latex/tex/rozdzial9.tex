@@ -29,6 +29,8 @@ Serce systemu odpowiadające za maszyny stanów (\textit{workflow}), procesy obl
     \item \textbf{Magazyn Plików:} \textbf{MinIO} -- wydajny serwer obiektowy kompatybilny z API Amazon S3. Zapewnia bezpieczne, odizolowane środowisko do przechowywania szyfrowanych skanów dokumentów pracowniczych i generowania tymczasowych linków pobierania.
 \end{itemize}
 
+Wybrano PostgreSQL ze wzgledu na zaawansowana obsługe typów JSONB (dla logów audytowych) oraz doskonała wydajnosc przy złozonych zlaczeniach (JOIN), co jest kluczowe dla modułu finansowego
+
 \subsection{Infrastruktura, Kolejkowanie i Monitoring (DevOps)}
 \begin{itemize}
     \item \textbf{Konteneryzacja i Sieć:} Całość infrastruktury uruchamiana jest w środowisku \textbf{Docker}. Dodatkowo, na wejściu do systemu zastosowano serwer \textbf{Nginx}, pełniący rolę \textit{Reverse Proxy} i \textit{Load Balancera}, który zarządza ruchem HTTP/HTTPS i zwiększa bezpieczeństwo środowiska.

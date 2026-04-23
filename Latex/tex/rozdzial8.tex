@@ -6,23 +6,39 @@ Prawidłowe zaprojektowanie struktury bazy danych jest fundamentem wydajności, 
 \begin{figure}[H]
     \centering
     % Upewnij się, że plik nazywa się odpowiednio, np. erd_diagram.png
-    \includegraphics[width=0.95\textwidth]{rys/erd.png} 
+    \includegraphics[width=1.1\textwidth]{rys/erd.pdf} 
     \caption{Logiczny model danych (Diagram ERD) systemu \texttt{WorkFlow}}
     \label{fig:erd_diagram}
 \end{figure}
 
 \subsection{Słownik głównych encji biznesowych}
-Zaproponowany model w pełni realizuje założenia biznesowe zdefiniowane w analizie wymagań. 
+Zaproponowany fizyczny model bazy danych charakteryzuje się wykorzystaniem unikalnych identyfikatorów \texttt{UUID} oraz rygorystyczną normalizacją struktur przestrzennych i kadrowych.
 
 \begin{itemize}
-    \item \textbf{User (Użytkownik systemu):} Tabela przechowująca dane autoryzacyjne oraz przypisaną rolę systemową (np. Brygadzista, Księgowość). Obsługuje mechanizm kontroli dostępu RBAC.
-    \item \textbf{Employee (Pracownik):} Stanowi centrum cyfrowej teczki pracowniczej. Tabela ta jest oddzielona od użytkownika systemu, ponieważ nie każdy pracownik fizyczny musi posiadać konto do logowania.
-    \item \textbf{TimeEntry (Ewidencja czasu):} Kluczowa tabela realizująca maszynę stanów (\textit{workflow}). Przechowuje datę, liczbę godzin oraz obecny status rekordu. Jest powiązana dwoma kluczami obcymi z tabelą \texttt{User} w celu zachowania zasady rozliczalności: rejestruje, kto utworzył wpis (\textit{creates}) oraz kto go zatwierdził (\textit{approvedBy}).
-    \item \textbf{Document (Dokument):} Tabela integrująca aplikację z zewnętrznym magazynem plików (\textit{storage}). Przechowuje bezpieczny link (\texttt{fileUrl}) oraz datę ważności, która jest podstawą dla skryptów generujących alerty (Scheduler).
-    \item \textbf{SalaryRate (Stawka):} Zaimplementowana jako tzw. wymiar wolnozmieniający się (\textit{Slowly Changing Dimension}). Dzięki polom \texttt{validFrom} oraz \texttt{validTo}, system zachowuje pełną historię zmian wynagrodzenia pracownika w czasie, co jest niezbędne do poprawnego generowania raportów wstecznych.
-    \item \textbf{AuditLog (Rejestr audytowy):} Tabela przechowująca niezmienny ślad rewizyjny (kto i jaką akcję wykonał), spełniająca wymogi zgodności prawnej i bezpieczeństwa (RODO).
+    \item \textbf{User, Employee oraz BrigadeAssignment:} Architektura oddziela konto systemowe (\texttt{User}) od fizycznego profilu kadrowego (\texttt{Employee}). Tabela asocjacyjna \texttt{BrigadeAssignment} umożliwia elastyczne przypisywanie pracowników terenowych do konkretnych brygadzistów, zachowując pełną historię zatrudnienia.
+    \item \textbf{Location, LocationAdministrator oraz Project:} Wydzielona struktura zarządzania placami budowy. Encja \texttt{Location} przechowuje dane adresowe. Tabela \texttt{LocationAdministrator} pozwala na precyzyjne przypisanie uprawnień (RBAC), definiując, który brygadzista ma dostęp do jakiego obszaru, a tabela \texttt{Project} powiązana jest z nią relacyjnie.
+    \item \textbf{TimeEntry:} Kluczowa tabela ewidencji czasu pracy. Wykorzystuje typ wyliczeniowy \texttt{ENUM\_TimeEntryStatus} do kontroli maszyny stanów. Automatyzuje wyliczanie godzin na podstawie pól \texttt{startTime} i \texttt{endTime}.
+    \item \textbf{Document:} Tabela integrująca aplikację z magazynem obiektowym MinIO. Przechowuje bezpieczny link (\texttt{fileUrl}), typ (\texttt{ENUM\_DocumentType}) oraz datę ważności.
+    \item \textbf{SalaryRate oraz Payroll:} Implementacja historii zmian stawek za pomocą pól \texttt{validFrom} oraz \texttt{validTo}. Zamrożenie wypłaty i blokada edycji godzin odbywa się poprzez przypisanie \texttt{payrollId} (z tabeli \texttt{Payroll}) do rekordów czasu pracy w \texttt{TimeEntry}.
+    \item \textbf{AuditLog:} Zaawansowany dziennik zdarzeń. Zapisuje akcje, powiązanych użytkowników oraz stan encji przed i po modyfikacji w formacie \texttt{JSONB} (\texttt{oldValue}, \texttt{newValue}), gwarantując audytowalność zgodną z RODO.
 \end{itemize}
 
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{Pole} & \textbf{Typ} & \textbf{Klucz} & \textbf{Opis} \\ \hline
+id & UUID & PK & Unikalny identyfikator wpisu \\ \hline
+employeeId & UUID & FK & Powiązanie z profilami pracowników (\texttt{Employee}) \\ \hline
+payrollId & UUID & FK & Powiązanie z listą płac (blokada edycji) \\ \hline
+startTime & TIME & - & Godzina rozpoczęcia pracy \\ \hline
+endTime & TIME & - & Godzina zakończenia pracy \\ \hline
+hours & DECIMAL(5,2) & - & Kolumna generowana automatycznie (STORED) \\ \hline
+status & ENUM & - & Status maszyny stanów (\texttt{TimeEntryStatus}) \\ \hline
+\end{tabular}
+\caption{Struktura fizyczna zaktualizowanej tabeli TimeEntry}
+\label{tab:timeentry_struct}
+\end{table}
 \subsection{Strategia komunikacji z warstwą danych}
 Architektura aplikacji zakłada hybrydowe podejście do warstwy dostępu do danych (DAL -- \textit{Data Access Layer}). W celu zbalansowania tempa wytwarzania oprogramowania oraz maksymalnej wydajności dla skomplikowanych raportów biznesowych, przyjęto następujące ograniczenie architektoniczne:
 
@@ -30,3 +46,50 @@ Architektura aplikacji zakłada hybrydowe podejście do warstwy dostępu do dany
     \item \textbf{Zapytania ORM (50\% operacji):} Mapowanie obiektowo-relacyjne (np. \textit{Entity Framework, Hibernate} lub \textit{Prisma}) zostanie użyte do obsługi standardowych operacji CRUD (tworzenie użytkowników, proste edycje profili, dodawanie dokumentów). ORM zapewnia wysokie bezpieczeństwo przed atakami SQL Injection i przyspiesza cykl deweloperski.
     \item \textbf{RAW QUERY (50\% operacji):} Surowe zapytania w języku SQL zostaną wykorzystane w miejscach, gdzie wydajność i precyzja są krytyczne. Obejmuje to proces generowania skomplikowanych raportów płacowych (\texttt{Payroll}), które wymagają wielokrotnego łączenia tabel (JOIN) z zaawansowanym grupowaniem i filtrowaniem po dacie ważności stawek (\texttt{SalaryRate}). Wykorzystanie \textit{Raw Queries} gwarantuje optymalny czas wykonania zapytań do bazy zgodnie z wymogami niefunkcyjnymi ($<300$ ms).
 \end{itemize}
+
+\subsection{Implementacja fizyczna bazy danych (DDL)}
+Poniżej przedstawiono fragment skryptu implementacyjnego, definiujący kluczowe tabele systemu wraz z więzami integralności oraz indeksami optymalizacyjnymi.
+
+\begin{lstlisting}[language=SQL, caption=Definicja tabeli Pracownicy i Ewidencja Czasu]
+-- Tabela ewidencji czasu pracy z mechanizmem automatycznego wyliczania
+CREATE TABLE "TimeEntry" (
+    "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    "employeeId" UUID NOT NULL REFERENCES "Employee"("id"),
+    "projectId" UUID NOT NULL REFERENCES "Project"("id"),
+    "payrollId" UUID REFERENCES "Payroll"("id"),
+    "date" DATE NOT NULL,
+    "startTime" TIME NOT NULL,
+    "endTime" TIME NOT NULL,
+    -- Zaawansowana funkcja PostgreSQL - automatyczne wyliczanie przepracowanych godzin
+    "hours" DECIMAL(5,2) GENERATED ALWAYS AS (
+        EXTRACT(EPOCH FROM ("endTime" - "startTime")) / 3600
+    ) STORED,
+    "status" "ENUM_TimeEntryStatus" DEFAULT 'RAW',
+    "createdBy" UUID NOT NULL REFERENCES "User"("id"),
+    "createdAt" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Indeks przyspieszajacy wyszukiwanie dokumentow po dacie
+CREATE INDEX idx_doc_expiration ON Documents(expiration_date);
+\end{lstlisting}
+
+\subsection{Zaawansowane zapytania analityczne (Raw SQL)}
+Zgodnie z przyjeta strategia, skomplikowane operacje finansowe realizowane sa poprzez surowe zapytania SQL. Ponizszy listing przedstawia proces generowania raportu płacowego, który uwzglednia historycznosc stawek (SCD Type 2).
+
+\begin{lstlisting}[language=SQL, caption=Zapytanie wyliczajace wynagrodzenia za okres kwiecien 2026]
+SELECT 
+    e."firstName", 
+    e."lastName", 
+    SUM(t."hours") as total_hours,
+    r."rate" as applied_rate,
+    SUM(t."hours" * r."rate") as gross_salary
+FROM "Employee" e
+JOIN "TimeEntry" t ON e."id" = t."employeeId"
+JOIN "SalaryRate" r ON e."id" = r."employeeId"
+WHERE t."date" BETWEEN '2026-04-01' AND '2026-04-30'
+  AND t."status" = 'APPROVED'
+  -- Połączenie odpowiedniej stawki z datą wykonania pracy
+  AND t."date" BETWEEN r."validFrom" AND COALESCE(r."validTo", '9999-12-31')
+GROUP BY e."id", e."firstName", e."lastName", r."rate";
+\end{lstlisting}
+
