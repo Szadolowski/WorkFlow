@@ -1,0 +1,82 @@
+% ------------------------------------------------------------------------
+% USTAWIENIA
+% ------------------------------------------------------------------------
+
+% ------------------------------------------------------------------------
+%   Kropki po numerach sekcji, podsekcji, itd.
+% ------------------------------------------------------------------------
+\makeatletter
+    \def\numberline#1{\hb@xt@\@tempdima{#1.\hfil}}
+    \renewcommand*\@seccntformat[1]{\csname the#1\endcsname.\enspace}
+\makeatother
+
+% ------------------------------------------------------------------------
+%   Numeracja równań, rysunków i tabel (np. 1.2)
+% ------------------------------------------------------------------------
+\makeatletter
+    \@addtoreset{equation}{section}
+    \renewcommand{\theequation}{{\thesection}.\@arabic\c@equation}
+
+    \@addtoreset{figure}{section}
+    \renewcommand{\thefigure}{{\thesection}.\@arabic\c@figure}
+
+    \@addtoreset{table}{section}
+    \renewcommand{\thetable}{{\thesection}.\@arabic\c@table}
+\makeatother
+
+% ------------------------------------------------------------------------
+% Środowisko tabeli
+% ------------------------------------------------------------------------
+\newenvironment{tabela}[3]
+{
+    \begin{table}[!htb]
+    \centering
+    \caption[#1]{#2}
+    \vskip 9pt
+    #3
+}{
+    \end{table}
+}
+
+% ------------------------------------------------------------------------
+% Dostosowanie listy TODO
+% ------------------------------------------------------------------------
+\renewcommand{\todoitem}[2]{%
+    \item \label{todo:\thetodo}%
+    \ifx#1\todomark%
+        \else\textbf{#1 }%
+    \fi%
+    (str.~\pageref{todopage:\thetodo})\ #2}
+\renewcommand{\todoname}{Do zrobienia...}
+\renewcommand{\todomark}{~uzupełnić}
+
+% ------------------------------------------------------------------------
+% Sekcje nienumerowane
+% ------------------------------------------------------------------------
+\def\nonumsection#1{%
+    \section*{#1}%
+    \addcontentsline{toc}{section}{#1}%
+}
+\def\nonumsubsection#1{%
+    \subsection*{#1}%
+    \addcontentsline{toc}{subsection}{#1}%
+}
+
+% ------------------------------------------------------------------------
+% Inne ustawienia
+% ------------------------------------------------------------------------
+\frenchspacing
+\setlength{\parskip}{3pt}
+\linespread{1.3}
+\setcounter{tocdepth}{4}
+\setcounter{secnumdepth}{4}
+
+\titleformat{\paragraph}[hang]
+{\normalfont\sffamily\bfseries}{\theparagraph}{1em}{}
+
+
+
+\sloppy
+
+
+\DeclareFieldFormat{url}{\url{#1}}

@@ -1,0 +1,95 @@
+% ------------------------------------------------------------------------
+% STRONA TYTUŁOWA - SPRAWOZDANIE (KRYPTOGRAFIA)
+% ------------------------------------------------------------------------
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{strona_tytulowa}
+\RequirePackage{enumitem}
+
+\makeatletter
+
+\def\uczelnia#1{\gdef\@uczelnia{#1}}
+\def\instytut#1{\gdef\@instytut{#1}}
+\def\rok#1{\gdef\@rok{#1}}
+\def\prowadzacy#1{\gdef\@prowadzacy{#1}}
+\def\praca#1{\gdef\@praca{#1}}
+\def\kierunek#1{\gdef\@kierunek{#1}}
+\def\authorI#1{\gdef\@authorI{#1}}
+\def\authorII#1{\gdef\@authorII{#1}}
+\def\przedmiot#1{\gdef\@przedmiot{#1}}
+% Dodałem zmienną dla grupy, żeby usunąć z kodu "na sztywno" wpisane dane
+\def\grupa#1{\gdef\@grupa{#1}} 
+
+\newif\ifdraft@mode \draft@modefalse
+\def\draft{\draft@modetrue}
+
+\def\stronatytulowa{
+
+    \newcommand*{\tmpthesisDraftKomunikat}{
+        \begin{array}{c}
+            \\
+            \mbox{\Large UWAGA -- TO JEST DRAFT}\\
+            \\
+            \mbox{\large Wydruk z \today}\\
+            \\
+        \end{array}
+    }
+
+    \vskip0.1in 
+
+    \begin{center}
+        \hyphenpenalty=10000\Large\expandafter{\@uczelnia}
+    \end{center}
+
+    %\vskip0.2in
+    \begin{center}
+        \large \@instytut \\
+        \@kierunek
+    \end{center}
+    
+    \vskip0.3in
+
+    \begin{center}
+        \huge\@praca \\ 
+        \large \@przedmiot
+    \end{center}
+    
+    \vskip0.3in
+
+    \begin{center}
+        \hyphenpenalty=10000\Large\sffamily\expandafter{\textbf{\@title}}
+    \end{center}
+
+    \ifdraft@mode
+      \begin{center}\framebox{$\tmpthesisDraftKomunikat$}\end{center}
+    \fi
+    
+    \vspace{0.5cm} 
+
+    \noindent \textbf{Cel i zakres projektu:}
+    
+    \begin{enumerate}[label=\arabic*), leftmargin=1.5cm, itemsep=2pt, topsep=5pt]
+        \item Zaprojektowanie architektury oraz logiki biznesowej dla bezpiecznego systemu cyfrowego zarządzania kadrami, czasem pracy i obiegiem dokumentów (\texttt{WorkFlow}).
+        
+        \item Analiza wymagań funkcjonalnych i niefunkcyjnych ze szczególnym uwzględnieniem mechanizmów bezpieczeństwa (ochrona danych osobowych, kontrola dostępu oparta na rolach -- RBAC oraz bezpieczny przepływ wrażliwych informacji finansowych).
+    \end{enumerate}
+    
+    \vspace{1.5cm}
+
+    \noindent
+    \begin{tabular}{@{}p{0.48\textwidth} p{0.48\textwidth}@{}}
+        \textbf{Nazwisko i Imię:} & \textbf{Nr grupy:} \\  
+        \@author & \@grupa \\  
+        \@authorI &  \\  [0.8cm]
+        % Używamy standardowej zmiennej \@date zamiast wpisywać datę na stałe
+        \textbf{Data oddania:} 11.04.2026 & \textbf{Ocena:} .........................................
+    \end{tabular}
+
+    \vfill
+    \begin{center}
+       \large \rm Nowy Sącz \@rok
+    \end{center}
+    \newpage
+}
+
+\makeatother
