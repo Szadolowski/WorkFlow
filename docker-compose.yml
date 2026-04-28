@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  # Baza Danych
+  postgres:
+    image: postgres:15-alpine
+    container_name: workflow-postgres
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: rootpassword
+      POSTGRES_DB: workflow_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  # Redis (do sesji, tokenów i ewentualnych powiadomień)
+  redis:
+    image: redis:7-alpine
+    container_name: workflow-redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+  # MinIO (Lokalny S3 na pliki/skany/zdjęcia od brygadzistów)
+  minio:
+    image: minio/minio
+    container_name: workflow-minio
+    environment:
+      MINIO_ROOT_USER: rootadmin
+      MINIO_ROOT_PASSWORD: rootpassword123
+    ports:
+      - "9000:9000" # API S3
+      - "9001:9001" # Panel przeglądarkowy (UI)
+    command: server /data --console-address ":9001"
+    volumes:
+      - miniodata:/data
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  miniodata:
