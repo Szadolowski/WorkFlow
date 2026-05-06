@@ -1,0 +1,76 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "docker",
+      "type": "shell",
+      "command": "docker-compose up -d", // Dodałem -d, żeby docker działał w tle i nie blokował terminala, jeśli chcesz
+      "icon": {
+        "id": "terminal",
+        "color": "terminal.ansiCyan"
+      },
+      "presentation": {
+        "panel": "new",
+        "group": "dev"
+      }
+    },
+    {
+      "label": "prisma setup",
+      "type": "shell",
+      "command": "npx prisma generate && npx prisma db push",
+      "options": {
+        "cwd": "${workspaceFolder}/backend"
+      },
+      "icon": {
+        "id": "warning", // Ikona trójkąta ostrzegawczego ze zdjęcia image_95566f.png
+        "color": "terminal.ansiYellow"
+      },
+      "presentation": {
+        "panel": "new",
+        "group": "dev"
+      }
+    },
+    {
+      "label": "nest backend",
+      "type": "shell",
+      "command": "npm install && npm run start:dev",
+      "options": {
+        "cwd": "${workspaceFolder}/backend"
+      },
+      "icon": {
+        "id": "terminal",
+        "color": "terminal.ansiMagenta"
+      },
+      "presentation": {
+        "panel": "new",
+        "group": "dev"
+      },
+      "dependsOn": ["prisma setup"] // Backend czeka, aż Prisma wygeneruje klienta
+    },
+    {
+      "label": "next frontend",
+      "type": "shell",
+      "command": "npm install && npm run dev",
+      "options": {
+        "cwd": "${workspaceFolder}/frontend"
+      },
+      "icon": {
+        "id": "terminal",
+        "color": "terminal.ansiGreen"
+      },
+      "presentation": {
+        "panel": "new",
+        "group": "dev"
+      }
+    },
+    {
+      "label": "Uruchom wszystko",
+      "dependsOrder": "sequence", // Ważne: uruchamia zadania po kolei
+      "dependsOn": ["docker", "nest backend", "next frontend"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
+}
