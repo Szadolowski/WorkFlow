@@ -4,73 +4,68 @@
     {
       "label": "docker",
       "type": "shell",
-      "command": "docker-compose up -d", // Dodałem -d, żeby docker działał w tle i nie blokował terminala, jeśli chcesz
-      "icon": {
-        "id": "terminal",
-        "color": "terminal.ansiCyan"
-      },
+      "command": "docker-compose up -d",
+      "icon": { "id": "terminal", "color": "terminal.ansiCyan" },
       "presentation": {
         "panel": "new",
-        "group": "dev"
+        "group": "dev",
+        "close": false // Terminal zostanie otwarty, byś mógł sprawdzić logi startowe
       }
     },
     {
       "label": "prisma setup",
       "type": "shell",
-      "command": "npx prisma generate && npx prisma db push",
-      "options": {
-        "cwd": "${workspaceFolder}/backend"
-      },
-      "icon": {
-        "id": "warning", // Ikona trójkąta ostrzegawczego ze zdjęcia image_95566f.png
-        "color": "terminal.ansiYellow"
-      },
+      "command": "npm install && npx prisma generate && npx prisma db push",
+      "options": { "cwd": "${workspaceFolder}/backend" },
+      "icon": { "id": "warning", "color": "terminal.ansiYellow" },
       "presentation": {
         "panel": "new",
-        "group": "dev"
+        "group": "dev",
+        "close": false // Konsola zostanie, żebyś widział np. sukces "db push"
       }
     },
     {
       "label": "nest backend",
       "type": "shell",
-      "command": "npm install && npm run start:dev",
-      "options": {
-        "cwd": "${workspaceFolder}/backend"
+      "command": "npm run start:dev",
+      "options": { "cwd": "${workspaceFolder}/backend" },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "typescript",
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "Starting Nest application...",
+          "endsPattern": "Nest application successfully started"
+        },
+        "pattern": { "regexp": "^.*" }
       },
-      "icon": {
-        "id": "terminal",
-        "color": "terminal.ansiMagenta"
-      },
-      "presentation": {
-        "panel": "new",
-        "group": "dev"
-      },
-      "dependsOn": ["prisma setup"] // Backend czeka, aż Prisma wygeneruje klienta
+      "icon": { "id": "terminal", "color": "terminal.ansiMagenta" },
+      "presentation": { "panel": "new", "group": "dev" },
+      "dependsOn": ["prisma setup"]
     },
     {
       "label": "next frontend",
       "type": "shell",
       "command": "npm install && npm run dev",
-      "options": {
-        "cwd": "${workspaceFolder}/frontend"
+      "options": { "cwd": "${workspaceFolder}/frontend" },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "typescript",
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".*(starting|compiling).*",
+          "endsPattern": ".*(Ready|ready) in.*"
+        },
+        "pattern": { "regexp": "^.*" }
       },
-      "icon": {
-        "id": "terminal",
-        "color": "terminal.ansiGreen"
-      },
-      "presentation": {
-        "panel": "new",
-        "group": "dev"
-      }
+      "icon": { "id": "terminal", "color": "terminal.ansiGreen" },
+      "presentation": { "panel": "new", "group": "dev" }
     },
     {
       "label": "Uruchom wszystko",
-      "dependsOrder": "sequence", // Ważne: uruchamia zadania po kolei
+      "dependsOrder": "sequence",
       "dependsOn": ["docker", "nest backend", "next frontend"],
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      }
+      "group": { "kind": "build", "isDefault": true }
     }
   ]
 }
