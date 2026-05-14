@@ -1,12 +1,9 @@
 generator client {
-  provider = "prisma-client"
-  // Jeśli używasz niestandardowej ścieżki wyjściowej z instrukcji:
-  output   = "../generated/prisma" 
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
-  // BRAK LINII URL - to jest teraz poprawne!
 }
 
 // ==========================================

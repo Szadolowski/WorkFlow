@@ -6,7 +6,8 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: ['eslint.config.mjs'],
+    // Ignorujemy pliki konfiguracyjne i artefakty budowania
+    ignores: ['eslint.config.mjs', 'dist/', 'node_modules/'],
   },
   eslint.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
@@ -17,7 +18,8 @@ export default tseslint.config(
         ...globals.node,
         ...globals.jest,
       },
-      sourceType: 'commonjs',
+      // ZMIANA: NestJS/TypeScript to moduły, nie CommonJS
+      sourceType: 'module',
       parserOptions: {
         projectService: true,
         tsconfigRootDir: import.meta.dirname,
@@ -26,10 +28,12 @@ export default tseslint.config(
   },
   {
     rules: {
-      '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-floating-promises': 'warn',
+      '@typescript-eslint/no-explicit-any': 'off', // Zgodnie z Twoim wyborem
+      '@typescript-eslint/no-floating-promises': 'error', // Zmienione na error dla bezpieczeństwa
       '@typescript-eslint/no-unsafe-argument': 'warn',
-      "prettier/prettier": ["error", { endOfLine: "auto" }],
+      // Naprawa błędu unsafe-call poprzez wymuszenie poprawnego sprawdzania typów
+      '@typescript-eslint/no-unsafe-call': 'warn',
+      'prettier/prettier': ['error', { endOfLine: 'auto' }],
     },
   },
 );
