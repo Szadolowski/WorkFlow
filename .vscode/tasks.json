@@ -7,22 +7,19 @@
       "command": "docker-compose up -d",
       "icon": { "id": "terminal", "color": "terminal.ansiCyan" },
       "presentation": {
-        "panel": "new",
+        "panel": "shared",
         "group": "dev",
-        "close": false // Terminal zostanie otwarty, byś mógł sprawdzić logi startowe
+        "close": true
       }
     },
     {
       "label": "prisma setup",
       "type": "shell",
-      "command": "npm install && npx prisma generate && npx prisma db push",
+      "command": "sleep 3 && npx prisma generate && npx prisma db push",
       "options": { "cwd": "${workspaceFolder}/backend" },
       "icon": { "id": "warning", "color": "terminal.ansiYellow" },
-      "presentation": {
-        "panel": "new",
-        "group": "dev",
-        "close": false // Konsola zostanie, żebyś widział np. sukces "db push"
-      }
+      "presentation": { "panel": "shared", "group": "dev" },
+      "dependsOn": ["docker"]
     },
     {
       "label": "nest backend",
@@ -35,7 +32,7 @@
         "background": {
           "activeOnStart": true,
           "beginsPattern": "Starting Nest application...",
-          "endsPattern": "Nest application successfully started"
+          "endsPattern": ".*Nest application successfully started.*"
         },
         "pattern": { "regexp": "^.*" }
       },
@@ -46,7 +43,7 @@
     {
       "label": "next frontend",
       "type": "shell",
-      "command": "npm install && npm run dev",
+      "command": "npm run dev",
       "options": { "cwd": "${workspaceFolder}/frontend" },
       "isBackground": true,
       "problemMatcher": {
@@ -63,7 +60,6 @@
     },
     {
       "label": "Uruchom wszystko",
-      "dependsOrder": "sequence",
       "dependsOn": ["docker", "nest backend", "next frontend"],
       "group": { "kind": "build", "isDefault": true }
     }
