@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { HardHat } from "lucide-react";
 
 // Definiujemy dostępność modułów wg. ról z bazy danych
 const NAV_ITEMS = [
@@ -12,7 +13,12 @@ const NAV_ITEMS = [
     href: "/dashboard/employees",
     roles: ["ADMIN", "HR", "OFFICE", "ACCOUNTING"],
   },
-  // Tu w przyszłości dodamy np. "Projekty", "Wypłaty" itd.
+  {
+    label: "Projekty i Budowy", // Zmienione z 'title' na 'label'
+    href: "/dashboard/projects",
+    icon: <HardHat className="w-5 h-5 mr-2 inline-block" />, // Opcjonalnie: ułożenie ikony
+    roles: ["ADMIN", "OFFICE", "HR", "FOREMAN"], // Zmienione z 'allowedRoles' na 'roles'
+  },
 ];
 
 export default function Sidebar({ role }: { role: string }) {
@@ -32,6 +38,7 @@ export default function Sidebar({ role }: { role: string }) {
                 href={link.href}
                 className="block px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-slate-800 hover:text-white transition-colors"
               >
+                {link.icon && link.icon}
                 {link.label}
               </Link>
             </li>
