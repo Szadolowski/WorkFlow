@@ -45,4 +45,10 @@ export class ProjectsController {
   async registerReader(@Param('id') id: string, @Body() dto: CreateReaderDto) {
     return this.projectsService.registerReader(id, dto);
   }
+
+  @Get(':id')
+  @Roles(UserRole.ADMIN, UserRole.OFFICE, UserRole.HR, UserRole.FOREMAN)
+  async getProjectDetails(@Param('id') id: string) {
+    return this.projectsService.getProjectDetails(id);
+  }
 }

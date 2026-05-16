@@ -3,7 +3,7 @@ import {
   ConflictException,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service'; // Ścieżka do Twojego PrismaService
+import { PrismaService } from '../prisma/prisma.service';
 import {
   CreateProjectDto,
   AssignEmployeesDto,
@@ -46,20 +46,17 @@ export class ProjectsService {
       throw new NotFoundException('Projekt nie istnieje.');
     }
 
-    // Wykonujemy operację w transakcji, aby zachować spójność danych (ACID)
     return this.prisma.$transaction(async (tx) => {
-      // 1. Zakończ aktualne (aktywne) przypisania dla podanych pracowników
       await tx.employeeAssignment.updateMany({
         where: {
           employeeId: { in: dto.employeeIds },
-          unassignedAt: null, // Tylko trwające przypisania
+          unassignedAt: null,
         },
         data: {
           unassignedAt: new Date(),
         },
       });
 
-      // 2. Utwórz nowe przypisania do wskazanego projektu
       const newAssignments = dto.employeeIds.map((employeeId) => ({
         employeeId,
         projectId,
@@ -98,5 +95,25 @@ export class ProjectsService {
         locationName: dto.locationName,
       },
     });
+  }
+
+  async getProjectDetails(projectId: string) {
+    const project = await this.prisma.project.findUnique({
+      where: { id: projectId },
+      include: {
+        // ZMIANA TUTAJ: używamy nazwy "assignments" z Twojego schematu
+        assignments: {
+          where: { unassignedAt: null },
+          include: {
+            employee: {
+              select: { id: true, firstName: true, lastName: true, role: true },
+            },
+          },
+        },
+      },
+    });
+
+    if (!project) throw new NotFoundException('Projekt nie istnieje.');
+    return project;
   }
 }
