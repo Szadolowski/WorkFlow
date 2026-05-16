@@ -49,3 +49,9 @@ export async function assignEmployeesAction(
   }
   return res.json();
 }
+
+export async function getProjectDetailsAction(projectId: string) {
+  const res = await serverFetch(`/projects/${projectId}`);
+  if (!res.ok) throw new Error("Nie udało się pobrać szczegółów projektu.");
+  return res.json();
+}

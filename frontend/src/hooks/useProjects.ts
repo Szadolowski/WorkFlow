@@ -8,6 +8,14 @@ import {
   CreateProjectPayload,
   AssignEmployeesPayload,
 } from "@/app/actions/projects.actions";
+import { getProjectDetailsAction } from "@/app/actions/projects.actions";
+
+export function useProjectDetailsQuery(projectId: string) {
+  return useQuery({
+    queryKey: ["projects", projectId],
+    queryFn: () => getProjectDetailsAction(projectId),
+  });
+}
 
 export function useActiveProjectsQuery() {
   return useQuery({

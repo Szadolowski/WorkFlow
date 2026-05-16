@@ -1,7 +1,8 @@
 "use client";
-
+import CreateProjectDialog from "@/components/projects/CreateProjectDialog";
 import { useActiveProjectsQuery } from "@/hooks/useProjects";
 import { Skeleton } from "@/components/ui/skeleton";
+import Link from "next/link";
 
 // 1. Dodajemy typowanie dla projektu z bazy danych
 type Project = {
@@ -35,26 +36,23 @@ export default function ProjectsPage() {
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Aktywne Budowy</h1>
-        <button className="bg-primary text-primary-foreground px-4 py-2 rounded-md">
-          Dodaj nowy projekt
-        </button>
+        <CreateProjectDialog />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {/* 2. Zmieniamy 'any' na zdefiniowany typ 'Project' */}
+        {/* 2. Mapujemy projekty z użyciem komponentu Link */}
         {projects?.map((project: Project) => (
-          <div
-            key={project.id}
-            className="border p-4 rounded-lg shadow-sm bg-card text-card-foreground"
-          >
-            <h2 className="font-semibold text-lg">{project.name}</h2>
-            <p className="text-sm text-muted-foreground mt-1">
-              Kod: {project.internalCode}
-            </p>
-            <p className="text-sm text-muted-foreground">
-              Adres: {project.address || "Brak adresu"}
-            </p>
-          </div>
+          <Link href={`/dashboard/projects/${project.id}`} key={project.id}>
+            <div className="border p-4 rounded-lg shadow-sm bg-card text-card-foreground hover:bg-slate-50 cursor-pointer transition-colors h-full">
+              <h2 className="font-semibold text-lg">{project.name}</h2>
+              <p className="text-sm text-muted-foreground mt-1">
+                Kod: {project.internalCode}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Adres: {project.address || "Brak adresu"}
+              </p>
+            </div>
+          </Link>
         ))}
 
         {projects?.length === 0 && (
