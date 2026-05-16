@@ -1,4 +1,8 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { GetEmployeesDto } from './dto/get-employees.dto';
@@ -10,7 +14,6 @@ export class EmployeesService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(dto: CreateEmployeeDto) {
-    // 1. Sprawdzenie unikalności (wczesne wyjście w przypadku duplikatu)
     const existingEmployee = await this.prisma.employee.findFirst({
       where: {
         OR: [{ email: dto.email }, { pesel: dto.pesel }],
@@ -28,11 +31,9 @@ export class EmployeesService {
       );
     }
 
-    // 2. Wygenerowanie tymczasowego hasła
     const tempPassword = Math.random().toString(36).slice(-8);
     const passwordHash = await bcrypt.hash(tempPassword, 10);
 
-    // 3. Zapis do bazy danych
     const newEmployee = await this.prisma.employee.create({
       data: {
         ...dto,
@@ -41,7 +42,6 @@ export class EmployeesService {
       },
     });
 
-    // 4. Zwracamy dane (bezpiecznie usuwając hash hasła z odpowiedzi bez błędu nieużywanej zmiennej)
     const employeeResponse = { ...newEmployee } as Partial<typeof newEmployee>;
     delete employeeResponse.passwordHash;
 
@@ -93,6 +93,54 @@ export class EmployeesService {
         page,
         limit,
         totalPages: Math.ceil(total / limit),
+      },
+    };
+  }
+
+  async getProfile(id: string) {
+    const employee = await this.prisma.employee.findUnique({
+      where: { id },
+      include: {
+        assignments: {
+          where: { unassignedAt: null },
+          include: {
+            project: true,
+          },
+        },
+        contracts: {
+          where: { isCurrent: true },
+          take: 1,
+        },
+        certifications: {
+          where: { expiresAt: { gt: new Date() } },
+          include: {
+            dictionary: true,
+          },
+        },
+      },
+    });
+
+    if (!employee || !employee.isActive) {
+      throw new NotFoundException(
+        'Pracownik nie został znaleziony lub jego profil jest nieaktywny.',
+      );
+    }
+
+    // 1. Wyciągamy relacje, żeby zostały nam tylko dane samego pracownika
+    const { contracts, assignments, certifications, ...baseEmployee } =
+      employee;
+
+    // 2. Bezpiecznie usuwamy wrażliwe dane z obiektu bazowego
+    const safeEmployee = { ...baseEmployee } as Partial<typeof baseEmployee>;
+    delete safeEmployee.passwordHash;
+    delete safeEmployee.twoFactorSecret;
+
+    return {
+      data: {
+        ...safeEmployee,
+        currentContract: contracts.length > 0 ? contracts[0] : null,
+        activeAssignments: assignments,
+        validCertifications: certifications,
       },
     };
   }
