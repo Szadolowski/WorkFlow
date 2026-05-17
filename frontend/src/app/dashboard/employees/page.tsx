@@ -2,6 +2,7 @@
 
 import { useEmployeesQuery } from "@/hooks/useEmployees";
 import AddEmployeeDialog from "@/components/employees/AddEmployeeDialog";
+import { useRouter } from "next/navigation"; // <-- Dodany import z Next.js
 import {
   Table,
   TableBody,
@@ -11,9 +12,20 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+// Definicja typu, żeby linter nie krzyczał o "any"
+type EmployeeListDto = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  pesel: string;
+  role: string;
+  isActive: boolean;
+};
+
 export default function EmployeesPage() {
-  // Pobieramy dane z naszego hooka TanStack Query
   const { data, isLoading, isError } = useEmployeesQuery();
+  const router = useRouter(); // <-- Inicjalizacja routera
 
   return (
     <div className="bg-white rounded-xl shadow-sm border p-6">
@@ -24,11 +36,9 @@ export default function EmployeesPage() {
             Zarządzaj kadrą, rolami i dostępami w systemie.
           </p>
         </div>
-        {/* Nasz modal z formularzem, który z taką pieczołowitością zbudowaliśmy! */}
         <AddEmployeeDialog />
       </div>
 
-      {/* Obsługa stanów ładowania */}
       {isLoading && (
         <div className="py-8 text-center text-slate-500 animate-pulse">
           Pobieranie danych z serwera...
@@ -42,7 +52,6 @@ export default function EmployeesPage() {
         </div>
       )}
 
-      {/* Wyświetlenie tabeli, gdy mamy dane */}
       {!isLoading && !isError && data && (
         <div className="rounded-md border">
           <Table>
@@ -67,8 +76,15 @@ export default function EmployeesPage() {
                   </TableCell>
                 </TableRow>
               ) : (
-                data.data.map((employee: any) => (
-                  <TableRow key={employee.id}>
+                data.data.map((employee: EmployeeListDto) => (
+                  <TableRow
+                    key={employee.id}
+                    // Dodajemy zdarzenie kliknięcia i style UX
+                    onClick={() =>
+                      router.push(`/dashboard/employees/${employee.id}`)
+                    }
+                    className="cursor-pointer hover:bg-slate-50 transition-colors"
+                  >
                     <TableCell className="font-medium text-slate-900">
                       {employee.firstName} {employee.lastName}
                     </TableCell>

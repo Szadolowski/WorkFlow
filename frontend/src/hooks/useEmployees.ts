@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getEmployeesAction,
   createEmployeeAction,
+  getEmployeeProfileAction,
   CreateEmployeePayload,
 } from "@/app/actions/employees.actions";
 
@@ -38,5 +39,19 @@ export function useCreateEmployeeMutation() {
       // aby nowy pracownik od razu pojawił się w tabeli.
       queryClient.invalidateQueries({ queryKey: ["employees"] });
     },
+  });
+}
+
+/**
+ * ==========================================
+ * NOWE: Hook do pobierania pełnego profilu
+ * ==========================================
+ */
+export function useEmployeeProfileQuery(employeeId: string) {
+  return useQuery({
+    queryKey: ["employeeProfile", employeeId],
+    queryFn: () => getEmployeeProfileAction(employeeId),
+    enabled: !!employeeId, // Uruchom zapytanie tylko wtedy, gdy posiadamy ID
+    staleTime: 1000 * 60 * 5, // Trzymaj dane w cache przez 5 minut
   });
 }
