@@ -50,3 +50,20 @@ export async function createEmployeeAction(data: CreateEmployeePayload) {
 
   return res.json();
 }
+
+// ==========================================
+// NOWE: Pobieranie profilu pracownika
+// ==========================================
+export async function getEmployeeProfileAction(id: string) {
+  const res = await serverFetch(`/employees/${id}/profile`);
+
+  if (!res.ok) {
+    if (res.status === 403)
+      throw new Error("Brak uprawnień do przeglądania tego profilu.");
+    if (res.status === 404)
+      throw new Error("Pracownik nie istnieje lub został usunięty.");
+    throw new Error("Błąd podczas pobierania profilu pracownika.");
+  }
+
+  return res.json();
+}
