@@ -5,7 +5,7 @@ import {
   AssignEmployeesDto,
   CreateReaderDto,
 } from './dto/projects.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'; // Ścieżki zależne od Twojej struktury
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '@prisma/client';

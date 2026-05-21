@@ -101,7 +101,6 @@ export class ProjectsService {
     const project = await this.prisma.project.findUnique({
       where: { id: projectId },
       include: {
-        // ZMIANA TUTAJ: używamy nazwy "assignments" z Twojego schematu
         assignments: {
           where: { unassignedAt: null },
           include: {

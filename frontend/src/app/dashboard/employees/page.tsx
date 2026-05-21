@@ -2,7 +2,7 @@
 
 import { useEmployeesQuery } from "@/hooks/useEmployees";
 import AddEmployeeDialog from "@/components/employees/AddEmployeeDialog";
-import { useRouter } from "next/navigation"; // <-- Dodany import z Next.js
+import { useRouter } from "next/navigation";
 import {
   Table,
   TableBody,
@@ -71,8 +71,8 @@ export default function EmployeesPage() {
                     colSpan={5}
                     className="text-center py-8 text-slate-500"
                   >
-                    Brak pracowników w bazie. Kliknij "Dodaj pracownika", aby
-                    rozpocząć!
+                    Brak pracowników w bazie. Kliknij &quot;Dodaj
+                    pracownika&quot;, aby rozpocząć!
                   </TableCell>
                 </TableRow>
               ) : (

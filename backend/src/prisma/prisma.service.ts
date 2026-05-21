@@ -9,7 +9,7 @@ export class PrismaService
   implements OnModuleInit, OnModuleDestroy
 {
   constructor() {
-    // Adapter to nowość i wymóg w Prismie v7+
+    // Adapter to nowość i wymóg w Pr>ismie v7+
     const connectionString = process.env.DATABASE_URL;
     const pool = new Pool({ connectionString });
     const adapter = new PrismaPg(pool);

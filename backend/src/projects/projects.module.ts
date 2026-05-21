@@ -8,6 +8,6 @@ import { AuthModule } from '../auth/auth.module';
   imports: [PrismaModule, AuthModule],
   controllers: [ProjectsController],
   providers: [ProjectsService],
-  exports: [ProjectsService], // Opcjonalnie: eksportujemy serwis, jeśli inny moduł będzie go potrzebował
+  exports: [ProjectsService],
 })
 export class ProjectsModule {}
