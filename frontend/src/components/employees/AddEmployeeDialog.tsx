@@ -31,12 +31,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { isValidPesel } from "@/lib/utils";
 
 // 1. Definicja schematu walidacji Zod (lustrzane odbicie naszego DTO z backendu)
 const formSchema = z.object({
   firstName: z.string().min(2, "Imię musi mieć min. 2 znaki"),
   lastName: z.string().min(2, "Nazwisko musi mieć min. 2 znaki"),
-  pesel: z.string().length(11, "PESEL musi składać się dokładnie z 11 cyfr"),
+  pesel: z
+    .string()
+    .length(11, "PESEL musi składać się dokładnie z 11 cyfr")
+    .regex(/^\d+$/, "PESEL nie może zawierać liter ani znaków specjalnych")
+    .refine(isValidPesel, "Niepoprawny numer PESEL"),
   email: z.string().email("Niepoprawny format adresu e-mail"),
   role: z.enum(["ADMIN", "HR", "OFFICE", "FOREMAN", "ACCOUNTING", "WORKER"]),
 });
