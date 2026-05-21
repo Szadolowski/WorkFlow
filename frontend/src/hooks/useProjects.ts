@@ -9,17 +9,22 @@ import {
   AssignEmployeesPayload,
 } from "@/app/actions/projects.actions";
 import { getProjectDetailsAction } from "@/app/actions/projects.actions";
+import { useFacility } from "@/hooks/useFacility";
 
 export function useProjectDetailsQuery(projectId: string) {
+  const { activeFacilityId } = useFacility();
+
   return useQuery({
-    queryKey: ["projects", projectId],
+    queryKey: ["projects", activeFacilityId, projectId],
     queryFn: () => getProjectDetailsAction(projectId),
   });
 }
 
 export function useActiveProjectsQuery() {
+  const { activeFacilityId } = useFacility();
+
   return useQuery({
-    queryKey: ["projects", "active"],
+    queryKey: ["projects", "active", activeFacilityId],
     queryFn: () => getActiveProjectsAction(),
   });
 }
@@ -31,7 +36,7 @@ export function useCreateProjectMutation() {
     mutationFn: (data: CreateProjectPayload) => createProjectAction(data),
     onSuccess: () => {
       // Automatyczne odświeżenie tabeli projektów po dodaniu nowej budowy
-      queryClient.invalidateQueries({ queryKey: ["projects", "active"] });
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
     },
   });
 }

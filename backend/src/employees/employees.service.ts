@@ -2,18 +2,23 @@ import {
   Injectable,
   ConflictException,
   NotFoundException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { GetEmployeesDto } from './dto/get-employees.dto';
-import { Prisma } from '@prisma/client';
+import { Prisma, UserRole } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class EmployeesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(dto: CreateEmployeeDto) {
+  async create(dto: CreateEmployeeDto, facilityId?: string) {
+    if (!facilityId) {
+      throw new ForbiddenException('Brak aktywnego zakładu.');
+    }
+
     const existingEmployee = await this.prisma.employee.findFirst({
       where: {
         OR: [{ email: dto.email }, { pesel: dto.pesel }],
@@ -37,10 +42,17 @@ export class EmployeesService {
     const newEmployee = await this.prisma.employee.create({
       data: {
         ...dto,
+        facilityId,
         passwordHash,
         isLoginEnabled: true,
       },
     });
+
+    await this.prisma.$executeRaw`
+      INSERT INTO "EmployeeFacilityAccess" ("employeeId", "facilityId", "createdAt")
+      VALUES (${newEmployee.id}, ${facilityId}, NOW())
+      ON CONFLICT ("employeeId", "facilityId") DO NOTHING
+    `;
 
     const employeeResponse = { ...newEmployee } as Partial<typeof newEmployee>;
     delete employeeResponse.passwordHash;
@@ -51,7 +63,7 @@ export class EmployeesService {
     };
   }
 
-  async findAll(query: GetEmployeesDto) {
+  async findAll(query: GetEmployeesDto, role: UserRole) {
     const page = query.page || 1;
     const limit = query.limit || 10;
     const skip = (page - 1) * limit;
@@ -65,6 +77,24 @@ export class EmployeesService {
     if (query.isActive !== undefined) {
       where.isActive = query.isActive === 'true';
     }
+
+    // Zawsze filtrujemy po aktywnym zakładzie. Nawet ADMIN będzie widział tylko
+    // pracowników przypisanych do aktualnego `facilityId` (zgodnie z wymaganiem).
+    if (!query.facilityId) {
+      throw new ForbiddenException('Brak aktywnego zakładu.');
+    }
+
+    const accessibleEmployeeIds = await this.prisma.$queryRaw<
+      { employeeId: string }[]
+    >`
+      SELECT DISTINCT "employeeId"
+      FROM "EmployeeFacilityAccess"
+      WHERE "facilityId" = ${query.facilityId}
+    `;
+
+    where.id = {
+      in: accessibleEmployeeIds.map((row) => row.employeeId),
+    };
 
     const [items, total] = await Promise.all([
       this.prisma.employee.findMany({
@@ -97,7 +127,29 @@ export class EmployeesService {
     };
   }
 
-  async getProfile(id: string) {
+  async getProfile(
+    id: string,
+    role: UserRole,
+    facilityId?: string,
+    requestingUserId?: string,
+  ) {
+    if (requestingUserId !== id) {
+      if (!facilityId) {
+        throw new ForbiddenException('Brak aktywnego zakładu.');
+      }
+
+      const accessRows = await this.prisma.$queryRaw<{ id: string }[]>`
+        SELECT 1 AS id
+        FROM "EmployeeFacilityAccess"
+        WHERE "employeeId" = ${id} AND "facilityId" = ${facilityId}
+        LIMIT 1
+      `;
+
+      if (accessRows.length === 0) {
+        throw new ForbiddenException('Brak dostępu do tego profilu.');
+      }
+    }
+
     const employee = await this.prisma.employee.findUnique({
       where: { id },
       include: {
@@ -126,15 +178,15 @@ export class EmployeesService {
       );
     }
 
-    // 1. Wyciągamy relacje, żeby zostały nam tylko dane samego pracownika
+    // --- ZMIANA TUTAJ: Nie przypisujemy hasła do zmiennej, tylko od razu usuwamy ---
     const { contracts, assignments, certifications, ...baseEmployee } =
       employee;
 
-    // 2. Bezpiecznie usuwamy wrażliwe dane z obiektu bazowego
     const safeEmployee = { ...baseEmployee } as Partial<typeof baseEmployee>;
     delete safeEmployee.passwordHash;
     delete safeEmployee.twoFactorSecret;
 
+    // Zwracamy odpowiedź ściśle zgodną z naszym standardem { data: ... } i DTO
     return {
       data: {
         ...safeEmployee,

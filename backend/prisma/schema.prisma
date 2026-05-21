@@ -7,19 +7,13 @@ datasource db {
 }
 
 // ==========================================
-// ENUMY (Typy wyliczeniowe)
+// ENUMY
 // ==========================================
-
 enum AbsenceType {
   HOLIDAY
   SICK_LEAVE
   UNEXCUSED
   SPECIAL
-}
-
-enum AnomalyStatus {
-  OPEN
-  RESOLVED
 }
 
 enum CertificationType {
@@ -58,90 +52,211 @@ enum UserRole {
 }
 
 // ==========================================
-// MODELE (Tabele)
+// MODELE (MULTI-TENANCY / ZAKŁADY)
 // ==========================================
 
-/// Centralna tabela osob (Pracownik + Użytkownik)
+model Facility {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String    @db.VarChar(500)
+  code        String?   @unique @db.VarChar(255) // Wewnętrzny kod zakładu, przydatny np. dla księgowości
+  address     String?   @db.VarChar(500)
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime? @updatedAt @db.Timestamp(6)
+
+  // Relacje - wszystko co jest podpięte pod dany zakład
+  employees   Employee[]
+  accessUsers EmployeeFacilityAccess[]
+  projects    Project[]
+  readers     Reader[]
+}
+
+// ==========================================
+// GŁÓWNE MODELE BIZNESOWE
+// ==========================================
+
 model Employee {
   id                 String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  firstName          String
-  lastName           String
+  facilityId         String    @db.Uuid // [NOWE] Przypisanie do zakładu
+  firstName          String    @db.VarChar(500)
+  lastName           String    @db.VarChar(500)
   pesel              String?   @unique @db.VarChar(11)
-  rfidCardId         String?   @unique
-  email              String?   @unique
-  passwordHash       String?
+  rfidCardId         String?   @unique @db.VarChar(500)
+  email              String?   @unique @db.VarChar(500)
+  passwordHash       String?   @db.VarChar(500)
   role               UserRole  @default(WORKER)
   isActive           Boolean   @default(true)
   isLoginEnabled     Boolean   @default(false)
   isTwoFactorEnabled Boolean   @default(false)
-  twoFactorSecret    String?
-  createdAt          DateTime? @default(now()) @db.Timestamptz
-  updatedAt          DateTime? @db.Timestamptz
+  twoFactorSecret    String?   @db.VarChar(500)
+  createdAt          DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt          DateTime? @updatedAt @db.Timestamp(6)
 
-  // Relacje zwrotne
-  absences         Absence[]
-  anomalies        Anomaly[]
-  contracts        Contract[]
-  documents        Document[]
-  assignments      EmployeeAssignment[]
-  certifications   EmployeeCertification[]
-  generatedExports PayrollExport[]         @relation("ExportGenerator")
-  timeEntries      TimeEntry[]
-  timeEvents       TimeEvent[]
+  // Relacje
+  facility           Facility                @relation(fields: [facilityId], references: [id])
+  facilityAccesses   EmployeeFacilityAccess[]
+  timeEvents         TimeEvent[]
+  certifications     EmployeeCertification[]
+  contracts          Contract[]
+  documents          Document[]
+  absences           Absence[]
+  timeEntries        TimeEntry[]
+  assignments        EmployeeAssignment[]
+  generatedExports   PayrollExport[]
 }
 
-/// Słownik/Katalog wszystkich możliwych szkoleń i uprawnień w firmie.
+model EmployeeFacilityAccess {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  employeeId String   @db.Uuid
+  facilityId  String   @db.Uuid
+  createdAt   DateTime @default(now()) @db.Timestamp(6)
+
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  facility   Facility @relation(fields: [facilityId], references: [id], onDelete: Cascade)
+
+  @@unique([employeeId, facilityId])
+  @@index([employeeId])
+  @@index([facilityId])
+}
+
+model Project {
+  id           String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  facilityId   String        @db.Uuid // [NOWE] Przypisanie projektu do zakładu
+  name         String        @db.VarChar(500)
+  internalCode String?       @unique @db.VarChar(500)
+  address      String?       @db.VarChar(500)
+  status       ProjectStatus @default(ACTIVE)
+  startDate    DateTime?     @db.Timestamp(6)
+  endDate      DateTime?     @db.Timestamp(6)
+  createdAt    DateTime      @default(now()) @db.Timestamp(6)
+  updatedAt    DateTime?     @updatedAt @db.Timestamp(6)
+
+  // Relacje
+  facility     Facility             @relation(fields: [facilityId], references: [id])
+  timeEntries  TimeEntry[]
+  assignments  EmployeeAssignment[]
+  readers      Reader[]
+}
+
+model Reader {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  facilityId   String   @db.Uuid // [NOWE] Przypisanie czytnika do zakładu (nadrzędne)
+  projectId    String   @db.Uuid
+  serialNumber String   @unique @db.VarChar(255)
+  locationName String?  @db.VarChar(500)
+  isActive     Boolean  @default(true)
+
+  // Relacje
+  facility     Facility @relation(fields: [facilityId], references: [id])
+  project      Project  @relation(fields: [projectId], references: [id])
+  timeEvents   TimeEvent[]
+}
+
+model Contract {
+  id           String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  employeeId   String       @db.Uuid
+  type         ContractType
+  salaryAmount Decimal      @db.Decimal(12, 2)
+  startDate    DateTime     @db.Timestamp(6)
+  endDate      DateTime?    @db.Timestamp(6)
+  isCurrent    Boolean      @default(true)
+  createdAt    DateTime     @default(now()) @db.Timestamp(6)
+  updatedAt    DateTime?    @updatedAt @db.Timestamp(6)
+
+  // Relacje
+  employee     Employee     @relation(fields: [employeeId], references: [id])
+  documents    Document[]
+}
+
+model EmployeeCertification {
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  employeeId        String   @db.Uuid
+  dictionaryId      String   @db.Uuid
+  certificateNumber String?  @db.VarChar(500)
+  issuedAt          DateTime @db.Timestamp(6)
+  expiresAt         DateTime @db.Timestamp(6)
+  createdAt         DateTime @default(now()) @db.Timestamp(6)
+  updatedAt         DateTime? @updatedAt @db.Timestamp(6)
+
+  // Relacje
+  employee          Employee                @relation(fields: [employeeId], references: [id])
+  dictionary        CertificationDictionary @relation(fields: [dictionaryId], references: [id])
+  documents         Document[]
+}
+
 model CertificationDictionary {
   id                    String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   type                  CertificationType
-  name                  String            @unique
-  description           String?
+  name                  String            @unique @db.VarChar(500)
+  description           String?           @db.Text
   defaultValidityMonths Int?
-  isActive              Boolean?          @default(true)
-  createdAt             DateTime?         @default(now()) @db.Timestamptz
-
-  // Relacje zwrotne
-  employeeCertifications EmployeeCertification[]
-}
-
-/// Błędy do ręcznej korekty przez biuro/brygadzistę
-model Anomaly {
-  id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  employeeId  String        @db.Uuid
-  timeEventId String?       @db.Uuid
-  description String
-  status      AnomalyStatus @default(OPEN)
-  resolvedAt  DateTime?     @db.Timestamptz
-  createdAt   DateTime?     @default(now()) @db.Timestamptz
+  isActive              Boolean           @default(true)
+  createdAt             DateTime          @default(now()) @db.Timestamp(6)
 
   // Relacje
-  employee  Employee   @relation(fields: [employeeId], references: [id])
-  timeEvent TimeEvent? @relation(fields: [timeEventId], references: [id])
-
-  // Indeksy optymalizacyjne
-  @@index([employeeId])
-  @@index([timeEventId])
+  certifications        EmployeeCertification[]
 }
 
-/// Relacja wiele-do-wielu z historią (Kto, Gdzie, Kiedy)
+model TimeEvent {
+  id         String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  employeeId String          @db.Uuid
+  readerId   String          @db.Uuid
+  action     TimeEventAction
+  
+  eventTime  DateTime        @db.Timestamp(6)
+  createdAt  DateTime        @default(now()) @db.Timestamp(6)
+
+  // Relacje
+  employee   Employee        @relation(fields: [employeeId], references: [id])
+  reader     Reader          @relation(fields: [readerId], references: [id])
+}
+
+model TimeEntry {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  payrollExportId String?  @db.Uuid
+  employeeId      String   @db.Uuid
+  projectId       String   @db.Uuid
+  startTime       DateTime @db.Timestamp(6)
+  endTime         DateTime @db.Timestamp(6)
+  calculatedHours Decimal  @db.Decimal(5, 2)
+  createdAt       DateTime @default(now()) @db.Timestamp(6)
+
+  // Relacje
+  payrollExport   PayrollExport? @relation(fields: [payrollExportId], references: [id])
+  employee        Employee       @relation(fields: [employeeId], references: [id])
+  project         Project        @relation(fields: [projectId], references: [id])
+}
+
 model EmployeeAssignment {
   id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   employeeId   String    @db.Uuid
   projectId    String    @db.Uuid
-  assignedAt   DateTime  @default(now()) @db.Timestamptz
-  unassignedAt DateTime? @db.Timestamptz
-  notes        String?
-  createdAt    DateTime? @default(now()) @db.Timestamptz
+  assignedAt   DateTime  @default(now()) @db.Timestamp(6)
+  unassignedAt DateTime? @db.Timestamp(6)
+  notes        String?   @db.Text
+  createdAt    DateTime  @default(now()) @db.Timestamp(6)
 
   // Relacje
-  employee Employee @relation(fields: [employeeId], references: [id])
-  project  Project  @relation(fields: [projectId], references: [id])
-
-  @@index([employeeId])
-  @@index([projectId])
+  employee     Employee  @relation(fields: [employeeId], references: [id])
+  project      Project   @relation(fields: [projectId], references: [id])
 }
 
-/// Rejestr urlopow i L4. Blokuje możliwość odbicia karty na czytniku, jeśli isApproved = true.
+model Document {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  employeeId      String   @db.Uuid
+  contractId      String?  @db.Uuid
+  certificationId String?  @db.Uuid
+  fileName        String   @db.VarChar(500)
+  fileUrl         String   @db.Text
+  createdAt       DateTime @default(now()) @db.Timestamp(6)
+
+  // Relacje
+  employee        Employee               @relation(fields: [employeeId], references: [id])
+  contract        Contract?              @relation(fields: [contractId], references: [id])
+  certification   EmployeeCertification? @relation(fields: [certificationId], references: [id])
+  absences        Absence[]
+}
+
 model Absence {
   id         String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   employeeId String      @db.Uuid
@@ -149,159 +264,24 @@ model Absence {
   startDate  DateTime    @db.Date
   endDate    DateTime    @db.Date
   documentId String?     @db.Uuid
-  isApproved Boolean?    @default(false)
-  createdAt  DateTime?   @default(now()) @db.Timestamptz
+  isApproved Boolean     @default(false)
+  createdAt  DateTime    @default(now()) @db.Timestamp(6)
 
   // Relacje
-  document Document? @relation(fields: [documentId], references: [id])
-  employee Employee  @relation(fields: [employeeId], references: [id])
-
-  @@index([employeeId])
+  employee   Employee    @relation(fields: [employeeId], references: [id])
+  document   Document?   @relation(fields: [documentId], references: [id])
 }
 
-/// Przetworzone dniowki (wygenerowane przez system na podstawie TimeEvent)
-model TimeEntry {
-  payrollExportId String?   @db.Uuid
-  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  employeeId      String    @db.Uuid
-  projectId       String    @db.Uuid
-  startTime       DateTime  @db.Timestamptz
-  endTime         DateTime  @db.Timestamptz
-  calculatedHours Decimal   @db.Decimal(5, 2)
-  createdAt       DateTime? @default(now()) @db.Timestamptz
-
-  // Relacje
-  employee      Employee       @relation(fields: [employeeId], references: [id])
-  payrollExport PayrollExport? @relation(fields: [payrollExportId], references: [id])
-  project       Project        @relation(fields: [projectId], references: [id])
-
-  @@index([employeeId])
-  @@index([projectId])
-  @@index([payrollExportId])
-}
-
-/// Zatwierdzone paczki rozliczeniowe. Chronią przed podwojnym wyeksportowaniem tych samych godzin.
 model PayrollExport {
-  id                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   periodMonth       Int
   periodYear        Int
-  generatedByUserId String    @db.Uuid
+  generatedByUserId String   @db.Uuid
   totalEmployees    Int
-  fileUrl           String?
-  createdAt         DateTime? @default(now()) @db.Timestamptz
+  fileUrl           String?  @db.Text
+  createdAt         DateTime @default(now()) @db.Timestamp(6)
 
   // Relacje
-  generatedBy Employee    @relation("ExportGenerator", fields: [generatedByUserId], references: [id])
-  timeEntries TimeEntry[]
-
-  @@index([generatedByUserId])
-}
-
-model Reader {
-  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  projectId    String   @db.Uuid
-  serialNumber String   @unique
-  locationName String?
-  isActive     Boolean? @default(true)
-
-  // Relacje
-  project    Project     @relation(fields: [projectId], references: [id])
-  timeEvents TimeEvent[]
-
-  @@index([projectId])
-}
-
-model Document {
-  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  employeeId      String    @db.Uuid
-  contractId      String?   @db.Uuid
-  certificationId String?   @db.Uuid
-  fileName        String
-  fileUrl         String
-  createdAt       DateTime? @default(now()) @db.Timestamptz
-
-  // Relacje
-  certification EmployeeCertification? @relation(fields: [certificationId], references: [id])
-  contract      Contract?              @relation(fields: [contractId], references: [id])
-  employee      Employee               @relation(fields: [employeeId], references: [id])
-  absences      Absence[]
-
-  @@index([employeeId])
-  @@index([contractId])
-  @@index([certificationId])
-}
-
-/// Tabela projektow/budow
-model Project {
-  id           String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name         String
-  internalCode String?       @unique
-  address      String?
-  status       ProjectStatus @default(ACTIVE)
-  startDate    DateTime?     @db.Timestamptz
-  endDate      DateTime?     @db.Timestamptz
-  createdAt    DateTime?     @default(now()) @db.Timestamptz
-  updatedAt    DateTime?     @db.Timestamptz
-
-  // Relacje zwrotne
-  assignments EmployeeAssignment[]
-  readers     Reader[]
-  timeEntries TimeEntry[]
-}
-
-/// Ewidencja konkretnych szkoleń przypisanych do pracownikow.
-model EmployeeCertification {
-  id                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  employeeId        String    @db.Uuid
-  dictionaryId      String    @db.Uuid
-  certificateNumber String?
-  issuedAt          DateTime  @db.Timestamptz
-  expiresAt         DateTime  @db.Timestamptz
-  createdAt         DateTime? @default(now()) @db.Timestamptz
-  updatedAt         DateTime? @db.Timestamptz
-
-  // Relacje
-  dictionary CertificationDictionary @relation(fields: [dictionaryId], references: [id])
-  employee   Employee                @relation(fields: [employeeId], references: [id])
-  documents  Document[]
-
-  @@index([employeeId])
-  @@index([dictionaryId])
-}
-
-/// Surowe zdarzenia z czytnikow (Log typu Append-Only. Tego NIE EDYTUJEMY)
-model TimeEvent {
-  id         String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  employeeId String          @db.Uuid
-  readerId   String          @db.Uuid
-  action     TimeEventAction
-  eventTime  DateTime        @db.Timestamptz
-  createdAt  DateTime?       @default(now()) @db.Timestamptz
-
-  // Relacje
-  employee  Employee  @relation(fields: [employeeId], references: [id])
-  reader    Reader    @relation(fields: [readerId], references: [id])
-  anomalies Anomaly[]
-
-  @@index([employeeId])
-  @@index([readerId])
-}
-
-/// Historia umow pracownikow. Pozwala śledzić zmiany stawek w czasie.
-model Contract {
-  id           String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  employeeId   String       @db.Uuid
-  type         ContractType
-  salaryAmount Decimal      @db.Decimal(12, 2)
-  startDate    DateTime     @db.Timestamptz
-  endDate      DateTime?    @db.Timestamptz
-  isCurrent    Boolean      @default(true)
-  createdAt    DateTime?    @default(now()) @db.Timestamptz
-  updatedAt    DateTime?    @db.Timestamptz
-
-  // Relacje
-  employee  Employee   @relation(fields: [employeeId], references: [id])
-  documents Document[]
-
-  @@index([employeeId])
+  generatedByUser   Employee    @relation(fields: [generatedByUserId], references: [id])
+  timeEntries       TimeEntry[]
 }

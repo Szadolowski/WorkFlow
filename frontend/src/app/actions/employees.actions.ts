@@ -16,6 +16,7 @@ export async function getEmployeesAction(
   limit = 10,
   role?: string,
   isActive?: string,
+  facilityId?: string,
 ) {
   // 1. Budowanie parametrów zapytania (URLSearchParams dba o czyszczenie undefined)
   const params = new URLSearchParams({
@@ -25,6 +26,7 @@ export async function getEmployeesAction(
 
   if (role) params.append("role", role);
   if (isActive) params.append("isActive", isActive);
+  if (facilityId) params.append("facilityId", facilityId);
 
   // 2. Strzał do NestJS przez nasz gotowy wrapper (który dodaje JWT)
   const res = await serverFetch(`/employees?${params.toString()}`);
@@ -36,8 +38,14 @@ export async function getEmployeesAction(
   return res.json();
 }
 
-export async function createEmployeeAction(data: CreateEmployeePayload) {
-  const res = await serverFetch("/employees", {
+export async function createEmployeeAction(
+  data: CreateEmployeePayload,
+  facilityId?: string,
+) {
+  const url = facilityId
+    ? `/employees?facilityId=${encodeURIComponent(facilityId)}`
+    : "/employees";
+  const res = await serverFetch(url, {
     method: "POST",
     body: JSON.stringify(data),
   });
@@ -54,8 +62,14 @@ export async function createEmployeeAction(data: CreateEmployeePayload) {
 // ==========================================
 // NOWE: Pobieranie profilu pracownika
 // ==========================================
-export async function getEmployeeProfileAction(id: string) {
-  const res = await serverFetch(`/employees/${id}/profile`);
+export async function getEmployeeProfileAction(
+  id: string,
+  facilityId?: string,
+) {
+  const url = facilityId
+    ? `/employees/${id}/profile?facilityId=${encodeURIComponent(facilityId)}`
+    : `/employees/${id}/profile`;
+  const res = await serverFetch(url);
 
   if (!res.ok) {
     if (res.status === 403)

@@ -2,6 +2,7 @@ import {
   Injectable,
   ConflictException,
   NotFoundException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import {
@@ -9,13 +10,17 @@ import {
   AssignEmployeesDto,
   CreateReaderDto,
 } from './dto/projects.dto';
-import { ProjectStatus } from '@prisma/client';
+import { ProjectStatus, UserRole } from '@prisma/client';
 
 @Injectable()
 export class ProjectsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createProject(dto: CreateProjectDto) {
+  async createProject(dto: CreateProjectDto, facilityId?: string) {
+    if (!facilityId) {
+      throw new ForbiddenException('Brak aktywnego zakładu.');
+    }
+
     const existingProject = await this.prisma.project.findUnique({
       where: { internalCode: dto.internalCode },
     });
@@ -27,15 +32,33 @@ export class ProjectsService {
     }
 
     return this.prisma.project.create({
-      data: dto,
+      data: {
+        ...dto,
+        facilityId,
+      },
     });
   }
 
-  async getActiveProjects() {
-    return this.prisma.project.findMany({
-      where: { status: ProjectStatus.ACTIVE },
-      orderBy: { createdAt: 'desc' },
-    });
+  async getActiveProjects(role: UserRole, facilityId?: string) {
+    if (role !== UserRole.ADMIN) {
+      if (!facilityId) {
+        throw new ForbiddenException('Brak aktywnego zakładu.');
+      }
+
+      return this.prisma.$queryRaw`
+        SELECT id, name, "internalCode", address, status, "startDate", "endDate", "createdAt", "updatedAt"
+        FROM "Project"
+        WHERE status = ${ProjectStatus.ACTIVE} AND "facilityId" = ${facilityId}
+        ORDER BY "createdAt" DESC
+      `;
+    }
+
+    return this.prisma.$queryRaw`
+      SELECT id, name, "internalCode", address, status, "startDate", "endDate", "createdAt", "updatedAt"
+      FROM "Project"
+      WHERE status = ${ProjectStatus.ACTIVE}
+      ORDER BY "createdAt" DESC
+    `;
   }
 
   async assignEmployees(projectId: string, dto: AssignEmployeesDto) {
@@ -71,10 +94,16 @@ export class ProjectsService {
   }
 
   async registerReader(projectId: string, dto: CreateReaderDto) {
-    const project = await this.prisma.project.findUnique({
-      where: { id: projectId },
-    });
-    if (!project) {
+    const projectRows = await this.prisma.$queryRaw<{ facilityId: string }[]>`
+      SELECT "facilityId"
+      FROM "Project"
+      WHERE id = ${projectId}
+      LIMIT 1
+    `;
+
+    const facilityId = projectRows[0]?.facilityId;
+
+    if (!facilityId) {
       throw new NotFoundException('Projekt nie istnieje.');
     }
 
@@ -91,14 +120,36 @@ export class ProjectsService {
     return this.prisma.reader.create({
       data: {
         projectId,
+        facilityId,
         serialNumber: dto.serialNumber,
         locationName: dto.locationName,
       },
     });
   }
 
-  async getProjectDetails(projectId: string) {
-    const project = await this.prisma.project.findUnique({
+  async getProjectDetails(
+    projectId: string,
+    role: UserRole,
+    facilityId?: string,
+  ) {
+    if (role !== UserRole.ADMIN) {
+      if (!facilityId) {
+        throw new ForbiddenException('Brak aktywnego zakładu.');
+      }
+
+      const accessRows = await this.prisma.$queryRaw<{ id: string }[]>`
+        SELECT 1 AS id
+        FROM "Project"
+        WHERE id = ${projectId} AND "facilityId" = ${facilityId}
+        LIMIT 1
+      `;
+
+      if (accessRows.length === 0) {
+        throw new NotFoundException('Projekt nie istnieje.');
+      }
+    }
+
+    const project = await this.prisma.project.findFirst({
       where: { id: projectId },
       include: {
         assignments: {

@@ -7,6 +7,7 @@ import {
   getEmployeeProfileAction,
   CreateEmployeePayload,
 } from "@/app/actions/employees.actions";
+import { useFacility } from "@/hooks/useFacility";
 
 /**
  * Hook do pobierania listy pracowników.
@@ -18,10 +19,13 @@ export function useEmployeesQuery(
   role?: string,
   isActive?: string,
 ) {
+  const { activeFacilityId } = useFacility();
+
   return useQuery({
     // queryKey gwarantuje, że przy zmianie np. strony, Query pobierze nowe dane
-    queryKey: ["employees", { page, limit, role, isActive }],
-    queryFn: () => getEmployeesAction(page, limit, role, isActive),
+    queryKey: ["employees", activeFacilityId, { page, limit, role, isActive }],
+    queryFn: () =>
+      getEmployeesAction(page, limit, role, isActive, activeFacilityId),
   });
 }
 
@@ -31,9 +35,11 @@ export function useEmployeesQuery(
  */
 export function useCreateEmployeeMutation() {
   const queryClient = useQueryClient();
+  const { activeFacilityId } = useFacility();
 
   return useMutation({
-    mutationFn: (data: CreateEmployeePayload) => createEmployeeAction(data),
+    mutationFn: (data: CreateEmployeePayload) =>
+      createEmployeeAction(data, activeFacilityId),
     onSuccess: () => {
       // Inwalidacja cache: Zmuszamy TanStack Query do ponownego pobrania listy z bazy,
       // aby nowy pracownik od razu pojawił się w tabeli.
@@ -48,9 +54,11 @@ export function useCreateEmployeeMutation() {
  * ==========================================
  */
 export function useEmployeeProfileQuery(employeeId: string) {
+  const { activeFacilityId } = useFacility();
+
   return useQuery({
-    queryKey: ["employeeProfile", employeeId],
-    queryFn: () => getEmployeeProfileAction(employeeId),
+    queryKey: ["employeeProfile", activeFacilityId, employeeId],
+    queryFn: () => getEmployeeProfileAction(employeeId, activeFacilityId),
     enabled: !!employeeId, // Uruchom zapytanie tylko wtedy, gdy posiadamy ID
     staleTime: 1000 * 60 * 5, // Trzymaj dane w cache przez 5 minut
   });

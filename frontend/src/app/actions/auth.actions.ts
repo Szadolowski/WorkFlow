@@ -53,5 +53,6 @@ export async function loginAction(prevState: ActionState, formData: FormData) {
 export async function logoutAction() {
   const cookieStore = await cookies();
   cookieStore.delete("access_token"); // Niszczymy bilet wstępu
+  cookieStore.delete("active_facility_id");
   redirect("/login"); // Wyrzucamy użytkownika do formularza
 }

@@ -4,6 +4,7 @@ import {
   IsBooleanString,
   IsInt,
   Min,
+  IsUUID,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { UserRole } from '@prisma/client';
@@ -16,6 +17,10 @@ export class GetEmployeesDto {
   @IsOptional()
   @IsBooleanString()
   isActive?: string;
+
+  @IsOptional()
+  @IsUUID('4')
+  facilityId?: string;
 
   @IsOptional()
   @Type(() => Number)

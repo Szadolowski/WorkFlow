@@ -5,7 +5,6 @@ import {
   Body,
   Query,
   UseGuards,
-  ForbiddenException,
   Param,
   Req,
 } from '@nestjs/common';
@@ -24,6 +23,19 @@ import { RolesGuard } from '@/auth/guards/roles.guard';
 import { Roles } from '@/auth/decorators/roles.decorator';
 import { UserRole } from '@prisma/client';
 
+type UserRoleRequest = {
+  user: {
+    role: UserRole;
+  };
+};
+
+type UserProfileRequest = {
+  user: {
+    role: UserRole;
+    sub: string;
+  };
+};
+
 @ApiTags('Employees')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -33,17 +45,21 @@ export class EmployeesController {
 
   @Roles(UserRole.ADMIN, UserRole.HR)
   @Post()
-  create(@Body() createEmployeeDto: CreateEmployeeDto) {
-    return this.employeesService.create(createEmployeeDto);
+  create(
+    @Body() createEmployeeDto: CreateEmployeeDto,
+    @Query('facilityId') facilityId: string | undefined,
+  ) {
+    return this.employeesService.create(createEmployeeDto, facilityId);
   }
 
   @Roles(UserRole.ADMIN, UserRole.HR, UserRole.OFFICE, UserRole.ACCOUNTING)
   @Get()
-  findAll(@Query() query: GetEmployeesDto) {
-    return this.employeesService.findAll(query);
+  findAll(@Query() query: GetEmployeesDto, @Req() req: UserRoleRequest) {
+    return this.employeesService.findAll(query, req.user.role);
   }
 
   @Get(':id/profile')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({
     summary:
       'Pobierz pełny profil pracownika (dla HR, Biura lub samego pracownika)',
@@ -54,28 +70,18 @@ export class EmployeesController {
     description: 'Brak uprawnień do przeglądania tego profilu.',
   })
   @ApiResponse({ status: 404, description: 'Pracownik nie istnieje.' })
-  // TUTAJ ZMIANA: Zastępujemy "req: any" dokładnym typem obiektu user
   async getProfile(
     @Param('id') id: string,
-    @Req() req: { user: { id: string; role: UserRole } },
+    @Req() req: UserProfileRequest,
+    @Query('facilityId') facilityId: string | undefined,
   ) {
-    const user = req.user;
+    const user = req.user; // Obiekt wstrzyknięty przez JwtStrategy
 
-    const elevatedRoles: UserRole[] = [
-      UserRole.ADMIN,
-      UserRole.HR,
-      UserRole.OFFICE,
-    ];
-
-    const hasElevatedAccess = elevatedRoles.includes(user.role);
-    const isProfileOwner = user.id === id;
-
-    if (!hasElevatedAccess && !isProfileOwner) {
-      throw new ForbiddenException(
-        'Brak uprawnień do przeglądania tego profilu.',
-      );
-    }
-
-    return this.employeesService.getProfile(id);
+    return this.employeesService.getProfile(
+      id,
+      user.role,
+      facilityId,
+      user.sub,
+    );
   }
 }

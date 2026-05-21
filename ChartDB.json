@@ -1,0 +1,2458 @@
+{
+  "id": "0",
+  "name": "Diagram 1",
+  "createdAt": "2026-05-10T13:45:37.177Z",
+  "updatedAt": "2026-05-21T10:20:15.946Z",
+  "databaseType": "postgresql",
+  "tables": [
+    {
+      "id": "1",
+      "name": "Facility",
+      "schema": "public",
+      "order": 0,
+      "fields": [
+        {
+          "id": "2",
+          "name": "id",
+          "type": {
+            "name": "uuid",
+            "id": "uuid",
+            "usageLevel": 2
+          },
+          "nullable": false,
+          "primaryKey": true,
+          "unique": true,
+          "createdAt": 1779358753834,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "id": "3",
+          "name": "name",
+          "type": {
+            "name": "varchar",
+            "id": "varchar",
+            "fieldAttributes": {
+              "hasCharMaxLength": true
+            },
+            "usageLevel": 1
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1779358753834,
+          "characterMaximumLength": "500"
+        },
+        {
+          "id": "4",
+          "name": "code",
+          "type": {
+            "name": "varchar",
+            "id": "varchar",
+            "fieldAttributes": {
+              "hasCharMaxLength": true
+            },
+            "usageLevel": 1
+          },
+          "nullable": true,
+          "primaryKey": false,
+          "unique": true,
+          "createdAt": 1779358753834,
+          "characterMaximumLength": "255",
+          "comments": "Wewnętrzny kod zakładu, przydatny np. dla księgowości"
+        },
+        {
+          "id": "5",
+          "name": "address",
+          "type": {
+            "name": "varchar",
+            "id": "varchar",
+            "fieldAttributes": {
+              "hasCharMaxLength": true
+            },
+            "usageLevel": 1
+          },
+          "nullable": true,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1779358753834,
+          "characterMaximumLength": "500"
+        },
+        {
+          "id": "6",
+          "name": "isActive",
+          "type": {
+            "name": "boolean",
+            "id": "boolean",
+            "usageLevel": 1
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1779358753834,
+          "default": "true"
+        },
+        {
+          "id": "7",
+          "name": "createdAt",
+          "type": {
+            "name": "timestamp",
+            "id": "timestamp",
+            "usageLevel": 1
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1779358753834,
+          "default": "now()"
+        },
+        {
+          "id": "8",
+          "name": "updatedAt",
+          "type": {
+            "name": "timestamp",
+            "id": "timestamp",
+            "usageLevel": 1
+          },
+          "nullable": true,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1779358753834
+        }
+      ],
+      "indexes": [
+        {
+          "id": "9",
+          "name": "",
+          "fieldIds": [
+            "2"
+          ],
+          "unique": true,
+          "isPrimaryKey": true,
+          "createdAt": 1779358753835
+        }
+      ],
+      "x": 653.848853106163,
+      "y": -1056.040590517687,
+      "color": "#8eb7ff",
+      "isView": false,
+      "createdAt": 1779358753835
+    },
+    {
+      "id": "10",
+      "name": "Employee",
+      "schema": "public",
+      "x": -363.77197596249505,
+      "y": -578.8142638361575,
+      "fields": [
+        {
+          "id": "11",
+          "name": "id",
+          "type": {
+            "name": "uuid",
+            "id": "uuid",
+            "usageLevel": 2
+          },
+          "nullable": false,
+          "primaryKey": true,
+          "unique": true,
+          "createdAt": 1777368231573,
+          "comments": "Unikalny identyfikator osoby",
+          "default": "gen_random_uuid()"
+        },
+        {
+          "id": "12",
+          "name": "facilityId",
+          "type": {
+            "name": "uuid",
+            "id": "uuid",
+            "usageLevel": 2
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1779358753836,
+          "comments": "[NOWE] Przypisanie do zakładu"
+        },
+        {
+          "id": "13",
+          "name": "firstName",
+          "type": {
+            "name": "varchar",
+            "id": "varchar",
+            "fieldAttributes": {
+              "hasCharMaxLength": true
+            },
+            "usageLevel": 1
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777368231573,
+          "characterMaximumLength": "500",
+          "comments": "Imię"
+        },
+        {
+          "id": "14",
+          "name": "lastName",
+          "type": {
+            "name": "varchar",
+            "id": "varchar",
+            "fieldAttributes": {
+              "hasCharMaxLength": true
+            },
+            "usageLevel": 1
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777368231573,
+          "characterMaximumLength": "500",
+          "comments": "Nazwisko"
+        },
+        {
+          "id": "15",
+          "name": "pesel",
+          "type": {
+            "name": "varchar",
+            "id": "varchar",
+            "fieldAttributes": {
+              "hasCharMaxLength": true
+            },
+            "usageLevel": 1
+          },
+          "nullable": true,
+          "primaryKey": false,
+          "unique": true,
+          "createdAt": 1777368231573,
+          "characterMaximumLength": "11",
+          "comments": "Numer PESEL"
+        },
+        {
+          "id": "16",
+          "name": "rfidCardId",
+          "type": {
+            "name": "varchar",
+            "id": "varchar",
+            "fieldAttributes": {
+              "hasCharMaxLength": true
+            },
+            "usageLevel": 1
+          },
+          "nullable": true,
+          "primaryKey": false,
+          "unique": true,
+          "createdAt": 1777368231573,
+          "characterMaximumLength": "500",
+          "comments": "ID karty zbliżeniowej"
+        },
+        {
+          "id": "17",
+          "name": "email",
+          "type": {
+            "name": "varchar",
+            "id": "varchar",
+            "fieldAttributes": {
+              "hasCharMaxLength": true
+            },
+            "usageLevel": 1
+          },
+          "nullable": true,
+          "primaryKey": false,
+          "unique": true,
+          "createdAt": 1777368231573,
+          "characterMaximumLength": "500",
+          "comments": "Login - jeśli brak, osoba się nie zaloguje"
+        },
+        {
+          "id": "18",
+          "name": "passwordHash",
+          "type": {
+            "name": "varchar",
+            "id": "varchar",
+            "fieldAttributes": {
+              "hasCharMaxLength": true
+            },
+            "usageLevel": 1
+          },
+          "nullable": true,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777368231573,
+          "characterMaximumLength": "500",
+          "comments": "Hasło - jeśli brak, osoba się nie zaloguje"
+        },
+        {
+          "id": "19",
+          "name": "role",
+          "type": {
+            "id": "UserRole",
+            "name": "UserRole"
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777368231573,
+          "comments": "Rola systemowa",
+          "default": "WORKER"
+        },
+        {
+          "id": "20",
+          "name": "isActive",
+          "type": {
+            "name": "boolean",
+            "id": "boolean",
+            "usageLevel": 1
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777368231573,
+          "comments": "Czy osoba nadal pracuje w firmie",
+          "default": "true"
+        },
+        {
+          "id": "21",
+          "name": "isLoginEnabled",
+          "type": {
+            "name": "boolean",
+            "id": "boolean",
+            "usageLevel": 1
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777368231573,
+          "comments": "Czy zezwolić na logowanie do systemu",
+          "default": "false"
+        },
+        {
+          "id": "22",
+          "name": "isTwoFactorEnabled",
+          "type": {
+            "name": "boolean",
+            "id": "boolean",
+            "usageLevel": 1
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777368231573,
+          "comments": "Wymog 2FA",
+          "default": "false"
+        },
+        {
+          "id": "23",
+          "name": "twoFactorSecret",
+          "type": {
+            "name": "varchar",
+            "id": "varchar",
+            "fieldAttributes": {
+              "hasCharMaxLength": true
+            },
+            "usageLevel": 1
+          },
+          "nullable": true,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777368231573,
+          "characterMaximumLength": "500",
+          "comments": "Klucz do 2FA"
+        },
+        {
+          "id": "24",
+          "name": "createdAt",
+          "type": {
+            "name": "timestamp",
+            "id": "timestamp",
+            "usageLevel": 1
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777368231573,
+          "default": "now()"
+        },
+        {
+          "id": "25",
+          "name": "updatedAt",
+          "type": {
+            "name": "timestamp",
+            "id": "timestamp",
+            "usageLevel": 1
+          },
+          "nullable": true,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777368231573
+        }
+      ],
+      "indexes": [
+        {
+          "id": "26",
+          "name": "",
+          "fieldIds": [
+            "11"
+          ],
+          "unique": true,
+          "isPrimaryKey": true,
+          "createdAt": 1777368231573
+        }
+      ],
+      "color": "#ff6363",
+      "isView": false,
+      "createdAt": 1777368231573,
+      "comments": "Centralna tabela osob (Pracownik + Użytkownik)",
+      "order": 0,
+      "expanded": true,
+      "parentAreaId": "rxngtgwa8iz4fh5mbdigw7hqz",
+      "diagramId": "oy3977o2vhgw"
+    },
+    {
+      "id": "27",
+      "name": "EmployeeFacilityAccess",
+      "schema": "public",
+      "order": 1,
+      "fields": [
+        {
+          "id": "28",
+          "name": "id",
+          "type": {
+            "name": "uuid",
+            "id": "uuid",
+            "usageLevel": 2
+          },
+          "nullable": false,
+          "primaryKey": true,
+          "unique": true,
+          "createdAt": 1779358753835,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "id": "29",
+          "name": "employeeId",
+          "type": {
+            "name": "uuid",
+            "id": "uuid",
+            "usageLevel": 2
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1779358753835
+        },
+        {
+          "id": "30",
+          "name": "facilityId",
+          "type": {
+            "name": "uuid",
+            "id": "uuid",
+            "usageLevel": 2
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1779358753835
+        },
+        {
+          "id": "31",
+          "name": "createdAt",
+          "type": {
+            "name": "timestamp",
+            "id": "timestamp",
+            "usageLevel": 1
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1779358753835,
+          "default": "now()"
+        }
+      ],
+      "indexes": [
+        {
+          "id": "32",
+          "name": "",
+          "fieldIds": [
+            "28"
+          ],
+          "unique": true,
+          "isPrimaryKey": true,
+          "createdAt": 1779358753836
+        },
+        {
+          "id": "33",
+          "name": "idx_EmployeeFacilityAccess_employeeId_facilityId",
+          "fieldIds": [
+            "29",
+            "30"
+          ],
+          "unique": true,
+          "createdAt": 1779358753835
+        }
+      ],
+      "x": 651.6304904226465,
+      "y": -1281.2679634681404,
+      "color": "#8eb7ff",
+      "isView": false,
+      "createdAt": 1779358753835
+    },
+    {
+      "id": "34",
+      "name": "Project",
+      "schema": "public",
+      "x": 7.081919475756678,
+      "y": -436.5053748988724,
+      "fields": [
+        {
+          "id": "35",
+          "name": "id",
+          "type": {
+            "name": "uuid",
+            "id": "uuid",
+            "usageLevel": 2
+          },
+          "nullable": false,
+          "primaryKey": true,
+          "unique": true,
+          "createdAt": 1777368622304,
+          "comments": "ID projektu/budowy",
+          "default": "gen_random_uuid()"
+        },
+        {
+          "id": "36",
+          "name": "facilityId",
+          "type": {
+            "name": "uuid",
+            "id": "uuid",
+            "usageLevel": 2
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1779358753836,
+          "comments": "[NOWE] Przypisanie projektu do zakładu"
+        },
+        {
+          "id": "37",
+          "name": "name",
+          "type": {
+            "name": "varchar",
+            "id": "varchar",
+            "fieldAttributes": {
+              "hasCharMaxLength": true
+            },
+            "usageLevel": 1
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777368622304,
+          "characterMaximumLength": "500",
+          "comments": "Nazwa budowy/kontraktu"
+        },
+        {
+          "id": "38",
+          "name": "internalCode",
+          "type": {
+            "name": "varchar",
+            "id": "varchar",
+            "fieldAttributes": {
+              "hasCharMaxLength": true
+            },
+            "usageLevel": 1
+          },
+          "nullable": true,
+          "primaryKey": false,
+          "unique": true,
+          "createdAt": 1777368622304,
+          "characterMaximumLength": "500",
+          "comments": "Wewnętrzny kod projektu (np. B-2024-01)"
+        },
+        {
+          "id": "39",
+          "name": "address",
+          "type": {
+            "name": "varchar",
+            "id": "varchar",
+            "fieldAttributes": {
+              "hasCharMaxLength": true
+            },
+            "usageLevel": 1
+          },
+          "nullable": true,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777368622304,
+          "characterMaximumLength": "500",
+          "comments": "Adres realizacji"
+        },
+        {
+          "id": "40",
+          "name": "status",
+          "type": {
+            "id": "ProjectStatus",
+            "name": "ProjectStatus"
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777368622305,
+          "comments": "Status realizacji",
+          "default": "ACTIVE"
+        },
+        {
+          "id": "41",
+          "name": "startDate",
+          "type": {
+            "name": "timestamp",
+            "id": "timestamp",
+            "usageLevel": 1
+          },
+          "nullable": true,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777368622305,
+          "comments": "Data planowanego/faktycznego rozpoczęcia"
+        },
+        {
+          "id": "42",
+          "name": "endDate",
+          "type": {
+            "name": "timestamp",
+            "id": "timestamp",
+            "usageLevel": 1
+          },
+          "nullable": true,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777368622305,
+          "comments": "Data zakończenia"
+        },
+        {
+          "id": "43",
+          "name": "createdAt",
+          "type": {
+            "name": "timestamp",
+            "id": "timestamp",
+            "usageLevel": 1
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777368622305,
+          "default": "now()"
+        },
+        {
+          "id": "44",
+          "name": "updatedAt",
+          "type": {
+            "name": "timestamp",
+            "id": "timestamp",
+            "usageLevel": 1
+          },
+          "nullable": true,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777368622305
+        }
+      ],
+      "indexes": [
+        {
+          "id": "45",
+          "name": "",
+          "fieldIds": [
+            "35"
+          ],
+          "unique": true,
+          "isPrimaryKey": true,
+          "createdAt": 1777368622305
+        }
+      ],
+      "color": "#ff6363",
+      "isView": false,
+      "createdAt": 1777368622305,
+      "comments": "Tabela projektow/budow",
+      "order": 1,
+      "parentAreaId": "rxngtgwa8iz4fh5mbdigw7hqz",
+      "diagramId": "oy3977o2vhgw"
+    },
+    {
+      "id": "46",
+      "name": "EmployeeAssignment",
+      "schema": "public",
+      "x": 6.984474232781906,
+      "y": -716.5005989293991,
+      "fields": [
+        {
+          "id": "47",
+          "name": "id",
+          "type": {
+            "name": "uuid",
+            "id": "uuid",
+            "usageLevel": 2
+          },
+          "nullable": false,
+          "primaryKey": true,
+          "unique": true,
+          "createdAt": 1777368622305,
+          "comments": "ID przypisania",
+          "default": "gen_random_uuid()"
+        },
+        {
+          "id": "48",
+          "name": "employeeId",
+          "type": {
+            "name": "uuid",
+            "id": "uuid",
+            "usageLevel": 2
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777368622305,
+          "comments": "Powiązanie z pracownikiem"
+        },
+        {
+          "id": "49",
+          "name": "projectId",
+          "type": {
+            "name": "uuid",
+            "id": "uuid",
+            "usageLevel": 2
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777368622305,
+          "comments": "Powiązanie z projektem"
+        },
+        {
+          "id": "50",
+          "name": "assignedAt",
+          "type": {
+            "name": "timestamp",
+            "id": "timestamp",
+            "usageLevel": 1
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777368622305,
+          "comments": "Od kiedy pracownik jest na tym projekcie",
+          "default": "now()"
+        },
+        {
+          "id": "51",
+          "name": "unassignedAt",
+          "type": {
+            "name": "timestamp",
+            "id": "timestamp",
+            "usageLevel": 1
+          },
+          "nullable": true,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777368622305,
+          "comments": "Do kiedy pracownik był na tym projekcie (NULL = nadal jest)"
+        },
+        {
+          "id": "52",
+          "name": "notes",
+          "type": {
+            "name": "text",
+            "id": "text",
+            "usageLevel": 1
+          },
+          "nullable": true,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777368622305,
+          "comments": "Dodatkowe uwagi (np. pełniona funkcja na danej budowie)"
+        },
+        {
+          "id": "53",
+          "name": "createdAt",
+          "type": {
+            "name": "timestamp",
+            "id": "timestamp",
+            "usageLevel": 1
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777368622305,
+          "default": "now()"
+        }
+      ],
+      "indexes": [
+        {
+          "id": "54",
+          "name": "",
+          "fieldIds": [
+            "47"
+          ],
+          "unique": true,
+          "isPrimaryKey": true,
+          "createdAt": 1777368622305
+        }
+      ],
+      "color": "#ff6363",
+      "isView": false,
+      "createdAt": 1777368622305,
+      "comments": "Relacja wiele-do-wielu z historią (Kto, Gdzie, Kiedy)",
+      "order": 2,
+      "parentAreaId": "rxngtgwa8iz4fh5mbdigw7hqz",
+      "diagramId": "oy3977o2vhgw"
+    },
+    {
+      "id": "55",
+      "name": "Contract",
+      "schema": "public",
+      "x": 14.659787766986682,
+      "y": 407.1299347220859,
+      "fields": [
+        {
+          "id": "56",
+          "name": "id",
+          "type": {
+            "name": "uuid",
+            "id": "uuid",
+            "usageLevel": 2
+          },
+          "nullable": false,
+          "primaryKey": true,
+          "unique": true,
+          "createdAt": 1777369102257,
+          "comments": "ID umowy",
+          "default": "gen_random_uuid()"
+        },
+        {
+          "id": "57",
+          "name": "employeeId",
+          "type": {
+            "name": "uuid",
+            "id": "uuid",
+            "usageLevel": 2
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777369102257,
+          "comments": "Powiązanie z pracownikiem"
+        },
+        {
+          "id": "58",
+          "name": "type",
+          "type": {
+            "id": "ContractType",
+            "name": "ContractType"
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777369102257,
+          "comments": "Rodzaj zawartej umowy"
+        },
+        {
+          "id": "59",
+          "name": "salaryAmount",
+          "type": {
+            "name": "numeric",
+            "id": "numeric",
+            "usageLevel": 2,
+            "fieldAttributes": {
+              "precision": {
+                "max": 131072,
+                "min": 0,
+                "default": 10
+              },
+              "scale": {
+                "max": 16383,
+                "min": 0,
+                "default": 2
+              }
+            }
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777369102257,
+          "precision": 12,
+          "scale": 2,
+          "comments": "Kwota wynagrodzenia (brutto)"
+        },
+        {
+          "id": "60",
+          "name": "startDate",
+          "type": {
+            "name": "timestamp",
+            "id": "timestamp",
+            "usageLevel": 1
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777369102257,
+          "comments": "Data rozpoczęcia obowiązywania umowy"
+        },
+        {
+          "id": "61",
+          "name": "endDate",
+          "type": {
+            "name": "timestamp",
+            "id": "timestamp",
+            "usageLevel": 1
+          },
+          "nullable": true,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777369102257,
+          "comments": "Data zakończenia (NULL dla umow na czas nieokreślony)"
+        },
+        {
+          "id": "62",
+          "name": "isCurrent",
+          "type": {
+            "name": "boolean",
+            "id": "boolean",
+            "usageLevel": 1
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777369102257,
+          "comments": "Flaga oznaczająca obecnie trwającą umowę",
+          "default": "true"
+        },
+        {
+          "id": "63",
+          "name": "createdAt",
+          "type": {
+            "name": "timestamp",
+            "id": "timestamp",
+            "usageLevel": 1
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777369102257,
+          "default": "now()"
+        },
+        {
+          "id": "64",
+          "name": "updatedAt",
+          "type": {
+            "name": "timestamp",
+            "id": "timestamp",
+            "usageLevel": 1
+          },
+          "nullable": true,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777369102257
+        }
+      ],
+      "indexes": [
+        {
+          "id": "65",
+          "name": "",
+          "fieldIds": [
+            "56"
+          ],
+          "unique": true,
+          "isPrimaryKey": true,
+          "createdAt": 1777369102257
+        }
+      ],
+      "color": "#8a61f5",
+      "isView": false,
+      "createdAt": 1777369102257,
+      "comments": "Historia umow pracownikow. Pozwala śledzić zmiany stawek w czasie.",
+      "order": 3,
+      "parentAreaId": "4slp5fbuduvzd1s928zr6pz4e",
+      "diagramId": "oy3977o2vhgw"
+    },
+    {
+      "id": "66",
+      "name": "CertificationDictionary",
+      "schema": "public",
+      "x": 362.2367887462071,
+      "y": 814.9201241840212,
+      "fields": [
+        {
+          "id": "67",
+          "name": "id",
+          "type": {
+            "name": "uuid",
+            "id": "uuid",
+            "usageLevel": 2
+          },
+          "nullable": false,
+          "primaryKey": true,
+          "unique": true,
+          "createdAt": 1777369834739,
+          "comments": "ID w słowniku",
+          "default": "gen_random_uuid()"
+        },
+        {
+          "id": "68",
+          "name": "type",
+          "type": {
+            "id": "CertificationType",
+            "name": "CertificationType"
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777369834739,
+          "comments": "Kategoria (BHP, UDT, Lekarskie)"
+        },
+        {
+          "id": "69",
+          "name": "name",
+          "type": {
+            "name": "varchar",
+            "id": "varchar",
+            "fieldAttributes": {
+              "hasCharMaxLength": true
+            },
+            "usageLevel": 1
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": true,
+          "createdAt": 1777369834739,
+          "characterMaximumLength": "500",
+          "comments": "Oficjalna nazwa (np. \"Wozki widłowe kat. II WJO\")"
+        },
+        {
+          "id": "70",
+          "name": "description",
+          "type": {
+            "name": "text",
+            "id": "text",
+            "usageLevel": 1
+          },
+          "nullable": true,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777369834739,
+          "comments": "Opis, na co dokładnie pozwala to uprawnienie"
+        },
+        {
+          "id": "71",
+          "name": "defaultValidityMonths",
+          "type": {
+            "name": "int",
+            "id": "int",
+            "usageLevel": 1
+          },
+          "nullable": true,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777369834739,
+          "comments": "Domyślna ważność w miesiącach (pomaga wyliczać datę końcową)"
+        },
+        {
+          "id": "72",
+          "name": "isActive",
+          "type": {
+            "name": "boolean",
+            "id": "boolean",
+            "usageLevel": 1
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777369834739,
+          "comments": "Czy szkolenie jest nadal oferowane/wymagane w firmie",
+          "default": "true"
+        },
+        {
+          "id": "73",
+          "name": "createdAt",
+          "type": {
+            "name": "timestamp",
+            "id": "timestamp",
+            "usageLevel": 1
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777369834739,
+          "default": "now()"
+        }
+      ],
+      "indexes": [
+        {
+          "id": "74",
+          "name": "",
+          "fieldIds": [
+            "67"
+          ],
+          "unique": true,
+          "isPrimaryKey": true,
+          "createdAt": 1777369834739
+        }
+      ],
+      "color": "#8a61f5",
+      "isView": false,
+      "createdAt": 1777369834739,
+      "comments": "Słownik/Katalog wszystkich możliwych szkoleń i uprawnień w firmie.",
+      "order": 4,
+      "parentAreaId": "4slp5fbuduvzd1s928zr6pz4e",
+      "diagramId": "oy3977o2vhgw"
+    },
+    {
+      "id": "75",
+      "name": "EmployeeCertification",
+      "schema": "public",
+      "x": 39.736788746209214,
+      "y": 751.1701241840215,
+      "fields": [
+        {
+          "id": "76",
+          "name": "id",
+          "type": {
+            "name": "uuid",
+            "id": "uuid",
+            "usageLevel": 2
+          },
+          "nullable": false,
+          "primaryKey": true,
+          "unique": true,
+          "createdAt": 1777369834739,
+          "comments": "ID zdanego szkolenia",
+          "default": "gen_random_uuid()"
+        },
+        {
+          "id": "77",
+          "name": "employeeId",
+          "type": {
+            "name": "uuid",
+            "id": "uuid",
+            "usageLevel": 2
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777369834739,
+          "comments": "Kto zdał"
+        },
+        {
+          "id": "78",
+          "name": "dictionaryId",
+          "type": {
+            "name": "uuid",
+            "id": "uuid",
+            "usageLevel": 2
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777369834739,
+          "comments": "Jakie szkolenie ze słownika"
+        },
+        {
+          "id": "79",
+          "name": "certificateNumber",
+          "type": {
+            "name": "varchar",
+            "id": "varchar",
+            "fieldAttributes": {
+              "hasCharMaxLength": true
+            },
+            "usageLevel": 1
+          },
+          "nullable": true,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777369834739,
+          "characterMaximumLength": "500",
+          "comments": "Numer dokumentu (np. numer zaświadczenia UDT)"
+        },
+        {
+          "id": "80",
+          "name": "issuedAt",
+          "type": {
+            "name": "timestamp",
+            "id": "timestamp",
+            "usageLevel": 1
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777369834739,
+          "comments": "Data wydania (zdania egzaminu/badania)"
+        },
+        {
+          "id": "81",
+          "name": "expiresAt",
+          "type": {
+            "name": "timestamp",
+            "id": "timestamp",
+            "usageLevel": 1
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777369834739,
+          "comments": "Data wygaśnięcia (wyliczana lub wpisywana)"
+        },
+        {
+          "id": "82",
+          "name": "createdAt",
+          "type": {
+            "name": "timestamp",
+            "id": "timestamp",
+            "usageLevel": 1
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777369834739,
+          "default": "now()"
+        },
+        {
+          "id": "83",
+          "name": "updatedAt",
+          "type": {
+            "name": "timestamp",
+            "id": "timestamp",
+            "usageLevel": 1
+          },
+          "nullable": true,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777369834739
+        }
+      ],
+      "indexes": [
+        {
+          "id": "84",
+          "name": "",
+          "fieldIds": [
+            "76"
+          ],
+          "unique": true,
+          "isPrimaryKey": true,
+          "createdAt": 1777369834739
+        }
+      ],
+      "color": "#8a61f5",
+      "isView": false,
+      "createdAt": 1777369834739,
+      "comments": "Ewidencja konkretnych szkoleń przypisanych do pracownikow.",
+      "order": 5,
+      "parentAreaId": "4slp5fbuduvzd1s928zr6pz4e",
+      "diagramId": "oy3977o2vhgw"
+    },
+    {
+      "id": "85",
+      "name": "Document",
+      "schema": "public",
+      "x": 35.98678874621024,
+      "y": 1087.42012418402,
+      "fields": [
+        {
+          "id": "86",
+          "name": "id",
+          "type": {
+            "name": "uuid",
+            "id": "uuid",
+            "usageLevel": 2
+          },
+          "nullable": false,
+          "primaryKey": true,
+          "unique": true,
+          "createdAt": 1777369915639,
+          "comments": "ID pliku",
+          "default": "gen_random_uuid()"
+        },
+        {
+          "id": "87",
+          "name": "employeeId",
+          "type": {
+            "name": "uuid",
+            "id": "uuid",
+            "usageLevel": 2
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777369915639,
+          "comments": "Właściciel dokumentu"
+        },
+        {
+          "id": "88",
+          "name": "contractId",
+          "type": {
+            "name": "uuid",
+            "id": "uuid",
+            "usageLevel": 2
+          },
+          "nullable": true,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777369915639,
+          "comments": "Opcjonalnie: Skan konkretnej umowy"
+        },
+        {
+          "id": "89",
+          "name": "certificationId",
+          "type": {
+            "name": "uuid",
+            "id": "uuid",
+            "usageLevel": 2
+          },
+          "nullable": true,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777369915639,
+          "comments": "Opcjonalnie: Skan certyfikatu"
+        },
+        {
+          "id": "90",
+          "name": "fileName",
+          "type": {
+            "name": "varchar",
+            "id": "varchar",
+            "fieldAttributes": {
+              "hasCharMaxLength": true
+            },
+            "usageLevel": 1
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777369915639,
+          "characterMaximumLength": "500",
+          "comments": "Oryginalna nazwa pliku"
+        },
+        {
+          "id": "91",
+          "name": "fileUrl",
+          "type": {
+            "name": "text",
+            "id": "text",
+            "usageLevel": 1
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777369915639,
+          "comments": "Link do MinIO"
+        },
+        {
+          "id": "92",
+          "name": "createdAt",
+          "type": {
+            "name": "timestamp",
+            "id": "timestamp",
+            "usageLevel": 1
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777369915639,
+          "default": "now()"
+        }
+      ],
+      "indexes": [
+        {
+          "id": "93",
+          "name": "",
+          "fieldIds": [
+            "86"
+          ],
+          "unique": true,
+          "isPrimaryKey": true,
+          "createdAt": 1777369915639
+        }
+      ],
+      "color": "#8a61f5",
+      "isView": false,
+      "createdAt": 1777369915639,
+      "order": 6,
+      "parentAreaId": "4slp5fbuduvzd1s928zr6pz4e",
+      "diagramId": "oy3977o2vhgw"
+    },
+    {
+      "id": "94",
+      "name": "Reader",
+      "schema": "public",
+      "x": 1144.4277154862812,
+      "y": -452.3238998634865,
+      "fields": [
+        {
+          "id": "95",
+          "name": "id",
+          "type": {
+            "name": "uuid",
+            "id": "uuid",
+            "usageLevel": 2
+          },
+          "nullable": false,
+          "primaryKey": true,
+          "unique": true,
+          "createdAt": 1777370030009,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "id": "96",
+          "name": "facilityId",
+          "type": {
+            "name": "uuid",
+            "id": "uuid",
+            "usageLevel": 2
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1779358753837,
+          "comments": "[NOWE] Przypisanie czytnika do zakładu (nadrzędne)"
+        },
+        {
+          "id": "97",
+          "name": "projectId",
+          "type": {
+            "name": "uuid",
+            "id": "uuid",
+            "usageLevel": 2
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777370030009,
+          "comments": "Na jakiej budowie stoi ten czytnik"
+        },
+        {
+          "id": "98",
+          "name": "serialNumber",
+          "type": {
+            "name": "varchar",
+            "id": "varchar",
+            "fieldAttributes": {
+              "hasCharMaxLength": true
+            },
+            "usageLevel": 1
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": true,
+          "createdAt": 1777370030009,
+          "characterMaximumLength": "255",
+          "comments": "Numer seryjny urządzenia od producenta"
+        },
+        {
+          "id": "99",
+          "name": "locationName",
+          "type": {
+            "name": "varchar",
+            "id": "varchar",
+            "fieldAttributes": {
+              "hasCharMaxLength": true
+            },
+            "usageLevel": 1
+          },
+          "nullable": true,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777370030009,
+          "characterMaximumLength": "500",
+          "comments": "Np. \"Brama Głowna Połnoc\""
+        },
+        {
+          "id": "100",
+          "name": "isActive",
+          "type": {
+            "name": "boolean",
+            "id": "boolean",
+            "usageLevel": 1
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777370030009,
+          "default": "true"
+        }
+      ],
+      "indexes": [
+        {
+          "id": "101",
+          "name": "",
+          "fieldIds": [
+            "95"
+          ],
+          "unique": true,
+          "isPrimaryKey": true,
+          "createdAt": 1777370030009
+        }
+      ],
+      "color": "#4dee8a",
+      "isView": false,
+      "createdAt": 1777370030009,
+      "order": 7,
+      "parentAreaId": "iay3bd75niwnbxmn6i1v8s8ho",
+      "diagramId": "oy3977o2vhgw"
+    },
+    {
+      "id": "102",
+      "name": "TimeEvent",
+      "schema": "public",
+      "x": 719.4257504649976,
+      "y": -682.8449672862511,
+      "fields": [
+        {
+          "id": "103",
+          "name": "id",
+          "type": {
+            "name": "uuid",
+            "id": "uuid",
+            "usageLevel": 2
+          },
+          "nullable": false,
+          "primaryKey": true,
+          "unique": true,
+          "createdAt": 1777370030009,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "id": "104",
+          "name": "employeeId",
+          "type": {
+            "name": "uuid",
+            "id": "uuid",
+            "usageLevel": 2
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777370030009,
+          "comments": "Kto się odbił"
+        },
+        {
+          "id": "105",
+          "name": "readerId",
+          "type": {
+            "name": "uuid",
+            "id": "uuid",
+            "usageLevel": 2
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777370030009,
+          "comments": "Na ktorym czytniku"
+        },
+        {
+          "id": "106",
+          "name": "action",
+          "type": {
+            "id": "TimeEventAction",
+            "name": "TimeEventAction"
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777370030009,
+          "comments": "WEJŚCIE czy WYJŚCIE"
+        },
+        {
+          "id": "107",
+          "name": "eventTime",
+          "type": {
+            "name": "timestamp",
+            "id": "timestamp",
+            "usageLevel": 1
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777370030009,
+          "comments": "Dokładny czas odbicia z urządzenia"
+        },
+        {
+          "id": "108",
+          "name": "createdAt",
+          "type": {
+            "name": "timestamp",
+            "id": "timestamp",
+            "usageLevel": 1
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777370030009,
+          "default": "now()"
+        }
+      ],
+      "indexes": [
+        {
+          "id": "109",
+          "name": "",
+          "fieldIds": [
+            "103"
+          ],
+          "unique": true,
+          "isPrimaryKey": true,
+          "createdAt": 1777370030009
+        }
+      ],
+      "color": "#4dee8a",
+      "isView": false,
+      "createdAt": 1777370030009,
+      "comments": "Surowe zdarzenia z czytnikow (Log typu Append-Only. Tego NIE EDYTUJEMY)",
+      "order": 8,
+      "parentAreaId": "iay3bd75niwnbxmn6i1v8s8ho",
+      "diagramId": "oy3977o2vhgw"
+    },
+    {
+      "id": "110",
+      "name": "TimeEntry",
+      "schema": "public",
+      "x": 1059.7046676012951,
+      "y": 56.01131309827919,
+      "fields": [
+        {
+          "id": "111",
+          "name": "id",
+          "type": {
+            "name": "uuid",
+            "id": "uuid",
+            "usageLevel": 2
+          },
+          "nullable": false,
+          "primaryKey": true,
+          "unique": true,
+          "createdAt": 1777370030009,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "id": "112",
+          "name": "payrollExportId",
+          "type": {
+            "name": "uuid",
+            "id": "uuid",
+            "usageLevel": 2
+          },
+          "nullable": true,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777370373584,
+          "comments": "Jeśli wypełnione, oznacza że te godziny zostały już wyeksportowane i opłacone"
+        },
+        {
+          "id": "113",
+          "name": "employeeId",
+          "type": {
+            "name": "uuid",
+            "id": "uuid",
+            "usageLevel": 2
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777370030009
+        },
+        {
+          "id": "114",
+          "name": "projectId",
+          "type": {
+            "name": "uuid",
+            "id": "uuid",
+            "usageLevel": 2
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777370030009,
+          "comments": "Gdzie pracował w tym czasie"
+        },
+        {
+          "id": "115",
+          "name": "startTime",
+          "type": {
+            "name": "timestamp",
+            "id": "timestamp",
+            "usageLevel": 1
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777370030009,
+          "comments": "Czas rozpoczęcia pracy"
+        },
+        {
+          "id": "116",
+          "name": "endTime",
+          "type": {
+            "name": "timestamp",
+            "id": "timestamp",
+            "usageLevel": 1
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777370030009,
+          "comments": "Czas zakończenia pracy"
+        },
+        {
+          "id": "117",
+          "name": "calculatedHours",
+          "type": {
+            "name": "numeric",
+            "id": "numeric",
+            "usageLevel": 2,
+            "fieldAttributes": {
+              "precision": {
+                "max": 131072,
+                "min": 0,
+                "default": 10
+              },
+              "scale": {
+                "max": 16383,
+                "min": 0,
+                "default": 2
+              }
+            }
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777370030009,
+          "precision": 5,
+          "scale": 2,
+          "comments": "Zsumowany czas, np. 8.5h"
+        },
+        {
+          "id": "118",
+          "name": "createdAt",
+          "type": {
+            "name": "timestamp",
+            "id": "timestamp",
+            "usageLevel": 1
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777370030009,
+          "default": "now()"
+        }
+      ],
+      "indexes": [
+        {
+          "id": "119",
+          "name": "",
+          "fieldIds": [
+            "111"
+          ],
+          "unique": true,
+          "isPrimaryKey": true,
+          "createdAt": 1777370030009
+        }
+      ],
+      "color": "#4dee8a",
+      "isView": false,
+      "createdAt": 1777370030009,
+      "comments": "Przetworzone dniowki (wygenerowane przez system na podstawie TimeEvent)",
+      "order": 9,
+      "parentAreaId": "iay3bd75niwnbxmn6i1v8s8ho",
+      "diagramId": "oy3977o2vhgw"
+    },
+    {
+      "id": "120",
+      "name": "Absence",
+      "schema": "public",
+      "x": -680,
+      "y": 280,
+      "fields": [
+        {
+          "id": "121",
+          "name": "id",
+          "type": {
+            "name": "uuid",
+            "id": "uuid",
+            "usageLevel": 2
+          },
+          "nullable": false,
+          "primaryKey": true,
+          "unique": true,
+          "createdAt": 1777370373584,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "id": "122",
+          "name": "employeeId",
+          "type": {
+            "name": "uuid",
+            "id": "uuid",
+            "usageLevel": 2
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777370373584
+        },
+        {
+          "id": "123",
+          "name": "type",
+          "type": {
+            "id": "AbsenceType",
+            "name": "AbsenceType"
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777370373584,
+          "comments": "Rodzaj nieobecności"
+        },
+        {
+          "id": "124",
+          "name": "startDate",
+          "type": {
+            "name": "date",
+            "id": "date",
+            "usageLevel": 1
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777370373584,
+          "comments": "Od kiedy (tylko data, bez godziny)"
+        },
+        {
+          "id": "125",
+          "name": "endDate",
+          "type": {
+            "name": "date",
+            "id": "date",
+            "usageLevel": 1
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777370373584,
+          "comments": "Do kiedy"
+        },
+        {
+          "id": "126",
+          "name": "documentId",
+          "type": {
+            "name": "uuid",
+            "id": "uuid",
+            "usageLevel": 2
+          },
+          "nullable": true,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777370373584,
+          "comments": "Opcjonalnie: skan wniosku urlopowego lub L4 z MinIO"
+        },
+        {
+          "id": "127",
+          "name": "isApproved",
+          "type": {
+            "name": "boolean",
+            "id": "boolean",
+            "usageLevel": 1
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777370373584,
+          "comments": "Czy biuro/brygadzista zatwierdził ten urlop",
+          "default": "false"
+        },
+        {
+          "id": "128",
+          "name": "createdAt",
+          "type": {
+            "name": "timestamp",
+            "id": "timestamp",
+            "usageLevel": 1
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777370373584,
+          "default": "now()"
+        }
+      ],
+      "indexes": [
+        {
+          "id": "129",
+          "name": "",
+          "fieldIds": [
+            "121"
+          ],
+          "unique": true,
+          "isPrimaryKey": true,
+          "createdAt": 1777370373584
+        }
+      ],
+      "color": "#8eb7ff",
+      "isView": false,
+      "createdAt": 1777370373584,
+      "comments": "Rejestr urlopow i L4. Blokuje możliwość odbicia karty na czytniku, jeśli isApproved = true.",
+      "order": 11,
+      "parentAreaId": "p7i3klfj8lmpzk81j237bcj86",
+      "diagramId": "oy3977o2vhgw"
+    },
+    {
+      "id": "130",
+      "name": "PayrollExport",
+      "schema": "public",
+      "x": -680,
+      "y": -20,
+      "fields": [
+        {
+          "id": "131",
+          "name": "id",
+          "type": {
+            "name": "uuid",
+            "id": "uuid",
+            "usageLevel": 2
+          },
+          "nullable": false,
+          "primaryKey": true,
+          "unique": true,
+          "createdAt": 1777370373584,
+          "default": "gen_random_uuid()"
+        },
+        {
+          "id": "132",
+          "name": "periodMonth",
+          "type": {
+            "name": "int",
+            "id": "int",
+            "usageLevel": 1
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777370373584,
+          "comments": "Miesiąc rozliczeniowy (1-12)"
+        },
+        {
+          "id": "133",
+          "name": "periodYear",
+          "type": {
+            "name": "int",
+            "id": "int",
+            "usageLevel": 1
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777370373584,
+          "comments": "Rok rozliczeniowy (np. 2026)"
+        },
+        {
+          "id": "134",
+          "name": "generatedByUserId",
+          "type": {
+            "name": "uuid",
+            "id": "uuid",
+            "usageLevel": 2
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777370373584,
+          "comments": "Kto z Księgowości wygenerował plik"
+        },
+        {
+          "id": "135",
+          "name": "totalEmployees",
+          "type": {
+            "name": "int",
+            "id": "int",
+            "usageLevel": 1
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777370373584,
+          "comments": "Ilu pracownikow obejmuje ta paczka"
+        },
+        {
+          "id": "136",
+          "name": "fileUrl",
+          "type": {
+            "name": "text",
+            "id": "text",
+            "usageLevel": 1
+          },
+          "nullable": true,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777370373584,
+          "comments": "Opcjonalnie: link do wygenerowanego pliku CSV/XML dla Comarcha w MinIO"
+        },
+        {
+          "id": "137",
+          "name": "createdAt",
+          "type": {
+            "name": "timestamp",
+            "id": "timestamp",
+            "usageLevel": 1
+          },
+          "nullable": false,
+          "primaryKey": false,
+          "unique": false,
+          "createdAt": 1777370373584,
+          "default": "now()"
+        }
+      ],
+      "indexes": [
+        {
+          "id": "138",
+          "name": "",
+          "fieldIds": [
+            "131"
+          ],
+          "unique": true,
+          "isPrimaryKey": true,
+          "createdAt": 1777370373584
+        }
+      ],
+      "color": "#8eb7ff",
+      "isView": false,
+      "createdAt": 1777370373584,
+      "comments": "Zatwierdzone paczki rozliczeniowe. Chronią przed podwojnym wyeksportowaniem tych samych godzin.",
+      "order": 12,
+      "parentAreaId": "p7i3klfj8lmpzk81j237bcj86",
+      "diagramId": "oy3977o2vhgw"
+    }
+  ],
+  "relationships": [
+    {
+      "id": "139",
+      "name": "CertificationDictionary_id_EmployeeCertification_dictionaryId",
+      "sourceSchema": "public",
+      "sourceTableId": "66",
+      "targetSchema": "public",
+      "targetTableId": "75",
+      "sourceFieldId": "67",
+      "targetFieldId": "78",
+      "sourceCardinality": "one",
+      "targetCardinality": "many",
+      "createdAt": 1777369834739,
+      "diagramId": "oy3977o2vhgw"
+    },
+    {
+      "id": "140",
+      "name": "Contract_id_Document_contractId",
+      "sourceSchema": "public",
+      "sourceTableId": "55",
+      "targetSchema": "public",
+      "targetTableId": "85",
+      "sourceFieldId": "56",
+      "targetFieldId": "88",
+      "sourceCardinality": "one",
+      "targetCardinality": "many",
+      "createdAt": 1777369915640,
+      "diagramId": "oy3977o2vhgw"
+    },
+    {
+      "id": "141",
+      "name": "Document_id_Absence_documentId",
+      "sourceSchema": "public",
+      "sourceTableId": "85",
+      "targetSchema": "public",
+      "targetTableId": "120",
+      "sourceFieldId": "86",
+      "targetFieldId": "126",
+      "sourceCardinality": "one",
+      "targetCardinality": "many",
+      "createdAt": 1777370373585,
+      "diagramId": "oy3977o2vhgw"
+    },
+    {
+      "id": "142",
+      "name": "Employee_id_Absence_employeeId",
+      "sourceSchema": "public",
+      "sourceTableId": "10",
+      "targetSchema": "public",
+      "targetTableId": "120",
+      "sourceFieldId": "11",
+      "targetFieldId": "122",
+      "sourceCardinality": "one",
+      "targetCardinality": "many",
+      "createdAt": 1777370373585,
+      "diagramId": "oy3977o2vhgw"
+    },
+    {
+      "id": "143",
+      "name": "Employee_id_Contract_employeeId",
+      "sourceSchema": "public",
+      "sourceTableId": "10",
+      "targetSchema": "public",
+      "targetTableId": "55",
+      "sourceFieldId": "11",
+      "targetFieldId": "57",
+      "sourceCardinality": "one",
+      "targetCardinality": "many",
+      "createdAt": 1777369102258,
+      "diagramId": "oy3977o2vhgw"
+    },
+    {
+      "id": "144",
+      "name": "Employee_id_Document_employeeId",
+      "sourceSchema": "public",
+      "sourceTableId": "10",
+      "targetSchema": "public",
+      "targetTableId": "85",
+      "sourceFieldId": "11",
+      "targetFieldId": "87",
+      "sourceCardinality": "one",
+      "targetCardinality": "many",
+      "createdAt": 1777369915640,
+      "diagramId": "oy3977o2vhgw"
+    },
+    {
+      "id": "145",
+      "name": "Employee_id_EmployeeAssignment_employeeId",
+      "sourceSchema": "public",
+      "sourceTableId": "10",
+      "targetSchema": "public",
+      "targetTableId": "46",
+      "sourceFieldId": "11",
+      "targetFieldId": "48",
+      "sourceCardinality": "one",
+      "targetCardinality": "many",
+      "createdAt": 1777368622305,
+      "diagramId": "oy3977o2vhgw"
+    },
+    {
+      "id": "146",
+      "name": "Employee_id_EmployeeCertification_employeeId",
+      "sourceSchema": "public",
+      "sourceTableId": "10",
+      "targetSchema": "public",
+      "targetTableId": "75",
+      "sourceFieldId": "11",
+      "targetFieldId": "77",
+      "sourceCardinality": "one",
+      "targetCardinality": "many",
+      "createdAt": 1777369834739,
+      "diagramId": "oy3977o2vhgw"
+    },
+    {
+      "id": "147",
+      "name": "Employee_id_PayrollExport_generatedByUserId",
+      "sourceSchema": "public",
+      "sourceTableId": "10",
+      "targetSchema": "public",
+      "targetTableId": "130",
+      "sourceFieldId": "11",
+      "targetFieldId": "134",
+      "sourceCardinality": "one",
+      "targetCardinality": "many",
+      "createdAt": 1777370373585,
+      "diagramId": "oy3977o2vhgw"
+    },
+    {
+      "id": "148",
+      "name": "Employee_id_TimeEntry_employeeId",
+      "sourceSchema": "public",
+      "sourceTableId": "10",
+      "targetSchema": "public",
+      "targetTableId": "110",
+      "sourceFieldId": "11",
+      "targetFieldId": "113",
+      "sourceCardinality": "one",
+      "targetCardinality": "many",
+      "createdAt": 1777370030009,
+      "diagramId": "oy3977o2vhgw"
+    },
+    {
+      "id": "149",
+      "name": "Employee_id_TimeEvent_employeeId",
+      "sourceSchema": "public",
+      "sourceTableId": "10",
+      "targetSchema": "public",
+      "targetTableId": "102",
+      "sourceFieldId": "11",
+      "targetFieldId": "104",
+      "sourceCardinality": "one",
+      "targetCardinality": "many",
+      "createdAt": 1777370030009,
+      "diagramId": "oy3977o2vhgw"
+    },
+    {
+      "id": "150",
+      "name": "EmployeeCertification_id_Document_certificationId",
+      "sourceSchema": "public",
+      "sourceTableId": "75",
+      "targetSchema": "public",
+      "targetTableId": "85",
+      "sourceFieldId": "76",
+      "targetFieldId": "89",
+      "sourceCardinality": "one",
+      "targetCardinality": "many",
+      "createdAt": 1777369915640,
+      "diagramId": "oy3977o2vhgw"
+    },
+    {
+      "id": "151",
+      "name": "PayrollExport_id_TimeEntry_payrollExportId",
+      "sourceSchema": "public",
+      "sourceTableId": "130",
+      "targetSchema": "public",
+      "targetTableId": "110",
+      "sourceFieldId": "131",
+      "targetFieldId": "112",
+      "sourceCardinality": "one",
+      "targetCardinality": "many",
+      "createdAt": 1777370373584,
+      "diagramId": "oy3977o2vhgw"
+    },
+    {
+      "id": "152",
+      "name": "Project_id_EmployeeAssignment_projectId",
+      "sourceSchema": "public",
+      "sourceTableId": "34",
+      "targetSchema": "public",
+      "targetTableId": "46",
+      "sourceFieldId": "35",
+      "targetFieldId": "49",
+      "sourceCardinality": "one",
+      "targetCardinality": "many",
+      "createdAt": 1777368622305,
+      "diagramId": "oy3977o2vhgw"
+    },
+    {
+      "id": "153",
+      "name": "Project_id_Reader_projectId",
+      "sourceSchema": "public",
+      "sourceTableId": "34",
+      "targetSchema": "public",
+      "targetTableId": "94",
+      "sourceFieldId": "35",
+      "targetFieldId": "97",
+      "sourceCardinality": "one",
+      "targetCardinality": "many",
+      "createdAt": 1777370030009,
+      "diagramId": "oy3977o2vhgw"
+    },
+    {
+      "id": "154",
+      "name": "Project_id_TimeEntry_projectId",
+      "sourceSchema": "public",
+      "sourceTableId": "34",
+      "targetSchema": "public",
+      "targetTableId": "110",
+      "sourceFieldId": "35",
+      "targetFieldId": "114",
+      "sourceCardinality": "one",
+      "targetCardinality": "many",
+      "createdAt": 1777370030009,
+      "diagramId": "oy3977o2vhgw"
+    },
+    {
+      "id": "155",
+      "name": "Reader_id_TimeEvent_readerId",
+      "sourceSchema": "public",
+      "sourceTableId": "94",
+      "targetSchema": "public",
+      "targetTableId": "102",
+      "sourceFieldId": "95",
+      "targetFieldId": "105",
+      "sourceCardinality": "one",
+      "targetCardinality": "many",
+      "createdAt": 1777370030009,
+      "diagramId": "oy3977o2vhgw"
+    },
+    {
+      "id": "156",
+      "name": "Employee_id_EmployeeFacilityAccess_employeeId",
+      "sourceSchema": "public",
+      "targetSchema": "public",
+      "sourceTableId": "10",
+      "targetTableId": "27",
+      "sourceFieldId": "11",
+      "targetFieldId": "29",
+      "sourceCardinality": "one",
+      "targetCardinality": "many",
+      "createdAt": 1779358753839
+    },
+    {
+      "id": "157",
+      "name": "Facility_id_EmployeeFacilityAccess_facilityId",
+      "sourceSchema": "public",
+      "targetSchema": "public",
+      "sourceTableId": "1",
+      "targetTableId": "27",
+      "sourceFieldId": "2",
+      "targetFieldId": "30",
+      "sourceCardinality": "one",
+      "targetCardinality": "many",
+      "createdAt": 1779358753839
+    },
+    {
+      "id": "158",
+      "name": "Facility_id_Employee_facilityId",
+      "sourceSchema": "public",
+      "targetSchema": "public",
+      "sourceTableId": "1",
+      "targetTableId": "10",
+      "sourceFieldId": "2",
+      "targetFieldId": "12",
+      "sourceCardinality": "one",
+      "targetCardinality": "many",
+      "createdAt": 1779358753839
+    },
+    {
+      "id": "159",
+      "name": "Facility_id_Project_facilityId",
+      "sourceSchema": "public",
+      "targetSchema": "public",
+      "sourceTableId": "1",
+      "targetTableId": "34",
+      "sourceFieldId": "2",
+      "targetFieldId": "36",
+      "sourceCardinality": "one",
+      "targetCardinality": "many",
+      "createdAt": 1779358753839
+    },
+    {
+      "id": "160",
+      "name": "Facility_id_Reader_facilityId",
+      "sourceSchema": "public",
+      "targetSchema": "public",
+      "sourceTableId": "1",
+      "targetTableId": "94",
+      "sourceFieldId": "2",
+      "targetFieldId": "96",
+      "sourceCardinality": "one",
+      "targetCardinality": "many",
+      "createdAt": 1779358753839
+    }
+  ],
+  "dependencies": [],
+  "areas": [
+    {
+      "id": "161",
+      "name": "Dokumenty",
+      "x": -22.76321125379178,
+      "y": 319.9201241840219,
+      "width": 640,
+      "height": 1060,
+      "color": "#8a61f5",
+      "diagramId": "oy3977o2vhgw"
+    },
+    {
+      "id": "162",
+      "name": "Rejestracja czasu pracy",
+      "x": 665.6198347107438,
+      "y": -723.3792470156106,
+      "width": 780,
+      "height": 1100,
+      "color": "#4dee8a",
+      "diagramId": "oy3977o2vhgw"
+    },
+    {
+      "id": "163",
+      "name": "Finanse",
+      "x": -720,
+      "y": -80,
+      "width": 320,
+      "height": 700,
+      "color": "#8eb7ff",
+      "diagramId": "oy3977o2vhgw"
+    },
+    {
+      "id": "164",
+      "name": "Struktura organizacyjna",
+      "x": -400,
+      "y": -760,
+      "width": 680,
+      "height": 740,
+      "color": "#ff6363",
+      "diagramId": "oy3977o2vhgw"
+    }
+  ],
+  "customTypes": [
+    {
+      "id": "165",
+      "schema": "public",
+      "name": "AbsenceType",
+      "kind": "enum",
+      "values": [
+        "HOLIDAY",
+        "SICK_LEAVE",
+        "UNEXCUSED",
+        "SPECIAL"
+      ],
+      "order": 0
+    },
+    {
+      "id": "166",
+      "schema": "public",
+      "name": "CertificationType",
+      "kind": "enum",
+      "values": [
+        "BHP",
+        "MEDICAL",
+        "UDT",
+        "OTHER"
+      ],
+      "order": 0
+    },
+    {
+      "id": "167",
+      "schema": "public",
+      "name": "ContractType",
+      "kind": "enum",
+      "values": [
+        "UOP",
+        "UZ",
+        "UD",
+        "B2B"
+      ],
+      "order": 0
+    },
+    {
+      "id": "168",
+      "schema": "public",
+      "name": "ProjectStatus",
+      "kind": "enum",
+      "values": [
+        "PLANNED",
+        "ACTIVE",
+        "COMPLETED",
+        "SUSPENDED"
+      ],
+      "order": 0
+    },
+    {
+      "id": "169",
+      "schema": "public",
+      "name": "TimeEventAction",
+      "kind": "enum",
+      "values": [
+        "IN",
+        "OUT"
+      ],
+      "order": 0
+    },
+    {
+      "id": "170",
+      "schema": "public",
+      "name": "UserRole",
+      "kind": "enum",
+      "values": [
+        "ADMIN",
+        "HR",
+        "OFFICE",
+        "FOREMAN",
+        "ACCOUNTING",
+        "WORKER"
+      ],
+      "order": 0
+    }
+  ],
+  "notes": []
+}
