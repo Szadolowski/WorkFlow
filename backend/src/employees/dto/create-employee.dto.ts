@@ -1,5 +1,6 @@
-import { IsEmail, IsEnum, IsNotEmpty, IsString, Length } from 'class-validator';
+import { IsEmail, IsEnum, IsNotEmpty, IsString } from 'class-validator';
 import { UserRole } from '@prisma/client';
+import { IsPesel } from '@/common/validators/is-pesel.validator';
 
 export class CreateEmployeeDto {
   @IsNotEmpty()
@@ -12,7 +13,7 @@ export class CreateEmployeeDto {
 
   @IsNotEmpty()
   @IsString()
-  @Length(11, 11, { message: 'PESEL musi mieć dokładnie 11 znaków' })
+  @IsPesel({ message: 'Niepoprawny numer PESEL' })
   pesel!: string;
 
   @IsNotEmpty()
