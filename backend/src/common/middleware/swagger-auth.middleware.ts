@@ -12,13 +12,11 @@ export class SwaggerAuthMiddleware implements NestMiddleware {
   async use(req: Request, res: Response, next: NextFunction) {
     const authHeader = req.headers.authorization;
 
-    // 1. Sprawdzamy, czy przeglądarka wysłała nagłówek Basic Auth
     if (!authHeader || !authHeader.startsWith('Basic ')) {
       return this.sendChallenge(res);
     }
 
     try {
-      // 2. Dekodujemy base64 (format login:haslo)
       const base64Credentials = authHeader.split(' ')[1];
       const credentials = Buffer.from(base64Credentials, 'base64').toString(
         'utf-8',
@@ -29,17 +27,10 @@ export class SwaggerAuthMiddleware implements NestMiddleware {
         return this.sendChallenge(res);
       }
 
-      // 3. SZUKAMY UŻYTKOWNIKA W BAZIE DANYCH
-      // Zapytanie do tabeli employee, szukając po unikalnym emailu
       const employee = await this.prisma.employee.findUnique({
         where: { email },
       });
 
-      // 4. WERYFIKACJA UPRAWNIEŃ I HASŁA
-      // - Sprawdzamy czy pracownik istnieje
-      // - Sprawdzamy czy jego rola to ADMIN (UserRole.ADMIN)
-      // - Sprawdzamy czy konto jest aktywne (isActive === true)
-      // - Porównujemy hasło z bazy z wpisanym za pomocą: await bcrypt.compare(password, employee.passwordHash)
       if (
         !employee ||
         employee.role !== UserRole.ADMIN ||
