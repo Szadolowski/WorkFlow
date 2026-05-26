@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { HardHat } from "lucide-react";
+import { ThemeToggle } from "@/components/shared/ThemeToggle";
 
 import { useFacility } from "@/hooks/useFacility";
 import {
@@ -44,6 +45,7 @@ export default function Sidebar({ role }: { role: string }) {
       <div className="h-16 flex items-center px-6 border-b border-slate-800 font-bold text-xl tracking-wider">
         WorkFlow.
       </div>
+      <ThemeToggle />
       <div className="border-b border-slate-800 px-4 py-4">
         <p className="px-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400">
           Aktywny zakład
