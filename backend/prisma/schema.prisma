@@ -37,6 +37,12 @@ enum ProjectStatus {
   SUSPENDED
 }
 
+enum TimeEntryStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 enum TimeEventAction {
   IN
   OUT
@@ -103,6 +109,8 @@ model Employee {
   timeEntries        TimeEntry[]
   assignments        EmployeeAssignment[]
   generatedExports   PayrollExport[]
+  equipmentAssignments EquipmentAssignment[]
+  auditLogs          AuditLog[]
 }
 
 model EmployeeFacilityAccess {
@@ -219,6 +227,7 @@ model TimeEntry {
   startTime       DateTime @db.Timestamp(6)
   endTime         DateTime @db.Timestamp(6)
   calculatedHours Decimal  @db.Decimal(5, 2)
+  status          TimeEntryStatus @default(PENDING) // [NOWE POLE]
   createdAt       DateTime @default(now()) @db.Timestamp(6)
 
   // Relacje
@@ -284,4 +293,59 @@ model PayrollExport {
   // Relacje
   generatedByUser   Employee    @relation(fields: [generatedByUserId], references: [id])
   timeEntries       TimeEntry[]
+}
+
+// ==========================================
+// MODUŁ BHP (ZASOBY I SPRZĘT)
+// ==========================================
+
+model EquipmentCategory {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String   @unique @db.VarChar(255)
+  description String?  @db.Text
+  createdAt   DateTime @default(now()) @db.Timestamp(6)
+
+  equipment   Equipment[]
+}
+
+model Equipment {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  categoryId       String   @db.Uuid
+  name             String   @db.VarChar(255)
+  serialNumber     String?  @unique @db.VarChar(255)
+  purchasedAt      DateTime? @db.Date
+  isActive         Boolean  @default(true)
+  createdAt        DateTime @default(now()) @db.Timestamp(6)
+
+  category         EquipmentCategory @relation(fields: [categoryId], references: [id])
+  assignments      EquipmentAssignment[]
+}
+
+model EquipmentAssignment {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  equipmentId String    @db.Uuid
+  employeeId  String    @db.Uuid
+  assignedAt  DateTime  @default(now()) @db.Timestamp(6)
+  returnedAt  DateTime? @db.Timestamp(6)
+  notes       String?   @db.Text
+
+  equipment   Equipment @relation(fields: [equipmentId], references: [id])
+  employee    Employee  @relation(fields: [employeeId], references: [id])
+}
+
+// ==========================================
+// AUDIT TRAIL
+// ==========================================
+
+model AuditLog {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  employeeId  String   @db.Uuid // Pracownik, który wykonał akcję
+  action      String   @db.VarChar(255) // np. ZMIANA_STAWKI
+  entityName  String   @db.VarChar(255) // np. Contract, Employee
+  entityId    String   @db.Uuid // ID zmodyfikowanego rekordu
+  oldValues   Json?    // Zapisane w formacie JSON
+  newValues   Json?    // Zapisane w formacie JSON
+  createdAt   DateTime @default(now()) @db.Timestamp(6)
+
+  employee    Employee @relation(fields: [employeeId], references: [id])
 }
