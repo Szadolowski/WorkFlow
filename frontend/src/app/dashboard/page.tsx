@@ -1,16 +1,30 @@
 import { Suspense } from "react";
+import { redirect } from "next/navigation";
+import { serverFetch } from "@/lib/api-client";
+
 import HrDashboard from "@/components/features/dashboard/HrDashboard";
 import ForemanDashboard from "@/components/features/dashboard/ForemanDashboard";
 
 export default async function DashboardPage() {
-  // TODO: Docelowo pobierzemy to z tokena JWT / mechanizmu sesji po stronie serwera
-  // Na ten moment używamy "zaślepki" (mocka) do testowania naszych widoków.
-  // Zmień tę wartość na "FOREMAN" lub "WORKER", by przetestować inne widoki.
-  const mockUserRole = "HR" as string;
+  let role = "WORKER";
+
+  try {
+    // Odpytujemy bezpiecznie backend z poziomu serwera by sprawdzić rolę usera
+    const res = await serverFetch("/auth/me");
+    if (res.ok) {
+      const data = await res.json();
+      role = data.user.role;
+    } else {
+      redirect("/login");
+    }
+  } catch (error) {
+    redirect("/login");
+  }
 
   let DashboardContent;
 
-  switch (mockUserRole) {
+  // Renderowanie oparte na Roli (Strategy Pattern z wytycznych)
+  switch (role) {
     case "HR":
       DashboardContent = <HrDashboard />;
       break;
@@ -22,7 +36,7 @@ export default async function DashboardPage() {
         <div className="p-6">
           <h1 className="text-2xl font-bold">Witaj w systemie!</h1>
           <p className="text-muted-foreground mt-2">
-            Twój standardowy panel pracowniczy jest w przygotowaniu.
+            Twój spersonalizowany panel pracowniczy jest w przygotowaniu.
           </p>
         </div>
       );
@@ -30,11 +44,11 @@ export default async function DashboardPage() {
 
   return (
     <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">
-      {/* Suspense pozwoli nam na wyświetlenie ładnego "szkieletu" (Skeleton), 
-          gdy wewnątrz widoków zaczniemy pobierać prawdziwe dane z bazy. */}
       <Suspense
         fallback={
-          <div className="text-muted-foreground">Ładowanie widoku...</div>
+          <div className="text-muted-foreground">
+            Ładowanie widoku głównego...
+          </div>
         }
       >
         {DashboardContent}
