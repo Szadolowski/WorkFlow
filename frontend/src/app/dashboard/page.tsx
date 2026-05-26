@@ -6,7 +6,7 @@ export default async function DashboardPage() {
   // TODO: Docelowo pobierzemy to z tokena JWT / mechanizmu sesji po stronie serwera
   // Na ten moment używamy "zaślepki" (mocka) do testowania naszych widoków.
   // Zmień tę wartość na "FOREMAN" lub "WORKER", by przetestować inne widoki.
-  const mockUserRole: "HR" | "FOREMAN" | "WORKER" = "HR";
+  const mockUserRole = "HR" as string;
 
   let DashboardContent;
 
