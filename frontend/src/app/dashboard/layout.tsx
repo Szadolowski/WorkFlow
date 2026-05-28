@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-
 import { logoutAction } from "@/app/actions/auth.actions";
 import Sidebar from "@/components/layout/Sidebar";
 import { serverFetch } from "@/lib/api-client";
@@ -14,27 +13,43 @@ export default async function DashboardLayout({
 
   try {
     const res = await serverFetch("/auth/me");
-    const data = await res.json();
-    user = data.user;
-  } catch {
-    redirect("/login");
+
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error(
+        `[DashboardLayout] Błąd API: Status ${res.status} | Odpowiedź:`,
+        errorText,
+      );
+    } else {
+      const data = await res.json();
+      user = data.user;
+    }
+  } catch (error) {
+    // Od teraz wiemy DOKŁADNIE, jeśli fetch rzuci jakimś błędem (np. brak sieci, 401 z api-client)
+    console.error(
+      "[DashboardLayout] Wyjątek podczas pobierania użytkownika:",
+      error,
+    );
   }
 
-  if (!user) redirect("/login");
+  // Wyrzucamy redirect poza blok try/catch (dobre praktyki Next.js)
+  if (!user) {
+    redirect("/login");
+  }
 
   return (
     <FacilityProvider
       facilities={user.facilities}
       initialActiveFacilityId={user.activeFacilityId}
     >
-      <div className="flex h-screen w-full overflow-hidden bg-slate-50">
+      <div className="flex h-screen w-full overflow-hidden bg-slate-50 dark:bg-background">
         <Sidebar role={user.role} />
 
         <div className="flex h-full flex-1 flex-col overflow-hidden">
-          <header className="flex h-16 shrink-0 items-center justify-between border-b bg-white px-8">
-            <div className="text-sm text-slate-500">
+          <header className="flex h-16 shrink-0 items-center justify-between border-b bg-white dark:bg-background dark:border-border px-8">
+            <div className="text-sm text-slate-500 dark:text-muted-foreground">
               Zalogowano jako:{" "}
-              <span className="font-semibold text-slate-900">
+              <span className="font-semibold text-slate-900 dark:text-foreground">
                 {user.firstName} {user.lastName}
               </span>{" "}
               ({user.role})
@@ -43,7 +58,7 @@ export default async function DashboardLayout({
             <form action={logoutAction}>
               <button
                 type="submit"
-                className="text-sm font-medium text-red-600 transition-colors hover:text-red-700"
+                className="text-sm font-medium text-red-600 transition-colors hover:text-red-700 dark:text-destructive"
               >
                 Wyloguj się
               </button>
