@@ -56,3 +56,36 @@ export async function logoutAction() {
   cookieStore.delete("active_facility_id");
   redirect("/login"); // Wyrzucamy użytkownika do formularza
 }
+
+export async function getProfileAction() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("access_token")?.value;
+
+  // Jeśli nie ma tokena, od razu zwracamy błąd
+  if (!token) {
+    return { error: "Brak tokena autoryzacji." };
+  }
+
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:2000"}/auth/me`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Przekazujemy token JWT
+        },
+        cache: "no-store", // Dashboard musi mieć zawsze świeże dane
+      },
+    );
+
+    if (!response.ok) {
+      return { error: "Sesja wygasła lub brak dostępu." };
+    }
+
+    // Zwracamy obiekt użytkownika (zdekodowany przez backend), w tym jego .role
+    return await response.json();
+  } catch {
+    return { error: "Błąd połączenia z serwerem." };
+  }
+}
