@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Post,
+  Patch,
   Body,
   Query,
   UseGuards,
@@ -23,8 +24,9 @@ import { RolesGuard } from '@/auth/guards/roles.guard';
 import { Roles } from '@/auth/decorators/roles.decorator';
 import { UserRole } from '@prisma/client';
 import { EmployeeSingleResponseDto } from './dto/employee-response.dto';
+import { UpdateEmployeeAccessDto } from './dto/update-employee-access.dto';
 
-type UserProfileRequest = {
+type AuthenticatedEmployeeRequest = {
   user: {
     role: UserRole;
     sub: string;
@@ -66,6 +68,34 @@ export class EmployeesController {
     return this.employeesService.create(createEmployeeDto, facilityId);
   }
 
+  @Roles(UserRole.ADMIN)
+  @Patch(':id/access')
+  @ApiOperation({
+    summary: 'Aktywuje dostęp pracownika do systemu',
+    description:
+      'Nadaje pracownikowi rolę systemową, ustawia hasło tymczasowe i włącza możliwość logowania. Operacja dostępna wyłącznie dla administratora.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Dostęp pracownika został aktywowany.',
+    type: EmployeeSingleResponseDto,
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Brak uprawnień lub brak adresu e-mail pracownika.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Pracownik nie istnieje lub jest nieaktywny.',
+  })
+  updateAccess(
+    @Param('id') id: string,
+    @Body() dto: UpdateEmployeeAccessDto,
+    @Req() req: AuthenticatedEmployeeRequest,
+  ) {
+    return this.employeesService.updateAccess(id, dto, req.user.sub);
+  }
+
   @Roles(UserRole.ADMIN, UserRole.HR, UserRole.OFFICE, UserRole.ACCOUNTING)
   @Get()
   @ApiOperation({
@@ -91,7 +121,7 @@ export class EmployeesController {
   @ApiResponse({ status: 404, description: 'Pracownik nie istnieje.' })
   async getProfile(
     @Param('id') id: string,
-    @Req() req: UserProfileRequest,
+    @Req() req: AuthenticatedEmployeeRequest,
     @Query('facilityId') facilityId: string | undefined,
   ) {
     const user = req.user;

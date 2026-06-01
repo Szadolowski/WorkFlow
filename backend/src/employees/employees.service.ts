@@ -8,6 +8,8 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { GetEmployeesDto } from './dto/get-employees.dto';
 import { Prisma, UserRole } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
+import { UpdateEmployeeAccessDto } from './dto/update-employee-access.dto';
 
 @Injectable()
 export class EmployeesService {
@@ -230,5 +232,85 @@ export class EmployeesService {
         fileUrl: fileKey, // w fileUrl trzymamy klucz MinIO
       },
     });
+  }
+
+  async updateAccess(
+    employeeId: string,
+    dto: UpdateEmployeeAccessDto,
+    adminEmployeeId: string,
+  ) {
+    const employee = await this.prisma.employee.findUnique({
+      where: { id: employeeId },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        pesel: true,
+        email: true,
+        role: true,
+        isActive: true,
+        isLoginEnabled: true,
+        createdAt: true,
+      },
+    });
+
+    if (!employee || !employee.isActive) {
+      throw new NotFoundException(
+        'Pracownik nie został znaleziony lub jest nieaktywny.',
+      );
+    }
+
+    if (!employee.email) {
+      throw new ForbiddenException(
+        'Nie można aktywować dostępu bez adresu e-mail pracownika.',
+      );
+    }
+
+    const passwordHash = await bcrypt.hash(dto.temporaryPassword, 10);
+
+    const updatedEmployee = await this.prisma.$transaction(async (tx) => {
+      const updated = await tx.employee.update({
+        where: { id: employeeId },
+        data: {
+          role: dto.role,
+          passwordHash,
+          isLoginEnabled: true,
+        },
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          pesel: true,
+          email: true,
+          role: true,
+          isActive: true,
+          isLoginEnabled: true,
+          createdAt: true,
+        },
+      });
+
+      await tx.auditLog.create({
+        data: {
+          employeeId: adminEmployeeId,
+          action: 'EMPLOYEE_ACCESS_ACTIVATED',
+          entityName: 'Employee',
+          entityId: employeeId,
+          oldValues: {
+            role: employee.role,
+            isLoginEnabled: employee.isLoginEnabled,
+          },
+          newValues: {
+            role: updated.role,
+            isLoginEnabled: updated.isLoginEnabled,
+          },
+        },
+      });
+
+      return updated;
+    });
+
+    return {
+      data: this.toEmployeeResponse(updatedEmployee),
+    };
   }
 }
