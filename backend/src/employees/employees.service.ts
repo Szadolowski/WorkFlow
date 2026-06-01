@@ -82,6 +82,86 @@ export class EmployeesService {
     };
   }
 
+  async updateAccess(
+    employeeId: string,
+    dto: UpdateEmployeeAccessDto,
+    adminEmployeeId: string,
+  ) {
+    const employee = await this.prisma.employee.findUnique({
+      where: { id: employeeId },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        pesel: true,
+        email: true,
+        role: true,
+        isActive: true,
+        isLoginEnabled: true,
+        createdAt: true,
+      },
+    });
+
+    if (!employee || !employee.isActive) {
+      throw new NotFoundException(
+        'Pracownik nie został znaleziony lub jest nieaktywny.',
+      );
+    }
+
+    if (!employee.email) {
+      throw new ForbiddenException(
+        'Nie można aktywować dostępu bez adresu e-mail pracownika.',
+      );
+    }
+
+    const passwordHash = await bcrypt.hash(dto.temporaryPassword, 10);
+
+    const updatedEmployee = await this.prisma.$transaction(async (tx) => {
+      const updated = await tx.employee.update({
+        where: { id: employeeId },
+        data: {
+          role: dto.role,
+          passwordHash,
+          isLoginEnabled: true,
+        },
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          pesel: true,
+          email: true,
+          role: true,
+          isActive: true,
+          isLoginEnabled: true,
+          createdAt: true,
+        },
+      });
+
+      await tx.auditLog.create({
+        data: {
+          employeeId: adminEmployeeId,
+          action: 'EMPLOYEE_ACCESS_ACTIVATED',
+          entityName: 'Employee',
+          entityId: employeeId,
+          oldValues: {
+            role: employee.role,
+            isLoginEnabled: employee.isLoginEnabled,
+          },
+          newValues: {
+            role: updated.role,
+            isLoginEnabled: updated.isLoginEnabled,
+          },
+        },
+      });
+
+      return updated;
+    });
+
+    return {
+      data: this.toEmployeeResponse(updatedEmployee),
+    };
+  }
+
   async findAll(query: GetEmployeesDto) {
     const page = query.page || 1;
     const limit = query.limit || 10;
@@ -232,85 +312,5 @@ export class EmployeesService {
         fileUrl: fileKey, // w fileUrl trzymamy klucz MinIO
       },
     });
-  }
-
-  async updateAccess(
-    employeeId: string,
-    dto: UpdateEmployeeAccessDto,
-    adminEmployeeId: string,
-  ) {
-    const employee = await this.prisma.employee.findUnique({
-      where: { id: employeeId },
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        pesel: true,
-        email: true,
-        role: true,
-        isActive: true,
-        isLoginEnabled: true,
-        createdAt: true,
-      },
-    });
-
-    if (!employee || !employee.isActive) {
-      throw new NotFoundException(
-        'Pracownik nie został znaleziony lub jest nieaktywny.',
-      );
-    }
-
-    if (!employee.email) {
-      throw new ForbiddenException(
-        'Nie można aktywować dostępu bez adresu e-mail pracownika.',
-      );
-    }
-
-    const passwordHash = await bcrypt.hash(dto.temporaryPassword, 10);
-
-    const updatedEmployee = await this.prisma.$transaction(async (tx) => {
-      const updated = await tx.employee.update({
-        where: { id: employeeId },
-        data: {
-          role: dto.role,
-          passwordHash,
-          isLoginEnabled: true,
-        },
-        select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-          pesel: true,
-          email: true,
-          role: true,
-          isActive: true,
-          isLoginEnabled: true,
-          createdAt: true,
-        },
-      });
-
-      await tx.auditLog.create({
-        data: {
-          employeeId: adminEmployeeId,
-          action: 'EMPLOYEE_ACCESS_ACTIVATED',
-          entityName: 'Employee',
-          entityId: employeeId,
-          oldValues: {
-            role: employee.role,
-            isLoginEnabled: employee.isLoginEnabled,
-          },
-          newValues: {
-            role: updated.role,
-            isLoginEnabled: updated.isLoginEnabled,
-          },
-        },
-      });
-
-      return updated;
-    });
-
-    return {
-      data: this.toEmployeeResponse(updatedEmployee),
-    };
   }
 }
