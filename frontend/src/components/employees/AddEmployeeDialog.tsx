@@ -22,8 +22,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -31,9 +29,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { isValidPesel } from "@/lib/utils";
+import { useFacility } from "@/hooks/useFacility";
 
-// 1. Definicja schematu walidacji Zod (lustrzane odbicie naszego DTO z backendu)
 const formSchema = z.object({
   firstName: z.string().min(2, "Imię musi mieć min. 2 znaki"),
   lastName: z.string().min(2, "Nazwisko musi mieć min. 2 znaki"),
@@ -43,12 +43,13 @@ const formSchema = z.object({
     .regex(/^\d+$/, "PESEL nie może zawierać liter ani znaków specjalnych")
     .refine(isValidPesel, "Niepoprawny numer PESEL"),
   email: z.string().email("Niepoprawny format adresu e-mail"),
-  role: z.enum(["ADMIN", "HR", "OFFICE", "FOREMAN", "ACCOUNTING", "WORKER"]),
+  facilityId: z.string().uuid("Wybierz zakład dla pracownika"),
 });
 
 export default function AddEmployeeDialog() {
   const [open, setOpen] = useState(false);
   const mutation = useCreateEmployeeMutation();
+  const { facilities, activeFacilityId } = useFacility();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -57,18 +58,29 @@ export default function AddEmployeeDialog() {
       lastName: "",
       pesel: "",
       email: "",
-      role: "WORKER",
+      facilityId: activeFacilityId,
     },
   });
 
-  // 2. Bezpieczne łapanie błędu bez słowa "any" (wymóg ESLinta)
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      await mutation.mutateAsync(values);
-      form.reset();
+      const { facilityId, ...employeeData } = values;
+
+      await mutation.mutateAsync({
+        data: employeeData,
+        facilityId,
+      });
+
+      form.reset({
+        firstName: "",
+        lastName: "",
+        pesel: "",
+        email: "",
+        facilityId,
+      });
+
       setOpen(false);
     } catch (error) {
-      // Rzutujemy error na typ Error w locie
       form.setError("root", {
         message: (error as Error).message || "Wystąpił błąd",
       });
@@ -157,35 +169,40 @@ export default function AddEmployeeDialog() {
               )}
             />
 
-            {/* Rola (Select) */}
             <FormField
               control={form.control}
-              name="role"
+              name="facilityId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Rola w systemie</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
+                  <FormLabel>Zakład</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Wybierz rolę" />
+                        <SelectValue placeholder="Wybierz zakład" />
                       </SelectTrigger>
                     </FormControl>
+
                     <SelectContent>
-                      <SelectItem value="WORKER">Pracownik Fizyczny</SelectItem>
-                      <SelectItem value="FOREMAN">Brygadzista</SelectItem>
-                      <SelectItem value="OFFICE">Biuro</SelectItem>
-                      <SelectItem value="HR">Kadry (HR)</SelectItem>
-                      <SelectItem value="ACCOUNTING">Księgowość</SelectItem>
-                      <SelectItem value="ADMIN">Administrator</SelectItem>
+                      {facilities.map((facility) => (
+                        <SelectItem key={facility.id} value={facility.id}>
+                          {facility.name}
+                          {facility.code ? ` (${facility.code})` : ""}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
+
                   <FormMessage />
                 </FormItem>
               )}
             />
+
+            {/* Rola (Select) */}
+            <div className="rounded-md border border-dashed p-3 text-sm text-muted-foreground">
+              Pracownik zostanie dodany do ewidencji bez aktywnego konta
+              logowania. Dostęp do systemu i rola mogą zostać skonfigurowane
+              osobno przez administratora.
+            </div>
 
             {/* Błąd z serwera (np. konflikt PESEL/Email) */}
             {form.formState.errors.root && (

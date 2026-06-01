@@ -9,7 +9,6 @@ export type CreateEmployeePayload = {
   lastName: string;
   pesel: string;
   email: string;
-  role: string;
 };
 
 export async function getEmployeesAction(
