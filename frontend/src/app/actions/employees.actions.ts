@@ -1,7 +1,8 @@
 "use server";
 
 import { serverFetch } from "@/lib/api-client";
-
+import { cookies } from "next/headers";
+import { revalidatePath } from "next/cache";
 // Typy wejściowe (DTO) dla frontendu
 export type CreateEmployeePayload = {
   firstName: string;
@@ -18,7 +19,6 @@ export async function getEmployeesAction(
   isActive?: string,
   facilityId?: string,
 ) {
-  // 1. Budowanie parametrów zapytania (URLSearchParams dba o czyszczenie undefined)
   const params = new URLSearchParams({
     page: page.toString(),
     limit: limit.toString(),
@@ -28,7 +28,6 @@ export async function getEmployeesAction(
   if (isActive) params.append("isActive", isActive);
   if (facilityId) params.append("facilityId", facilityId);
 
-  // 2. Strzał do NestJS przez nasz gotowy wrapper (który dodaje JWT)
   const res = await serverFetch(`/employees?${params.toString()}`);
 
   if (!res.ok) {
@@ -51,7 +50,6 @@ export async function createEmployeeAction(
   });
 
   if (!res.ok) {
-    // Przechwytujemy komunikaty z NestJS (np. duplikat PESEL/email)
     const err = await res.json().catch(() => ({}));
     throw new Error(err.message || "Nie udało się dodać pracownika.");
   }
@@ -59,9 +57,6 @@ export async function createEmployeeAction(
   return res.json();
 }
 
-// ==========================================
-// NOWE: Pobieranie profilu pracownika
-// ==========================================
 export async function getEmployeeProfileAction(
   id: string,
   facilityId?: string,
@@ -80,4 +75,36 @@ export async function getEmployeeProfileAction(
   }
 
   return res.json();
+}
+
+// ==========================================
+// NOWE: Zapis dokumentu (MinIO klucz) do bazy
+// ==========================================
+export async function addDocumentAction(
+  employeeId: string,
+  fileName: string,
+  fileKey: string,
+) {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("access_token")?.value;
+
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:2000"}/employees/${employeeId}/documents`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ fileName, fileKey }),
+      },
+    );
+
+    revalidatePath(`/dashboard/employees/${employeeId}`);
+
+    return await response.json();
+  } catch {
+    return { error: "Błąd zapisu do bazy danych." };
+  }
 }
