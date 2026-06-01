@@ -8,11 +8,34 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { GetEmployeesDto } from './dto/get-employees.dto';
 import { Prisma, UserRole } from '@prisma/client';
-import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class EmployeesService {
   constructor(private readonly prisma: PrismaService) {}
+
+  private toEmployeeResponse(employee: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    pesel: string | null;
+    email: string | null;
+    role: UserRole;
+    isActive: boolean;
+    isLoginEnabled: boolean;
+    createdAt: Date;
+  }) {
+    return {
+      id: employee.id,
+      firstName: employee.firstName,
+      lastName: employee.lastName,
+      pesel: employee.pesel,
+      email: employee.email,
+      role: employee.role,
+      isActive: employee.isActive,
+      isLoginEnabled: employee.isLoginEnabled,
+      createdAt: employee.createdAt,
+    };
+  }
 
   async create(dto: CreateEmployeeDto, facilityId?: string) {
     if (!facilityId) {
@@ -36,15 +59,13 @@ export class EmployeesService {
       );
     }
 
-    const tempPassword = Math.random().toString(36).slice(-8);
-    const passwordHash = await bcrypt.hash(tempPassword, 10);
-
     const newEmployee = await this.prisma.employee.create({
       data: {
         ...dto,
         facilityId,
-        passwordHash,
-        isLoginEnabled: true,
+        role: UserRole.WORKER,
+        isLoginEnabled: false,
+        passwordHash: null,
       },
     });
 
@@ -54,12 +75,8 @@ export class EmployeesService {
       ON CONFLICT ("employeeId", "facilityId") DO NOTHING
     `;
 
-    const employeeResponse = { ...newEmployee } as Partial<typeof newEmployee>;
-    delete employeeResponse.passwordHash;
-
     return {
-      ...employeeResponse,
-      tempPassword,
+      data: this.toEmployeeResponse(newEmployee),
     };
   }
 

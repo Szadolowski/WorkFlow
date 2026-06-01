@@ -22,6 +22,7 @@ import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 import { RolesGuard } from '@/auth/guards/roles.guard';
 import { Roles } from '@/auth/decorators/roles.decorator';
 import { UserRole } from '@prisma/client';
+import { EmployeeSingleResponseDto } from './dto/employee-response.dto';
 
 type UserRoleRequest = {
   user: {
@@ -45,6 +46,25 @@ export class EmployeesController {
 
   @Roles(UserRole.ADMIN, UserRole.HR)
   @Post()
+  @ApiOperation({
+    summary: 'Dodaje pracownika do ewidencji kadrowej',
+    description:
+      'Tworzy rekord pracownika bez aktywowania konta logowania. Dostęp do systemu powinien zostać skonfigurowany osobnym procesem przez administratora.',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Pracownik został dodany do ewidencji.',
+    type: EmployeeSingleResponseDto,
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Brak aktywnego zakładu lub brak uprawnień.',
+  })
+  @ApiResponse({
+    status: 409,
+    description:
+      'Pracownik z podanym adresem e-mail lub numerem PESEL już istnieje.',
+  })
   create(
     @Body() createEmployeeDto: CreateEmployeeDto,
     @Query('facilityId') facilityId: string | undefined,
@@ -54,6 +74,11 @@ export class EmployeesController {
 
   @Roles(UserRole.ADMIN, UserRole.HR, UserRole.OFFICE, UserRole.ACCOUNTING)
   @Get()
+  @ApiOperation({
+    summary: 'Pobiera listę pracowników',
+    description:
+      'Zwraca listę pracowników z możliwością filtrowania i stronicowania.',
+  })
   findAll(@Query() query: GetEmployeesDto, @Req() req: UserRoleRequest) {
     return this.employeesService.findAll(query, req.user.role);
   }
