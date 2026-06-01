@@ -5,7 +5,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { UserRole } from "@/app/actions/employees.actions";
-import { useUpdateEmployeeAccessMutation } from "@/hooks/useEmployees";
+import {
+  useRevokeEmployeeAccessMutation,
+  useUpdateEmployeeAccessMutation,
+} from "@/hooks/useEmployees";
 
 import {
   Dialog,
@@ -53,6 +56,8 @@ export default function EmployeeAccessDialog({
   const [open, setOpen] = useState(false);
   const mutation = useUpdateEmployeeAccessMutation();
 
+  const revokeMutation = useRevokeEmployeeAccessMutation();
+
   const form = useForm<z.infer<typeof accessFormSchema>>({
     resolver: zodResolver(accessFormSchema),
     defaultValues: {
@@ -60,6 +65,23 @@ export default function EmployeeAccessDialog({
       temporaryPassword: "",
     },
   });
+
+  async function handleRevokeAccess() {
+    const confirmed = window.confirm(
+      "Czy na pewno chcesz odebrać temu pracownikowi dostęp do systemu?",
+    );
+
+    if (!confirmed) return;
+
+    try {
+      await revokeMutation.mutateAsync(employeeId);
+      setOpen(false);
+    } catch (error) {
+      form.setError("root", {
+        message: (error as Error).message || "Nie udało się odebrać dostępu.",
+      });
+    }
+  }
 
   async function onSubmit(values: z.infer<typeof accessFormSchema>) {
     try {
@@ -158,6 +180,17 @@ export default function EmployeeAccessDialog({
               <div className="text-sm font-medium text-destructive">
                 {form.formState.errors.root.message}
               </div>
+            )}
+
+            {isLoginEnabled && (
+              <Button
+                type="button"
+                variant="destructive"
+                disabled={revokeMutation.isPending}
+                onClick={handleRevokeAccess}
+              >
+                {revokeMutation.isPending ? "Odbieranie..." : "Odbierz dostęp"}
+              </Button>
             )}
 
             <div className="flex justify-end gap-2 pt-2">

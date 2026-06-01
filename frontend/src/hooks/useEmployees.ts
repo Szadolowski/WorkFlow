@@ -8,6 +8,7 @@ import {
   updateEmployeeAccessAction,
   CreateEmployeePayload,
   UpdateEmployeeAccessPayload,
+  revokeEmployeeAccessAction,
 } from "@/app/actions/employees.actions";
 import { useFacility } from "@/hooks/useFacility";
 
@@ -71,5 +72,19 @@ export function useEmployeeProfileQuery(employeeId: string) {
     queryFn: () => getEmployeeProfileAction(employeeId, activeFacilityId),
     enabled: !!employeeId, // Uruchom zapytanie tylko wtedy, gdy posiadamy ID
     staleTime: 1000 * 60 * 5, // Trzymaj dane w cache przez 5 minut
+  });
+}
+
+export function useRevokeEmployeeAccessMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (employeeId: string) => revokeEmployeeAccessAction(employeeId),
+    onSuccess: (_data, employeeId) => {
+      queryClient.invalidateQueries({ queryKey: ["employees"] });
+      queryClient.invalidateQueries({
+        queryKey: ["employeeProfile", employeeId],
+      });
+    },
   });
 }

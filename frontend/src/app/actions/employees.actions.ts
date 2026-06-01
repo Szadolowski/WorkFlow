@@ -139,3 +139,16 @@ export async function addDocumentAction(
     return { error: "Błąd zapisu do bazy danych." };
   }
 }
+
+export async function revokeEmployeeAccessAction(employeeId: string) {
+  const res = await serverFetch(`/employees/${employeeId}/access`, {
+    method: "DELETE",
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || "Nie udało się odebrać dostępu pracownika.");
+  }
+
+  return res.json();
+}
