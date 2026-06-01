@@ -24,12 +24,6 @@ import { Roles } from '@/auth/decorators/roles.decorator';
 import { UserRole } from '@prisma/client';
 import { EmployeeSingleResponseDto } from './dto/employee-response.dto';
 
-type UserRoleRequest = {
-  user: {
-    role: UserRole;
-  };
-};
-
 type UserProfileRequest = {
   user: {
     role: UserRole;
@@ -79,8 +73,8 @@ export class EmployeesController {
     description:
       'Zwraca listę pracowników z możliwością filtrowania i stronicowania.',
   })
-  findAll(@Query() query: GetEmployeesDto, @Req() req: UserRoleRequest) {
-    return this.employeesService.findAll(query, req.user.role);
+  findAll(@Query() query: GetEmployeesDto) {
+    return this.employeesService.findAll(query);
   }
 
   @Get(':id/profile')

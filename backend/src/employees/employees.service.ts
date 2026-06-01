@@ -80,7 +80,7 @@ export class EmployeesService {
     };
   }
 
-  async findAll(query: GetEmployeesDto, role: UserRole) {
+  async findAll(query: GetEmployeesDto) {
     const page = query.page || 1;
     const limit = query.limit || 10;
     const skip = (page - 1) * limit;
