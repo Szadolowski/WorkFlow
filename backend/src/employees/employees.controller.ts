@@ -39,7 +39,7 @@ type UserProfileRequest = {
 @ApiTags('Employees')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Controller('employees') // Zgodnie z naszą zasadą o prefixie /api/v1/
+@Controller('employees')
 export class EmployeesController {
   constructor(private readonly employeesService: EmployeesService) {}
 
@@ -75,7 +75,7 @@ export class EmployeesController {
     @Req() req: UserProfileRequest,
     @Query('facilityId') facilityId: string | undefined,
   ) {
-    const user = req.user; // Obiekt wstrzyknięty przez JwtStrategy
+    const user = req.user;
 
     return this.employeesService.getProfile(
       id,
@@ -83,5 +83,17 @@ export class EmployeesController {
       facilityId,
       user.sub,
     );
+  }
+
+  // === NOWY ENDPOINT: ZAPIS DOKUMENTU DO BAZY ===
+  @Post(':id/documents')
+  @UseGuards(JwtAuthGuard)
+  @Roles(UserRole.ADMIN, UserRole.HR)
+  @ApiOperation({ summary: 'Zapisuje w bazie wgrany dokument dla pracownika' })
+  async addDocument(
+    @Param('id') id: string,
+    @Body() body: { fileName: string; fileKey: string },
+  ) {
+    return this.employeesService.addDocument(id, body.fileName, body.fileKey);
   }
 }

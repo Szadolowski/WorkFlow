@@ -49,9 +49,8 @@ export default async function DashboardPage() {
             Twój spersonalizowany panel jest w trakcie przygotowywania.
             <br />
             <br />
-            {/* Wyświetlamy na czerwono dokładną wartość, z którą nie poradził sobie switch */}
             <span className="text-sm font-mono text-destructive bg-destructive/10 p-2 rounded-md">
-              Nierozpoznana rola: "{role}"
+              Nierozpoznana rola: &quot;{role}&quot;
             </span>
           </p>
         </div>

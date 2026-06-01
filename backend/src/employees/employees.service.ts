@@ -129,7 +129,7 @@ export class EmployeesService {
 
   async getProfile(
     id: string,
-    role: UserRole,
+    _role: UserRole,
     facilityId?: string,
     requestingUserId?: string,
   ) {
@@ -169,6 +169,10 @@ export class EmployeesService {
             dictionary: true,
           },
         },
+        // ---> TUTAJ POBIERAMY DOKUMENTY <---
+        documents: {
+          orderBy: { createdAt: 'desc' },
+        },
       },
     });
 
@@ -178,22 +182,36 @@ export class EmployeesService {
       );
     }
 
-    // --- ZMIANA TUTAJ: Nie przypisujemy hasła do zmiennej, tylko od razu usuwamy ---
-    const { contracts, assignments, certifications, ...baseEmployee } =
-      employee;
+    // ---> DODALIŚMY 'documents' DO DESTRUKTURYZACJI <---
+    const {
+      contracts,
+      assignments,
+      certifications,
+      documents,
+      ...baseEmployee
+    } = employee;
 
     const safeEmployee = { ...baseEmployee } as Partial<typeof baseEmployee>;
     delete safeEmployee.passwordHash;
     delete safeEmployee.twoFactorSecret;
 
-    // Zwracamy odpowiedź ściśle zgodną z naszym standardem { data: ... } i DTO
     return {
       data: {
         ...safeEmployee,
         currentContract: contracts.length > 0 ? contracts[0] : null,
         activeAssignments: assignments,
         validCertifications: certifications,
+        documents: documents, // ---> WYSTAWIAMY DOKUMENTY NA FRONTEND <---
       },
     };
+  }
+  async addDocument(employeeId: string, fileName: string, fileKey: string) {
+    return this.prisma.document.create({
+      data: {
+        employeeId,
+        fileName,
+        fileUrl: fileKey, // w fileUrl trzymamy klucz MinIO
+      },
+    });
   }
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { use } from "react";
+import { useState, use } from "react";
 import { useEmployeeProfileQuery } from "@/hooks/useEmployees";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -20,9 +20,23 @@ import {
   CalendarOff,
   FolderOpen,
   ShieldAlert,
+  Download,
 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input"; // <--- Dodany import Inputa
 
-// Definicje typów, aby uciszyć linter (zakaz używania "any")
+import { FileUpload } from "@/components/shared/FileUpload";
+import { getDownloadUrlAction } from "@/app/actions/storage.actions";
+import { addDocumentAction } from "@/app/actions/employees.actions";
+
+// Definicje typów, aby uciszyć linter
 type Assignment = {
   id: string;
   assignedAt: Date;
@@ -52,6 +66,10 @@ export default function EmployeeProfilePage({
   const resolvedParams = use(params);
   const employeeId = resolvedParams.id;
 
+  // Stany formularza dokumentów
+  const [docCategory, setDocCategory] = useState("Ogólny");
+  const [customFileName, setCustomFileName] = useState(""); // <--- Nowy stan na własną nazwę pliku
+
   const { data, isLoading, isError, error } =
     useEmployeeProfileQuery(employeeId);
 
@@ -65,7 +83,6 @@ export default function EmployeeProfilePage({
             <Skeleton className="h-4 w-32" />
           </div>
         </div>
-        {/* Poprawiona klasa Tailwinda: z h-[400px] na h-100 */}
         <Skeleton className="h-100 w-full" />
       </div>
     );
@@ -138,7 +155,6 @@ export default function EmployeeProfilePage({
 
       {/* SEKCJA ZAKŁADEK (TABS) */}
       <Tabs defaultValue="overview" className="w-full">
-        {/* Poprawiona klasa Tailwinda: z lg:w-[600px] na lg:w-150 */}
         <TabsList className="grid w-full lg:w-150 grid-cols-4 mb-6">
           <TabsTrigger value="overview">Podsumowanie</TabsTrigger>
           <TabsTrigger value="certifications">Uprawnienia</TabsTrigger>
@@ -363,19 +379,135 @@ export default function EmployeeProfilePage({
                 Dokumentów
               </CardTitle>
               <CardDescription>
-                Bezpieczne pliki pobierane bezpośrednio z MinIO (S3).
+                Zarządzaj plikami pracownika. Pliki są bezpiecznie transferowane
+                do MinIO (S3).
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="p-12 text-center border border-dashed rounded-lg bg-slate-50/30">
-                <FolderOpen className="w-8 h-8 mx-auto text-muted-foreground mb-3 opacity-50" />
-                <p className="text-sm font-medium">
-                  Połączenie z MinIO w przygotowaniu
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Tabela z dokumentami i mechanizm generowania Signed URL
-                  zostaną tu wkrótce podpięte.
-                </p>
+            <CardContent className="space-y-8">
+              {/* 1. SEKCJA WGRYWANIA Z WYBOREM KATEGORII I NAZWY */}
+              <div className="p-4 border rounded-lg bg-slate-50/50 space-y-4">
+                <h3 className="text-sm font-medium">Dodaj nowy dokument</h3>
+
+                <div className="flex flex-col sm:flex-row gap-4 items-end">
+                  {/* Wybór kategorii */}
+                  <div className="w-full sm:w-48">
+                    <label className="text-xs font-medium text-muted-foreground mb-1.5 block">
+                      Kategoria pliku
+                    </label>
+                    <Select value={docCategory} onValueChange={setDocCategory}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Wybierz typ" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Ogólny">Ogólny dokument</SelectItem>
+                        <SelectItem value="Umowa">Umowa</SelectItem>
+                        {/* Zmieniono na Certyfikat zgodnie z prośbą */}
+                        <SelectItem value="Certyfikat">Certyfikat</SelectItem>
+                        <SelectItem value="Medyczny">
+                          Badania lekarskie
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Pole na własną nazwę pliku */}
+                  <div className="w-full sm:w-64">
+                    <label className="text-xs font-medium text-muted-foreground mb-1.5 block">
+                      Nazwa (opcjonalnie)
+                    </label>
+                    <Input
+                      placeholder="np. Skierowanie na badania"
+                      value={customFileName}
+                      onChange={(e) => setCustomFileName(e.target.value)}
+                    />
+                  </div>
+
+                  {/* Komponent uploadu */}
+                  <div className="flex-1">
+                    <label className="text-xs font-medium text-muted-foreground mb-1.5 block">
+                      Wybierz plik z dysku
+                    </label>
+                    <FileUpload
+                      onUploadSuccess={async (
+                        fileKey: string,
+                        fileName: string,
+                      ) => {
+                        // Jeśli użytkownik wpisał nazwę, używamy jej. Jeśli nie - bierzemy nazwę z dysku.
+                        const baseName =
+                          customFileName.trim() !== ""
+                            ? customFileName.trim()
+                            : fileName;
+                        const finalName = `[${docCategory}] ${baseName}`;
+
+                        await addDocumentAction(employeeId, finalName, fileKey);
+
+                        // Po udanym wgraniu czyścimy pole tekstowe
+                        setCustomFileName("");
+                        alert("Sukces! Dokument zapisany w bazie.");
+                        window.location.reload();
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* 2. SEKCJA LISTY PLIKÓW POBIERANYCH Z BAZY I MINIO */}
+              <div>
+                <h3 className="text-sm font-medium mb-3 text-muted-foreground">
+                  Wgrane dokumenty
+                </h3>
+                {employee.documents && employee.documents.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                    {employee.documents.map((doc: any) => (
+                      <div
+                        key={doc.id}
+                        className="flex items-center justify-between p-3 border rounded-md bg-background hover:bg-slate-50/50 transition-colors"
+                      >
+                        <div className="flex items-center gap-3 overflow-hidden">
+                          <FileText className="w-5 h-5 text-muted-foreground shrink-0" />
+                          <div className="truncate">
+                            <p
+                              className="text-sm font-medium truncate"
+                              title={doc.fileName}
+                            >
+                              {doc.fileName}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {new Date(doc.createdAt).toLocaleDateString(
+                                "pl-PL",
+                              )}
+                            </p>
+                          </div>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={async () => {
+                            const res = await getDownloadUrlAction(doc.fileUrl);
+                            if (res.url) {
+                              const link = document.createElement("a");
+                              link.href = res.url;
+                              link.target = "_blank";
+                              document.body.appendChild(link);
+                              link.click();
+                              document.body.removeChild(link);
+                            }
+                          }}
+                        >
+                          <Download className="w-4 h-4 text-primary" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="p-8 text-center border border-dashed rounded-lg bg-slate-50/30">
+                    <FolderOpen className="w-8 h-8 mx-auto text-muted-foreground mb-3 opacity-30" />
+                    <p className="text-sm text-muted-foreground">
+                      Teczka pracownika jest pusta.
+                    </p>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
