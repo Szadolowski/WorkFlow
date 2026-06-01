@@ -162,6 +162,72 @@ export class EmployeesService {
     };
   }
 
+  async revokeAccess(employeeId: string, adminEmployeeId: string) {
+    const employee = await this.prisma.employee.findUnique({
+      where: { id: employeeId },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        pesel: true,
+        email: true,
+        role: true,
+        isActive: true,
+        isLoginEnabled: true,
+        createdAt: true,
+      },
+    });
+
+    if (!employee) {
+      throw new NotFoundException('Pracownik nie został znaleziony.');
+    }
+
+    const updatedEmployee = await this.prisma.$transaction(async (tx) => {
+      const updated = await tx.employee.update({
+        where: { id: employeeId },
+        data: {
+          role: UserRole.WORKER,
+          passwordHash: null,
+          isLoginEnabled: false,
+        },
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          pesel: true,
+          email: true,
+          role: true,
+          isActive: true,
+          isLoginEnabled: true,
+          createdAt: true,
+        },
+      });
+
+      await tx.auditLog.create({
+        data: {
+          employeeId: adminEmployeeId,
+          action: 'EMPLOYEE_ACCESS_REVOKED',
+          entityName: 'Employee',
+          entityId: employeeId,
+          oldValues: {
+            role: employee.role,
+            isLoginEnabled: employee.isLoginEnabled,
+          },
+          newValues: {
+            role: updated.role,
+            isLoginEnabled: updated.isLoginEnabled,
+          },
+        },
+      });
+
+      return updated;
+    });
+
+    return {
+      data: this.toEmployeeResponse(updatedEmployee),
+    };
+  }
+
   async findAll(query: GetEmployeesDto) {
     const page = query.page || 1;
     const limit = query.limit || 10;
@@ -209,6 +275,7 @@ export class EmployeesService {
           pesel: true,
           role: true,
           isActive: true,
+          isLoginEnabled: true,
           createdAt: true,
         },
       }),

@@ -76,6 +76,38 @@ export async function getEmployeeProfileAction(
   return res.json();
 }
 
+export type UserRole =
+  | "ADMIN"
+  | "HR"
+  | "OFFICE"
+  | "FOREMAN"
+  | "ACCOUNTING"
+  | "WORKER";
+
+export type UpdateEmployeeAccessPayload = {
+  role: UserRole;
+  temporaryPassword: string;
+};
+
+export async function updateEmployeeAccessAction(
+  employeeId: string,
+  data: UpdateEmployeeAccessPayload,
+) {
+  const res = await serverFetch(`/employees/${employeeId}/access`, {
+    method: "PATCH",
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(
+      err.message || "Nie udało się zaktualizować dostępu pracownika.",
+    );
+  }
+
+  return res.json();
+}
+
 // ==========================================
 // NOWE: Zapis dokumentu (MinIO klucz) do bazy
 // ==========================================

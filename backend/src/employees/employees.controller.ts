@@ -8,6 +8,7 @@ import {
   UseGuards,
   Param,
   Req,
+  Delete,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -94,6 +95,29 @@ export class EmployeesController {
     @Req() req: AuthenticatedEmployeeRequest,
   ) {
     return this.employeesService.updateAccess(id, dto, req.user.sub);
+  }
+
+  @Roles(UserRole.ADMIN)
+  @Delete(':id/access')
+  @ApiOperation({
+    summary: 'Odbiera pracownikowi dostęp do systemu',
+    description:
+      'Wyłącza możliwość logowania, usuwa hash hasła i resetuje rolę systemową do WORKER. Operacja dostępna wyłącznie dla administratora.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Dostęp pracownika został odebrany.',
+    type: EmployeeSingleResponseDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Pracownik nie istnieje.',
+  })
+  revokeAccess(
+    @Param('id') id: string,
+    @Req() req: AuthenticatedEmployeeRequest,
+  ) {
+    return this.employeesService.revokeAccess(id, req.user.sub);
   }
 
   @Roles(UserRole.ADMIN, UserRole.HR, UserRole.OFFICE, UserRole.ACCOUNTING)

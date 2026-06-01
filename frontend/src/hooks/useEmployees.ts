@@ -5,7 +5,9 @@ import {
   getEmployeesAction,
   createEmployeeAction,
   getEmployeeProfileAction,
+  updateEmployeeAccessAction,
   CreateEmployeePayload,
+  UpdateEmployeeAccessPayload,
 } from "@/app/actions/employees.actions";
 import { useFacility } from "@/hooks/useFacility";
 
@@ -37,6 +39,26 @@ export function useCreateEmployeeMutation() {
       createEmployeeAction(data, facilityId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["employees"] });
+    },
+  });
+}
+
+type UpdateEmployeeAccessMutationInput = {
+  employeeId: string;
+  data: UpdateEmployeeAccessPayload;
+};
+
+export function useUpdateEmployeeAccessMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ employeeId, data }: UpdateEmployeeAccessMutationInput) =>
+      updateEmployeeAccessAction(employeeId, data),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["employees"] });
+      queryClient.invalidateQueries({
+        queryKey: ["employeeProfile", variables.employeeId],
+      });
     },
   });
 }

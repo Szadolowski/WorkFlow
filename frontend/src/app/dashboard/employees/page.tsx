@@ -11,16 +11,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import EmployeeAccessDialog from "@/components/employees/EmployeeAccessDialog";
+import { UserRole } from "@/app/actions/employees.actions";
 
 // Definicja typu, żeby linter nie krzyczał o "any"
 type EmployeeListDto = {
   id: string;
   firstName: string;
   lastName: string;
-  email: string;
-  pesel: string;
-  role: string;
+  email: string | null;
+  pesel: string | null;
+  role: UserRole;
   isActive: boolean;
+  isLoginEnabled: boolean;
 };
 
 export default function EmployeesPage() {
@@ -62,13 +65,15 @@ export default function EmployeesPage() {
                 <TableHead>PESEL</TableHead>
                 <TableHead>Rola</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Dostęp</TableHead>
+                <TableHead className="text-right">Akcje</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {data.data.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={5}
+                    colSpan={7}
                     className="text-center py-8 text-slate-500"
                   >
                     Brak pracowników w bazie. Kliknij &quot;Dodaj
@@ -109,6 +114,25 @@ export default function EmployeesPage() {
                           Nieaktywny
                         </span>
                       )}
+                    </TableCell>
+                    <TableCell>
+                      {employee.isLoginEnabled ? (
+                        <span className="text-blue-600 font-medium text-sm">
+                          Konto aktywne
+                        </span>
+                      ) : (
+                        <span className="text-slate-500 font-medium text-sm">
+                          Brak dostępu
+                        </span>
+                      )}
+                    </TableCell>
+
+                    <TableCell className="text-right">
+                      <EmployeeAccessDialog
+                        employeeId={employee.id}
+                        currentRole={employee.role}
+                        isLoginEnabled={employee.isLoginEnabled}
+                      />
                     </TableCell>
                   </TableRow>
                 ))
