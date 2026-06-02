@@ -3,25 +3,45 @@ import {
   Injectable,
   BadRequestException,
 } from '@nestjs/common';
-import { UserRole } from '@prisma/client';
+import { ContractType, UserRole } from '@prisma/client';
 import { JwtPayload } from '@/auth/guards/jwt-auth.guard';
 import { PrismaService } from '@/prisma/prisma.service';
 import * as ExcelJS from 'exceljs';
 import type { Response } from 'express';
 
-// Definiujemy ścisły interfejs, żeby linter nie krzyczał o typ "any"
 interface PayrollRecord {
   firstName: string;
   lastName: string;
   pesel: string;
   role: string;
-  hourlyRate: number;
+  contractType: ContractType | 'BRAK';
+  salaryAmount: number;
   totalHours: number;
 }
 
 @Injectable()
 export class PayrollService {
   constructor(private prisma: PrismaService) {}
+
+  private calculateGrossPay(record: PayrollRecord) {
+    if (record.contractType === ContractType.UOP) {
+      return record.salaryAmount;
+    }
+
+    if (record.contractType === ContractType.UZ) {
+      return record.salaryAmount * record.totalHours;
+    }
+
+    if (record.contractType === ContractType.B2B) {
+      return record.salaryAmount * record.totalHours;
+    }
+
+    if (record.contractType === ContractType.UD) {
+      return record.salaryAmount;
+    }
+
+    return 0;
+  }
 
   async generateExcelExport(
     month: number,
@@ -73,7 +93,8 @@ export class PayrollService {
           lastName: emp.lastName,
           pesel: emp.pesel || 'Brak',
           role: emp.role,
-          hourlyRate: currentContract
+          contractType: currentContract ? currentContract.type : 'BRAK',
+          salaryAmount: currentContract
             ? Number(currentContract.salaryAmount)
             : 0,
           totalHours: 0,
@@ -93,22 +114,23 @@ export class PayrollService {
       { header: 'Nazwisko', key: 'lastName', width: 20 },
       { header: 'PESEL', key: 'pesel', width: 15 },
       { header: 'Stanowisko', key: 'role', width: 15 },
+      { header: 'Typ umowy', key: 'contractType', width: 15 },
       {
-        header: 'Stawka (PLN/h)',
-        key: 'hourlyRate',
-        width: 15,
+        header: 'Stawka / wynagrodzenie',
+        key: 'salaryAmount',
+        width: 22,
         style: { numFmt: '#,##0.00 "zł"' },
       },
       {
-        header: 'Przepracowane Godziny',
+        header: 'Przepracowane godziny',
         key: 'totalHours',
-        width: 25,
+        width: 22,
         style: { numFmt: '0.00 "h"' },
       },
       {
-        header: 'Kwota Brutto (PLN)',
+        header: 'Kwota brutto (PLN)',
         key: 'totalPay',
-        width: 25,
+        width: 22,
         style: { numFmt: '#,##0.00 "zł"', font: { bold: true } },
       },
     ];
@@ -127,12 +149,12 @@ export class PayrollService {
         lastName: data.lastName,
         pesel: data.pesel,
         role: data.role,
-        hourlyRate: data.hourlyRate,
+        contractType: data.contractType,
+        salaryAmount: data.salaryAmount,
         totalHours: data.totalHours,
-        totalPay: data.hourlyRate * data.totalHours,
+        totalPay: this.calculateGrossPay(data),
       });
     });
-
     res.setHeader(
       'Content-Type',
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
