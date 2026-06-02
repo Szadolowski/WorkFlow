@@ -9,10 +9,8 @@ import { UserRole } from '@prisma/client';
 import type { Response } from 'express';
 
 import { Roles } from '@/auth/decorators/roles.decorator';
-import {
-  JwtAuthGuard,
-  AuthenticatedRequest,
-} from '@/auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
+import type { AuthenticatedRequest } from '@/auth/guards/jwt-auth.guard';
 import { RolesGuard } from '@/auth/guards/roles.guard';
 import { PayrollService } from './payroll.service';
 import { ExportPayrollQueryDto } from './dto/export-payroll-query.dto';
