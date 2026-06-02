@@ -1,4 +1,10 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  BadRequestException,
+} from '@nestjs/common';
+import { UserRole } from '@prisma/client';
+import { JwtPayload } from '@/auth/guards/jwt-auth.guard';
 import { PrismaService } from '@/prisma/prisma.service';
 import * as ExcelJS from 'exceljs';
 import type { Response } from 'express';
@@ -21,8 +27,16 @@ export class PayrollService {
     month: number,
     year: number,
     facilityId: string,
+    user: JwtPayload,
     res: Response,
   ) {
+    if (
+      user.role !== UserRole.ADMIN &&
+      !user.facilityIds.includes(facilityId)
+    ) {
+      throw new ForbiddenException('Brak dostępu do wybranego zakładu.');
+    }
+
     const startDate = new Date(year, month - 1, 1);
     const endDate = new Date(year, month, 1);
 
