@@ -25,19 +25,17 @@ export class StorageController {
       throw new BadRequestException('Brak parametru fileName');
     }
 
-    // Dodajemy znacznik czasu, żeby pliki o tej samej nazwie się nie nadpisywały
     const sanitizedName = fileName.replace(/[^a-zA-Z0-9.\-_]/g, '_');
     const uniqueFileKey = `${Date.now()}-${sanitizedName}`;
 
-    // Generujemy link ważny przez 1 godzinę (3600 sekund)
     const url = await this.storageService.getPresignedUploadUrl(
       uniqueFileKey,
-      3600,
+      900,
     );
 
     return {
-      url, // Ten link frontend użyje do zrobienia PUT z plikiem
-      fileKey: uniqueFileKey, // Tę nazwę frontend wyśle nam potem, żeby zapisać ją w bazie danych
+      url,
+      fileKey: uniqueFileKey,
     };
   }
 }
