@@ -40,20 +40,4 @@ export class StorageController {
       fileKey: uniqueFileKey, // Tę nazwę frontend wyśle nam potem, żeby zapisać ją w bazie danych
     };
   }
-
-  @Get('download-url')
-  @ApiOperation({
-    summary: 'Pobiera czasowy link do odczytu/pobrania pliku z MinIO',
-  })
-  async getDownloadUrl(@Query('fileKey') fileKey: string) {
-    if (!fileKey) {
-      throw new BadRequestException('Brak parametru fileKey');
-    }
-
-    const url = await this.storageService.getPresignedDownloadUrl(
-      fileKey,
-      3600,
-    );
-    return { url };
-  }
 }
