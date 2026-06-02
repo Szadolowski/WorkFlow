@@ -29,6 +29,8 @@ import {
   EmployeeSingleResponseDto,
 } from './dto/employee-response.dto';
 import { UpdateEmployeeAccessDto } from './dto/update-employee-access.dto';
+import { AddEmployeeDocumentDto } from './dto/add-employee-document.dto';
+import { EmployeeDocumentSingleResponseDto } from './dto/employee-document-response.dto';
 
 type AuthenticatedEmployeeRequest = {
   user: {
@@ -170,15 +172,26 @@ export class EmployeesController {
     );
   }
 
-  // === NOWY ENDPOINT: ZAPIS DOKUMENTU DO BAZY ===
   @Post(':id/documents')
-  @UseGuards(JwtAuthGuard)
   @Roles(UserRole.ADMIN, UserRole.HR)
-  @ApiOperation({ summary: 'Zapisuje w bazie wgrany dokument dla pracownika' })
+  @ApiOperation({
+    summary: 'Zapisuje dokument pracownika w bazie',
+    description:
+      'Rejestruje w bazie metadane dokumentu wcześniej wgranego do MinIO. fileKey jest zapisywany jako fileUrl.',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Dokument został przypisany do pracownika.',
+    type: EmployeeDocumentSingleResponseDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Pracownik nie istnieje lub jest nieaktywny.',
+  })
   async addDocument(
     @Param('id') id: string,
-    @Body() body: { fileName: string; fileKey: string },
+    @Body() dto: AddEmployeeDocumentDto,
   ) {
-    return this.employeesService.addDocument(id, body.fileName, body.fileKey);
+    return this.employeesService.addDocument(id, dto);
   }
 }

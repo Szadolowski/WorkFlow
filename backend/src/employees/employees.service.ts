@@ -10,6 +10,7 @@ import { GetEmployeesDto } from './dto/get-employees.dto';
 import { Prisma, UserRole } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { UpdateEmployeeAccessDto } from './dto/update-employee-access.dto';
+import { AddEmployeeDocumentDto } from './dto/add-employee-document.dto';
 
 @Injectable()
 export class EmployeesService {
@@ -371,13 +372,39 @@ export class EmployeesService {
       },
     };
   }
-  async addDocument(employeeId: string, fileName: string, fileKey: string) {
-    return this.prisma.document.create({
-      data: {
-        employeeId,
-        fileName,
-        fileUrl: fileKey, // w fileUrl trzymamy klucz MinIO
+
+  async addDocument(employeeId: string, dto: AddEmployeeDocumentDto) {
+    const employee = await this.prisma.employee.findUnique({
+      where: { id: employeeId },
+      select: {
+        id: true,
+        isActive: true,
       },
     });
+
+    if (!employee || !employee.isActive) {
+      throw new NotFoundException(
+        'Pracownik nie został znaleziony lub jest nieaktywny.',
+      );
+    }
+
+    const document = await this.prisma.document.create({
+      data: {
+        employeeId,
+        fileName: dto.fileName,
+        fileUrl: dto.fileKey,
+      },
+      select: {
+        id: true,
+        employeeId: true,
+        fileName: true,
+        fileUrl: true,
+        createdAt: true,
+      },
+    });
+
+    return {
+      data: document,
+    };
   }
 }
