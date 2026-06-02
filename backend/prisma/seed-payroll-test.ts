@@ -19,6 +19,7 @@ const prisma = new PrismaClient({ adapter: new PrismaPg(pool) });
 
 const payrollMonth = Number(process.env.PAYROLL_MONTH || 3);
 const payrollYear = Number(process.env.PAYROLL_YEAR || 2026);
+const payrollEmployeeLimit = Number(process.env.PAYROLL_EMPLOYEE_LIMIT || 5);
 const payrollFacilityId = process.env.PAYROLL_FACILITY_ID;
 const payrollFacilityCode = process.env.PAYROLL_FACILITY_CODE;
 
@@ -50,6 +51,21 @@ function getBusinessDays(year: number, month: number, limit = 10) {
   }
 
   return days;
+}
+
+function shuffleArray<T>(items: T[]) {
+  const shuffled = [...items];
+
+  for (let index = shuffled.length - 1; index > 0; index--) {
+    const randomIndex = Math.floor(Math.random() * (index + 1));
+
+    [shuffled[index], shuffled[randomIndex]] = [
+      shuffled[randomIndex],
+      shuffled[index],
+    ];
+  }
+
+  return shuffled;
 }
 
 async function resolveFacility() {
@@ -214,8 +230,6 @@ async function getExistingPayrollEmployees(facilityId: string) {
       isActive: true,
       role: UserRole.WORKER,
     },
-    orderBy: [{ lastName: 'asc' }, { firstName: 'asc' }],
-    take: 5,
     include: {
       contracts: {
         where: {
@@ -232,7 +246,7 @@ async function getExistingPayrollEmployees(facilityId: string) {
     );
   }
 
-  return employees;
+  return shuffleArray(employees).slice(0, payrollEmployeeLimit);
 }
 
 async function main() {
@@ -252,6 +266,14 @@ async function main() {
     throw new Error('PAYROLL_YEAR musi być liczbą od 2000 do 2100.');
   }
 
+  if (
+    !Number.isInteger(payrollEmployeeLimit) ||
+    payrollEmployeeLimit < 1 ||
+    payrollEmployeeLimit > 50
+  ) {
+    throw new Error('PAYROLL_EMPLOYEE_LIMIT musi być liczbą od 1 do 50.');
+  }
+
   const facility = await resolveFacility();
   const { startDate, endDate } = getPeriodRange(payrollYear, payrollMonth);
 
@@ -260,6 +282,7 @@ async function main() {
   );
   console.log(`Zakład: ${facility.name} (${facility.id})`);
   console.log(`Okres: ${payrollMonth}/${payrollYear}`);
+  console.log(`Limit pracowników: ${payrollEmployeeLimit}`);
 
   await removeOldDemoPayrollEmployees();
 
@@ -280,8 +303,22 @@ async function main() {
     },
   });
 
+  await prisma.timeEntry.deleteMany({
+    where: {
+      projectId: project.id,
+      startTime: {
+        gte: startDate,
+        lt: endDate,
+      },
+    },
+  });
+
   const payrollEmployees = await getExistingPayrollEmployees(facility.id);
   const days = getBusinessDays(payrollYear, payrollMonth, 10);
+
+  console.log(
+    `Wylosowano ${payrollEmployees.length} pracowników do danych payroll.`,
+  );
 
   for (const [index, employee] of payrollEmployees.entries()) {
     await prisma.employeeFacilityAccess.upsert({
@@ -298,8 +335,10 @@ async function main() {
       update: {},
     });
 
-    if (employee.contracts.length === 0) {
-      await prisma.contract.create({
+    let currentContract = employee.contracts[0];
+
+    if (!currentContract) {
+      currentContract = await prisma.contract.create({
         data: {
           employeeId: employee.id,
           type: ContractType.UZ,
@@ -313,17 +352,6 @@ async function main() {
         `ℹ️ Dodano testową umowę UZ dla: ${employee.firstName} ${employee.lastName}`,
       );
     }
-
-    await prisma.timeEntry.deleteMany({
-      where: {
-        employeeId: employee.id,
-        projectId: project.id,
-        startTime: {
-          gte: startDate,
-          lt: endDate,
-        },
-      },
-    });
 
     for (const day of days) {
       const startTime = new Date(day);
@@ -344,14 +372,8 @@ async function main() {
       });
     }
 
-    const currentContract = employee.contracts[0];
-
     console.log(
-      `✅ ${employee.firstName} ${employee.lastName}: ${days.length} zatwierdzonych wpisów po 8h, umowa: ${
-        currentContract
-          ? `${currentContract.type}, ${currentContract.salaryAmount.toString()}`
-          : 'dodano UZ testową'
-      }`,
+      `✅ ${employee.firstName} ${employee.lastName}: ${days.length} zatwierdzonych wpisów po 8h, umowa: ${currentContract.type}, ${currentContract.salaryAmount.toString()}`,
     );
   }
 
