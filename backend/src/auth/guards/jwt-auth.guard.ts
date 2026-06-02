@@ -4,6 +4,7 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { UserRole } from '@prisma/client';
@@ -27,6 +28,7 @@ export class JwtAuthGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
     private prisma: PrismaService,
+    private configService: ConfigService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -37,9 +39,15 @@ export class JwtAuthGuard implements CanActivate {
       throw new UnauthorizedException('Brak tokena dostępu');
     }
 
+    const jwtSecret = this.configService.get<string>('JWT_SECRET');
+
+    if (!jwtSecret) {
+      throw new UnauthorizedException('Brak konfiguracji JWT_SECRET');
+    }
+
     try {
       const payload = await this.jwtService.verifyAsync<JwtPayload>(token, {
-        secret: process.env.JWT_SECRET,
+        secret: jwtSecret,
       });
 
       const employee = await this.prisma.employee.findUnique({
