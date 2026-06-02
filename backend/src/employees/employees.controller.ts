@@ -194,4 +194,36 @@ export class EmployeesController {
   ) {
     return this.employeesService.addDocument(id, dto);
   }
+
+  @Get(':id/documents/:documentId/download-url')
+  @ApiOperation({
+    summary: 'Pobiera bezpieczny link do pobrania dokumentu pracownika',
+    description:
+      'Generuje czasowy link do dokumentu po sprawdzeniu, czy użytkownik ma dostęp do pracownika i zakładu.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Link do pobrania dokumentu został wygenerowany.',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Brak dostępu do dokumentu.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Dokument nie istnieje.',
+  })
+  getDocumentDownloadUrl(
+    @Param('id') id: string,
+    @Param('documentId') documentId: string,
+    @Query('facilityId') facilityId: string | undefined,
+    @Req() req: AuthenticatedEmployeeRequest,
+  ) {
+    return this.employeesService.getDocumentDownloadUrl(
+      id,
+      documentId,
+      facilityId,
+      req.user,
+    );
+  }
 }

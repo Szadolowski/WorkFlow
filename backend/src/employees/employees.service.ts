@@ -11,10 +11,14 @@ import { Prisma, UserRole } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { UpdateEmployeeAccessDto } from './dto/update-employee-access.dto';
 import { AddEmployeeDocumentDto } from './dto/add-employee-document.dto';
+import { StorageService } from '@/storage/storage.service';
 
 @Injectable()
 export class EmployeesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly storageService: StorageService,
+  ) {}
 
   private toEmployeeResponse(employee: {
     id: string;
@@ -405,6 +409,73 @@ export class EmployeesService {
 
     return {
       data: document,
+    };
+  }
+  async getDocumentDownloadUrl(
+    employeeId: string,
+    documentId: string,
+    facilityId: string | undefined,
+    requestingUser: { sub: string; role: UserRole; facilityIds?: string[] },
+  ) {
+    if (requestingUser.sub !== employeeId) {
+      if (!facilityId) {
+        throw new ForbiddenException('Brak aktywnego zakładu.');
+      }
+
+      if (
+        requestingUser.role !== UserRole.ADMIN &&
+        !requestingUser.facilityIds?.includes(facilityId)
+      ) {
+        throw new ForbiddenException('Brak dostępu do wybranego zakładu.');
+      }
+    }
+
+    const document = await this.prisma.document.findUnique({
+      where: { id: documentId },
+      select: {
+        id: true,
+        employeeId: true,
+        fileUrl: true,
+        employee: {
+          select: {
+            isActive: true,
+          },
+        },
+      },
+    });
+
+    if (!document || document.employeeId !== employeeId) {
+      throw new NotFoundException('Dokument nie został znaleziony.');
+    }
+
+    if (!document.employee.isActive) {
+      throw new NotFoundException(
+        'Pracownik nie został znaleziony lub jest nieaktywny.',
+      );
+    }
+
+    if (requestingUser.sub !== employeeId) {
+      const accessRows = await this.prisma.$queryRaw<{ id: string }[]>`
+        SELECT 1 AS id
+        FROM "EmployeeFacilityAccess"
+        WHERE "employeeId" = ${employeeId} AND "facilityId" = ${facilityId}
+        LIMIT 1
+      `;
+
+      if (accessRows.length === 0) {
+        throw new ForbiddenException('Brak dostępu do dokumentu pracownika.');
+      }
+    }
+
+    const url = await this.storageService.getPresignedDownloadUrl(
+      document.fileUrl,
+      900,
+    );
+
+    return {
+      data: {
+        url,
+      },
     };
   }
 }
