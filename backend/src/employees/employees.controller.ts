@@ -24,7 +24,10 @@ import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 import { RolesGuard } from '@/auth/guards/roles.guard';
 import { Roles } from '@/auth/decorators/roles.decorator';
 import { UserRole } from '@prisma/client';
-import { EmployeeSingleResponseDto } from './dto/employee-response.dto';
+import {
+  EmployeeListResponseDto,
+  EmployeeSingleResponseDto,
+} from './dto/employee-response.dto';
 import { UpdateEmployeeAccessDto } from './dto/update-employee-access.dto';
 
 type AuthenticatedEmployeeRequest = {
@@ -126,6 +129,15 @@ export class EmployeesController {
     summary: 'Pobiera listę pracowników',
     description:
       'Zwraca listę pracowników z możliwością filtrowania i stronicowania.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista pracowników została pobrana.',
+    type: EmployeeListResponseDto,
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Brak aktywnego zakładu lub brak uprawnień.',
   })
   findAll(@Query() query: GetEmployeesDto) {
     return this.employeesService.findAll(query);

@@ -27,7 +27,11 @@ export async function getEmployeesAction(
   const res = await serverFetch(`/employees?${params.toString()}`);
 
   if (!res.ok) {
-    throw new Error("Błąd podczas pobierania listy pracowników.");
+    const err = await res.json().catch(() => ({}));
+
+    throw new Error(
+      err.message || "Błąd podczas pobierania listy pracowników.",
+    );
   }
 
   return res.json();

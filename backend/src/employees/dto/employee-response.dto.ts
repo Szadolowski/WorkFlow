@@ -66,3 +66,43 @@ export class EmployeeSingleResponseDto {
   })
   data!: EmployeeResponseDto;
 }
+
+export class PaginationMetaDto {
+  @ApiProperty({
+    example: 25,
+    description: 'Łączna liczba rekordów spełniających warunki filtrowania.',
+  })
+  total!: number;
+
+  @ApiProperty({
+    example: 1,
+    description: 'Aktualna strona wyników.',
+  })
+  page!: number;
+
+  @ApiProperty({
+    example: 10,
+    description: 'Liczba rekordów na stronę.',
+  })
+  limit!: number;
+
+  @ApiProperty({
+    example: 3,
+    description: 'Łączna liczba stron.',
+  })
+  totalPages!: number;
+}
+
+export class EmployeeListResponseDto {
+  @ApiProperty({
+    type: [EmployeeResponseDto],
+    description: 'Lista pracowników.',
+  })
+  data!: EmployeeResponseDto[];
+
+  @ApiProperty({
+    type: PaginationMetaDto,
+    description: 'Metadane paginacji.',
+  })
+  meta!: PaginationMetaDto;
+}
