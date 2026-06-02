@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
 import { EmployeesService } from './employees.service';
 import { EmployeesController } from './employees.controller';
-import { PrismaModule } from '../prisma/prisma.module'; // Upewnij się, że ścieżka do Prismy jest zgodna z Twoim projektem
+import { PrismaModule } from '../prisma/prisma.module';
 import { AuthModule } from '../auth/auth.module';
+import { StorageModule } from '@/storage/storage.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule], // Potrzebujemy Prismy do operacji na bazie
+  imports: [PrismaModule, AuthModule, StorageModule],
   controllers: [EmployeesController],
   providers: [EmployeesService],
 })

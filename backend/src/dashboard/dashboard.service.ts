@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import { JwtPayload } from '@/auth/guards/jwt-auth.guard';
 import { UserRole } from '@prisma/client';
@@ -7,9 +7,32 @@ import { UserRole } from '@prisma/client';
 export class DashboardService {
   constructor(private prisma: PrismaService) {}
 
-  async getSummary(user: JwtPayload, facilityIdParam?: string) {
-    // Priorytet ma ID z paska nawigacji (query), fallback na domyślny zakład usera
+  private resolveFacilityIdForScopedUser(
+    user: JwtPayload,
+    facilityIdParam?: string,
+  ) {
     const facilityId = facilityIdParam || user.activeFacilityId;
+
+    if (!facilityId) {
+      throw new ForbiddenException('Brak aktywnego zakładu.');
+    }
+
+    if (!user.facilityIds?.includes(facilityId)) {
+      throw new ForbiddenException('Brak dostępu do wybranego zakładu.');
+    }
+
+    return facilityId;
+  }
+
+  async getSummary(user: JwtPayload, facilityIdParam?: string) {
+    if (user.role === UserRole.ADMIN) {
+      return this.getAdminSummary();
+    }
+
+    const facilityId = this.resolveFacilityIdForScopedUser(
+      user,
+      facilityIdParam,
+    );
 
     switch (user.role) {
       case UserRole.HR:
@@ -18,10 +41,7 @@ export class DashboardService {
         return this.getForemanSummary(facilityId);
       case UserRole.ACCOUNTING:
         return this.getAccountingSummary(facilityId);
-      case UserRole.ADMIN:
-        return this.getAdminSummary(); // Admin widzi globalnie (bez facilityId)
       default:
-        // Fallback dla pozostałych ról (np. WORKER)
         return { role: user.role, data: {} };
     }
   }

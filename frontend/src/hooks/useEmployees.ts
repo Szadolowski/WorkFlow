@@ -1,18 +1,19 @@
 "use client";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   getEmployeesAction,
   createEmployeeAction,
   getEmployeeProfileAction,
-  CreateEmployeePayload,
+  updateEmployeeAccessAction,
+  revokeEmployeeAccessAction,
 } from "@/app/actions/employees.actions";
 import { useFacility } from "@/hooks/useFacility";
+import type {
+  CreateEmployeePayload,
+  UpdateEmployeeAccessPayload,
+} from "@/types/employees";
 
-/**
- * Hook do pobierania listy pracowników.
- * Automatycznie cache'uje dane i reaguje na zmiany paginacji/filtrów.
- */
 export function useEmployeesQuery(
   page = 1,
   limit = 10,
@@ -22,44 +23,70 @@ export function useEmployeesQuery(
   const { activeFacilityId } = useFacility();
 
   return useQuery({
-    // queryKey gwarantuje, że przy zmianie np. strony, Query pobierze nowe dane
     queryKey: ["employees", activeFacilityId, { page, limit, role, isActive }],
     queryFn: () =>
       getEmployeesAction(page, limit, role, isActive, activeFacilityId),
   });
 }
 
-/**
- * Hook do tworzenia nowego pracownika.
- * Po sukcesie automatycznie odświeża tabelę.
- */
+type CreateEmployeeMutationInput = {
+  data: CreateEmployeePayload;
+  facilityId: string;
+};
+
 export function useCreateEmployeeMutation() {
   const queryClient = useQueryClient();
-  const { activeFacilityId } = useFacility();
 
   return useMutation({
-    mutationFn: (data: CreateEmployeePayload) =>
-      createEmployeeAction(data, activeFacilityId),
+    mutationFn: ({ data, facilityId }: CreateEmployeeMutationInput) =>
+      createEmployeeAction(data, facilityId),
     onSuccess: () => {
-      // Inwalidacja cache: Zmuszamy TanStack Query do ponownego pobrania listy z bazy,
-      // aby nowy pracownik od razu pojawił się w tabeli.
       queryClient.invalidateQueries({ queryKey: ["employees"] });
     },
   });
 }
 
-/**
- * ==========================================
- * NOWE: Hook do pobierania pełnego profilu
- * ==========================================
- */
+type UpdateEmployeeAccessMutationInput = {
+  employeeId: string;
+  data: UpdateEmployeeAccessPayload;
+};
+
+export function useUpdateEmployeeAccessMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ employeeId, data }: UpdateEmployeeAccessMutationInput) =>
+      updateEmployeeAccessAction(employeeId, data),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["employees"] });
+      queryClient.invalidateQueries({
+        queryKey: ["employeeProfile", variables.employeeId],
+      });
+    },
+  });
+}
+
 export function useEmployeeProfileQuery(employeeId: string) {
   const { activeFacilityId } = useFacility();
 
   return useQuery({
     queryKey: ["employeeProfile", activeFacilityId, employeeId],
     queryFn: () => getEmployeeProfileAction(employeeId, activeFacilityId),
-    enabled: !!employeeId, // Uruchom zapytanie tylko wtedy, gdy posiadamy ID
-    staleTime: 1000 * 60 * 5, // Trzymaj dane w cache przez 5 minut
+    enabled: !!employeeId,
+    staleTime: 1000 * 60 * 5,
+  });
+}
+
+export function useRevokeEmployeeAccessMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (employeeId: string) => revokeEmployeeAccessAction(employeeId),
+    onSuccess: (_data, employeeId) => {
+      queryClient.invalidateQueries({ queryKey: ["employees"] });
+      queryClient.invalidateQueries({
+        queryKey: ["employeeProfile", employeeId],
+      });
+    },
   });
 }

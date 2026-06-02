@@ -30,10 +30,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input"; // <--- Dodany import Inputa
-
+import { Input } from "@/components/ui/input";
 import { FileUpload } from "@/components/shared/FileUpload";
-import { getDownloadUrlAction } from "@/app/actions/storage.actions";
+import { useFacility } from "@/hooks/useFacility";
+import {
+  getEmployeeDocumentDownloadUrlAction,
+  getEmployeeDocumentUploadUrlAction,
+} from "@/app/actions/storage.actions";
 import { addDocumentAction } from "@/app/actions/employees.actions";
 
 // Definicje typów, aby uciszyć linter
@@ -45,6 +48,14 @@ type Assignment = {
     internalCode: string | null;
     status: string;
   };
+};
+
+type EmployeeDocument = {
+  id: string;
+  employeeId: string;
+  fileName: string;
+  fileUrl: string;
+  createdAt: string;
 };
 
 type Certification = {
@@ -66,7 +77,7 @@ export default function EmployeeProfilePage({
   const resolvedParams = use(params);
   const employeeId = resolvedParams.id;
 
-  // Stany formularza dokumentów
+  const { activeFacilityId } = useFacility();
   const [docCategory, setDocCategory] = useState("Ogólny");
   const [customFileName, setCustomFileName] = useState(""); // <--- Nowy stan na własną nazwę pliku
 
@@ -100,13 +111,11 @@ export default function EmployeeProfilePage({
 
   const employee = data.data;
 
-  // Inicjały do Avatara (np. Jan Kowalski -> JK)
   const initials =
     `${employee.firstName.charAt(0)}${employee.lastName.charAt(0)}`.toUpperCase();
 
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-8">
-      {/* SEKCJA GŁÓWNA: Karta informacyjna */}
       <div className="flex flex-col md:flex-row md:items-center gap-6 bg-card p-6 rounded-xl border shadow-sm">
         <Avatar className="w-24 h-24 border-2 border-primary/10">
           <AvatarImage
@@ -383,13 +392,12 @@ export default function EmployeeProfilePage({
                 do MinIO (S3).
               </CardDescription>
             </CardHeader>
+
             <CardContent className="space-y-8">
-              {/* 1. SEKCJA WGRYWANIA Z WYBOREM KATEGORII I NAZWY */}
               <div className="p-4 border rounded-lg bg-slate-50/50 space-y-4">
                 <h3 className="text-sm font-medium">Dodaj nowy dokument</h3>
 
                 <div className="flex flex-col sm:flex-row gap-4 items-end">
-                  {/* Wybór kategorii */}
                   <div className="w-full sm:w-48">
                     <label className="text-xs font-medium text-muted-foreground mb-1.5 block">
                       Kategoria pliku
@@ -401,7 +409,6 @@ export default function EmployeeProfilePage({
                       <SelectContent>
                         <SelectItem value="Ogólny">Ogólny dokument</SelectItem>
                         <SelectItem value="Umowa">Umowa</SelectItem>
-                        {/* Zmieniono na Certyfikat zgodnie z prośbą */}
                         <SelectItem value="Certyfikat">Certyfikat</SelectItem>
                         <SelectItem value="Medyczny">
                           Badania lekarskie
@@ -410,7 +417,6 @@ export default function EmployeeProfilePage({
                     </Select>
                   </div>
 
-                  {/* Pole na własną nazwę pliku */}
                   <div className="w-full sm:w-64">
                     <label className="text-xs font-medium text-muted-foreground mb-1.5 block">
                       Nazwa (opcjonalnie)
@@ -422,26 +428,31 @@ export default function EmployeeProfilePage({
                     />
                   </div>
 
-                  {/* Komponent uploadu */}
                   <div className="flex-1">
                     <label className="text-xs font-medium text-muted-foreground mb-1.5 block">
                       Wybierz plik z dysku
                     </label>
                     <FileUpload
+                      getUploadUrl={(fileName) =>
+                        getEmployeeDocumentUploadUrlAction(
+                          employeeId,
+                          fileName,
+                          activeFacilityId,
+                        )
+                      }
                       onUploadSuccess={async (
                         fileKey: string,
                         fileName: string,
                       ) => {
-                        // Jeśli użytkownik wpisał nazwę, używamy jej. Jeśli nie - bierzemy nazwę z dysku.
                         const baseName =
                           customFileName.trim() !== ""
                             ? customFileName.trim()
                             : fileName;
+
                         const finalName = `[${docCategory}] ${baseName}`;
 
                         await addDocumentAction(employeeId, finalName, fileKey);
 
-                        // Po udanym wgraniu czyścimy pole tekstowe
                         setCustomFileName("");
                         alert("Sukces! Dokument zapisany w bazie.");
                         window.location.reload();
@@ -451,15 +462,14 @@ export default function EmployeeProfilePage({
                 </div>
               </div>
 
-              {/* 2. SEKCJA LISTY PLIKÓW POBIERANYCH Z BAZY I MINIO */}
               <div>
                 <h3 className="text-sm font-medium mb-3 text-muted-foreground">
                   Wgrane dokumenty
                 </h3>
+
                 {employee.documents && employee.documents.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                    {employee.documents.map((doc: any) => (
+                    {employee.documents.map((doc: EmployeeDocument) => (
                       <div
                         key={doc.id}
                         className="flex items-center justify-between p-3 border rounded-md bg-background hover:bg-slate-50/50 transition-colors"
@@ -480,14 +490,26 @@ export default function EmployeeProfilePage({
                             </p>
                           </div>
                         </div>
+
                         <Button
                           variant="ghost"
                           size="icon"
                           onClick={async () => {
-                            const res = await getDownloadUrlAction(doc.fileUrl);
-                            if (res.url) {
+                            const res =
+                              await getEmployeeDocumentDownloadUrlAction(
+                                employeeId,
+                                doc.id,
+                                activeFacilityId,
+                              );
+
+                            if (res.error) {
+                              alert(res.error);
+                              return;
+                            }
+
+                            if (res.data?.url) {
                               const link = document.createElement("a");
-                              link.href = res.url;
+                              link.href = res.data.url;
                               link.target = "_blank";
                               document.body.appendChild(link);
                               link.click();

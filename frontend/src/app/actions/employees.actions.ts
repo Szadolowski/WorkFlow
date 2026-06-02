@@ -3,14 +3,10 @@
 import { serverFetch } from "@/lib/api-client";
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
-// Typy wejściowe (DTO) dla frontendu
-export type CreateEmployeePayload = {
-  firstName: string;
-  lastName: string;
-  pesel: string;
-  email: string;
-  role: string;
-};
+import type {
+  CreateEmployeePayload,
+  UpdateEmployeeAccessPayload,
+} from "@/types/employees";
 
 export async function getEmployeesAction(
   page = 1,
@@ -31,7 +27,11 @@ export async function getEmployeesAction(
   const res = await serverFetch(`/employees?${params.toString()}`);
 
   if (!res.ok) {
-    throw new Error("Błąd podczas pobierania listy pracowników.");
+    const err = await res.json().catch(() => ({}));
+
+    throw new Error(
+      err.message || "Błąd podczas pobierania listy pracowników.",
+    );
   }
 
   return res.json();
@@ -77,6 +77,25 @@ export async function getEmployeeProfileAction(
   return res.json();
 }
 
+export async function updateEmployeeAccessAction(
+  employeeId: string,
+  data: UpdateEmployeeAccessPayload,
+) {
+  const res = await serverFetch(`/employees/${employeeId}/access`, {
+    method: "PATCH",
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(
+      err.message || "Nie udało się zaktualizować dostępu pracownika.",
+    );
+  }
+
+  return res.json();
+}
+
 // ==========================================
 // NOWE: Zapis dokumentu (MinIO klucz) do bazy
 // ==========================================
@@ -107,4 +126,17 @@ export async function addDocumentAction(
   } catch {
     return { error: "Błąd zapisu do bazy danych." };
   }
+}
+
+export async function revokeEmployeeAccessAction(employeeId: string) {
+  const res = await serverFetch(`/employees/${employeeId}/access`, {
+    method: "DELETE",
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || "Nie udało się odebrać dostępu pracownika.");
+  }
+
+  return res.json();
 }

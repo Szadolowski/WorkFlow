@@ -2,11 +2,13 @@ import {
   Controller,
   Get,
   Post,
+  Patch,
   Body,
   Query,
   UseGuards,
   Param,
   Req,
+  Delete,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -22,17 +24,19 @@ import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 import { RolesGuard } from '@/auth/guards/roles.guard';
 import { Roles } from '@/auth/decorators/roles.decorator';
 import { UserRole } from '@prisma/client';
+import {
+  EmployeeListResponseDto,
+  EmployeeSingleResponseDto,
+} from './dto/employee-response.dto';
+import { UpdateEmployeeAccessDto } from './dto/update-employee-access.dto';
+import { AddEmployeeDocumentDto } from './dto/add-employee-document.dto';
+import { EmployeeDocumentSingleResponseDto } from './dto/employee-document-response.dto';
 
-type UserRoleRequest = {
-  user: {
-    role: UserRole;
-  };
-};
-
-type UserProfileRequest = {
+type AuthenticatedEmployeeRequest = {
   user: {
     role: UserRole;
     sub: string;
+    facilityIds: string[];
   };
 };
 
@@ -45,6 +49,25 @@ export class EmployeesController {
 
   @Roles(UserRole.ADMIN, UserRole.HR)
   @Post()
+  @ApiOperation({
+    summary: 'Dodaje pracownika do ewidencji kadrowej',
+    description:
+      'Tworzy rekord pracownika bez aktywowania konta logowania. Dostęp do systemu powinien zostać skonfigurowany osobnym procesem przez administratora.',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Pracownik został dodany do ewidencji.',
+    type: EmployeeSingleResponseDto,
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Brak aktywnego zakładu lub brak uprawnień.',
+  })
+  @ApiResponse({
+    status: 409,
+    description:
+      'Pracownik z podanym adresem e-mail lub numerem PESEL już istnieje.',
+  })
   create(
     @Body() createEmployeeDto: CreateEmployeeDto,
     @Query('facilityId') facilityId: string | undefined,
@@ -52,10 +75,75 @@ export class EmployeesController {
     return this.employeesService.create(createEmployeeDto, facilityId);
   }
 
+  @Roles(UserRole.ADMIN)
+  @Patch(':id/access')
+  @ApiOperation({
+    summary: 'Aktywuje dostęp pracownika do systemu',
+    description:
+      'Nadaje pracownikowi rolę systemową, ustawia hasło tymczasowe i włącza możliwość logowania. Operacja dostępna wyłącznie dla administratora.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Dostęp pracownika został aktywowany.',
+    type: EmployeeSingleResponseDto,
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Brak uprawnień lub brak adresu e-mail pracownika.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Pracownik nie istnieje lub jest nieaktywny.',
+  })
+  updateAccess(
+    @Param('id') id: string,
+    @Body() dto: UpdateEmployeeAccessDto,
+    @Req() req: AuthenticatedEmployeeRequest,
+  ) {
+    return this.employeesService.updateAccess(id, dto, req.user.sub);
+  }
+
+  @Roles(UserRole.ADMIN)
+  @Delete(':id/access')
+  @ApiOperation({
+    summary: 'Odbiera pracownikowi dostęp do systemu',
+    description:
+      'Wyłącza możliwość logowania, usuwa hash hasła i resetuje rolę systemową do WORKER. Operacja dostępna wyłącznie dla administratora.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Dostęp pracownika został odebrany.',
+    type: EmployeeSingleResponseDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Pracownik nie istnieje.',
+  })
+  revokeAccess(
+    @Param('id') id: string,
+    @Req() req: AuthenticatedEmployeeRequest,
+  ) {
+    return this.employeesService.revokeAccess(id, req.user.sub);
+  }
+
   @Roles(UserRole.ADMIN, UserRole.HR, UserRole.OFFICE, UserRole.ACCOUNTING)
   @Get()
-  findAll(@Query() query: GetEmployeesDto, @Req() req: UserRoleRequest) {
-    return this.employeesService.findAll(query, req.user.role);
+  @ApiOperation({
+    summary: 'Pobiera listę pracowników',
+    description:
+      'Zwraca listę pracowników z możliwością filtrowania i stronicowania.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista pracowników została pobrana.',
+    type: EmployeeListResponseDto,
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Brak aktywnego zakładu lub brak uprawnień.',
+  })
+  findAll(@Query() query: GetEmployeesDto) {
+    return this.employeesService.findAll(query);
   }
 
   @Get(':id/profile')
@@ -72,28 +160,103 @@ export class EmployeesController {
   @ApiResponse({ status: 404, description: 'Pracownik nie istnieje.' })
   async getProfile(
     @Param('id') id: string,
-    @Req() req: UserProfileRequest,
+    @Req() req: AuthenticatedEmployeeRequest,
     @Query('facilityId') facilityId: string | undefined,
   ) {
     const user = req.user;
 
-    return this.employeesService.getProfile(
+    return this.employeesService.getProfile(id, facilityId, {
+      sub: user.sub,
+      role: user.role,
+      facilityIds: user.facilityIds,
+    });
+  }
+
+  @Get(':id/documents/upload-url')
+  @Roles(UserRole.ADMIN, UserRole.HR)
+  @ApiOperation({
+    summary: 'Pobiera bezpieczny link do wgrania dokumentu pracownika',
+    description:
+      'Generuje czasowy link uploadu po sprawdzeniu dostępu do pracownika i zakładu.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Link do uploadu dokumentu został wygenerowany.',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Brak dostępu do dokumentów pracownika.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Pracownik nie istnieje.',
+  })
+  getDocumentUploadUrl(
+    @Param('id') id: string,
+    @Query('fileName') fileName: string,
+    @Query('facilityId') facilityId: string | undefined,
+    @Req() req: AuthenticatedEmployeeRequest,
+  ) {
+    return this.employeesService.getDocumentUploadUrl(
       id,
-      user.role,
+      fileName,
       facilityId,
-      user.sub,
+      req.user,
     );
   }
 
-  // === NOWY ENDPOINT: ZAPIS DOKUMENTU DO BAZY ===
   @Post(':id/documents')
-  @UseGuards(JwtAuthGuard)
   @Roles(UserRole.ADMIN, UserRole.HR)
-  @ApiOperation({ summary: 'Zapisuje w bazie wgrany dokument dla pracownika' })
+  @ApiOperation({
+    summary: 'Zapisuje dokument pracownika w bazie',
+    description:
+      'Rejestruje w bazie metadane dokumentu wcześniej wgranego do MinIO. fileKey jest zapisywany jako fileUrl.',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Dokument został przypisany do pracownika.',
+    type: EmployeeDocumentSingleResponseDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Pracownik nie istnieje lub jest nieaktywny.',
+  })
   async addDocument(
     @Param('id') id: string,
-    @Body() body: { fileName: string; fileKey: string },
+    @Body() dto: AddEmployeeDocumentDto,
   ) {
-    return this.employeesService.addDocument(id, body.fileName, body.fileKey);
+    return this.employeesService.addDocument(id, dto);
+  }
+
+  @Get(':id/documents/:documentId/download-url')
+  @ApiOperation({
+    summary: 'Pobiera bezpieczny link do pobrania dokumentu pracownika',
+    description:
+      'Generuje czasowy link do dokumentu po sprawdzeniu, czy użytkownik ma dostęp do pracownika i zakładu.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Link do pobrania dokumentu został wygenerowany.',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Brak dostępu do dokumentu.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Dokument nie istnieje.',
+  })
+  getDocumentDownloadUrl(
+    @Param('id') id: string,
+    @Param('documentId') documentId: string,
+    @Query('facilityId') facilityId: string | undefined,
+    @Req() req: AuthenticatedEmployeeRequest,
+  ) {
+    return this.employeesService.getDocumentDownloadUrl(
+      id,
+      documentId,
+      facilityId,
+      req.user,
+    );
   }
 }

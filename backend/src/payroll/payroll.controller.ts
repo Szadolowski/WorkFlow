@@ -1,28 +1,52 @@
-import { Controller, Get, Query, Res, UseGuards } from '@nestjs/common';
-import { PayrollService } from './payroll.service';
-import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
-import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { Controller, Get, Query, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { UserRole } from '@prisma/client';
 import type { Response } from 'express';
+
+import { Roles } from '@/auth/decorators/roles.decorator';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
+import type { AuthenticatedRequest } from '@/auth/guards/jwt-auth.guard';
+import { RolesGuard } from '@/auth/guards/roles.guard';
+import { PayrollService } from './payroll.service';
+import { ExportPayrollQueryDto } from './dto/export-payroll-query.dto';
 
 @ApiTags('Płace i Raporty (Payroll)')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('payroll')
 export class PayrollController {
   constructor(private readonly payrollService: PayrollService) {}
 
+  @Roles(UserRole.ADMIN, UserRole.ACCOUNTING)
   @Get('export-excel')
-  @ApiOperation({ summary: 'Generuje listę płac w XLSX' })
+  @ApiOperation({
+    summary: 'Generuje listę płac w XLSX',
+    description:
+      'Eksportuje raport płacowy dla wskazanego zakładu i okresu. Dostępne tylko dla ADMIN i ACCOUNTING.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Plik XLSX z listą płac.',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Brak uprawnień do raportu płacowego lub zakładu.',
+  })
   async exportExcel(
-    @Query('month') month: string,
-    @Query('year') year: string,
-    @Query('facilityId') facilityId: string,
+    @Query() query: ExportPayrollQueryDto,
+    @Req() req: AuthenticatedRequest,
     @Res() res: Response,
   ) {
     await this.payrollService.generateExcelExport(
-      parseInt(month, 10),
-      parseInt(year, 10),
-      facilityId,
+      query.month,
+      query.year,
+      query.facilityId,
+      req.user,
       res,
     );
   }

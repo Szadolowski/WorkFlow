@@ -1,14 +1,28 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from '@/auth/auth.service';
 import { AuthController } from '@/auth/auth.controller';
-import { PrismaService } from '@/prisma/prisma.service'; // Jeśli nie masz osobnego PrismaModule
+import { PrismaService } from '@/prisma/prisma.service';
 
 @Module({
   imports: [
-    JwtModule.register({
-      secret: process.env.JWT_SECRET || 'dev-super-secret-key', // Zmień w produkcji!
-      signOptions: { expiresIn: '8h' },
+    ConfigModule,
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        const jwtSecret = configService.get<string>('JWT_SECRET');
+
+        if (!jwtSecret) {
+          throw new Error('Brak wymaganej zmiennej środowiskowej JWT_SECRET');
+        }
+
+        return {
+          secret: jwtSecret,
+          signOptions: { expiresIn: '8h' },
+        };
+      },
     }),
   ],
   controllers: [AuthController],

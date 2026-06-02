@@ -1,11 +1,9 @@
 import { Module } from '@nestjs/common';
 import { StorageService } from './storage.service';
-import { StorageController } from './storage.controller';
-import { AuthModule } from '../auth/auth.module'; // <--- Import modułu autoryzacji
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports: [AuthModule], // <--- Rejestracja AuthModule daje dostęp do JwtService
-  controllers: [StorageController],
+  imports: [AuthModule],
   providers: [StorageService],
   exports: [StorageService],
 })

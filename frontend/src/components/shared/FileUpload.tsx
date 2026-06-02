@@ -1,16 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import { getUploadUrlAction } from "@/app/actions/storage.actions";
 import { Input } from "@/components/ui/input";
 import { CheckCircle2, Loader2, AlertCircle } from "lucide-react";
 
-// Tu dodaliśmy przekazywanie oryginalnej nazwy pliku do rodzica
+type UploadUrlResult = {
+  data?: {
+    url: string;
+    fileKey: string;
+  };
+  error?: string;
+};
+
 interface FileUploadProps {
+  getUploadUrl: (fileName: string) => Promise<UploadUrlResult>;
   onUploadSuccess?: (fileKey: string, fileName: string) => void;
 }
 
-export function FileUpload({ onUploadSuccess }: FileUploadProps) {
+export function FileUpload({ getUploadUrl, onUploadSuccess }: FileUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadedKey, setUploadedKey] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -24,13 +31,17 @@ export function FileUpload({ onUploadSuccess }: FileUploadProps) {
     setUploadedKey(null);
 
     try {
-      const data = await getUploadUrlAction(file.name);
+      const uploadUrlResult = await getUploadUrl(file.name);
 
-      if (data.error) {
-        throw new Error(data.error);
+      if (uploadUrlResult.error) {
+        throw new Error(uploadUrlResult.error);
       }
 
-      const { url, fileKey } = data;
+      if (!uploadUrlResult.data) {
+        throw new Error("Backend nie zwrócił danych linku uploadu.");
+      }
+
+      const { url, fileKey } = uploadUrlResult.data;
 
       const uploadResponse = await fetch(url, {
         method: "PUT",
@@ -47,8 +58,9 @@ export function FileUpload({ onUploadSuccess }: FileUploadProps) {
       }
 
       setUploadedKey(fileKey);
+
       if (onUploadSuccess) {
-        onUploadSuccess(fileKey, file.name); // Przekazujemy file.name
+        onUploadSuccess(fileKey, file.name);
       }
     } catch (err) {
       const errorMessage =
