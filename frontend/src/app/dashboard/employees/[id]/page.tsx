@@ -33,7 +33,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FileUpload } from "@/components/shared/FileUpload";
 import { useFacility } from "@/hooks/useFacility";
-import { getEmployeeDocumentDownloadUrlAction } from "@/app/actions/storage.actions";
+import {
+  getEmployeeDocumentDownloadUrlAction,
+  getEmployeeDocumentUploadUrlAction,
+} from "@/app/actions/storage.actions";
 import { addDocumentAction } from "@/app/actions/employees.actions";
 
 // Definicje typów, aby uciszyć linter
@@ -430,6 +433,13 @@ export default function EmployeeProfilePage({
                       Wybierz plik z dysku
                     </label>
                     <FileUpload
+                      getUploadUrl={(fileName) =>
+                        getEmployeeDocumentUploadUrlAction(
+                          employeeId,
+                          fileName,
+                          activeFacilityId,
+                        )
+                      }
                       onUploadSuccess={async (
                         fileKey: string,
                         fileName: string,

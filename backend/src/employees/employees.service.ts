@@ -4,6 +4,7 @@ import {
   NotFoundException,
   ForbiddenException,
 } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common/exceptions';
 import { PrismaService } from '@/prisma/prisma.service';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { GetEmployeesDto } from './dto/get-employees.dto';
@@ -488,6 +489,67 @@ export class EmployeesService {
     return {
       data: {
         url,
+      },
+    };
+  }
+
+  async getDocumentUploadUrl(
+    employeeId: string,
+    fileName: string,
+    facilityId: string | undefined,
+    requestingUser: { sub: string; role: UserRole; facilityIds?: string[] },
+  ) {
+    if (!fileName) {
+      throw new BadRequestException('Brak parametru fileName');
+    }
+
+    if (requestingUser.sub !== employeeId) {
+      if (!facilityId) {
+        throw new ForbiddenException('Brak aktywnego zakładu.');
+      }
+
+      if (
+        requestingUser.role !== UserRole.ADMIN &&
+        !requestingUser.facilityIds?.includes(facilityId)
+      ) {
+        throw new ForbiddenException('Brak dostępu do wybranego zakładu.');
+      }
+
+      const accessRows = await this.prisma.$queryRaw<{ id: string }[]>`
+        SELECT 1 AS id
+        FROM "EmployeeFacilityAccess"
+        WHERE "employeeId" = ${employeeId} AND "facilityId" = ${facilityId}
+        LIMIT 1
+      `;
+
+      if (accessRows.length === 0) {
+        throw new ForbiddenException('Brak dostępu do dokumentów pracownika.');
+      }
+    }
+
+    const employee = await this.prisma.employee.findUnique({
+      where: { id: employeeId },
+      select: { id: true, isActive: true },
+    });
+
+    if (!employee || !employee.isActive) {
+      throw new NotFoundException(
+        'Pracownik nie został znaleziony lub jest nieaktywny.',
+      );
+    }
+
+    const sanitizedName = fileName.replace(/[^a-zA-Z0-9.\-_]/g, '_');
+    const uniqueFileKey = `employees/${employeeId}/documents/${Date.now()}-${sanitizedName}`;
+
+    const url = await this.storageService.getPresignedUploadUrl(
+      uniqueFileKey,
+      900,
+    );
+
+    return {
+      data: {
+        url,
+        fileKey: uniqueFileKey,
       },
     };
   }

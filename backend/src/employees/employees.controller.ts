@@ -172,6 +172,39 @@ export class EmployeesController {
     });
   }
 
+  @Get(':id/documents/upload-url')
+  @Roles(UserRole.ADMIN, UserRole.HR)
+  @ApiOperation({
+    summary: 'Pobiera bezpieczny link do wgrania dokumentu pracownika',
+    description:
+      'Generuje czasowy link uploadu po sprawdzeniu dostępu do pracownika i zakładu.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Link do uploadu dokumentu został wygenerowany.',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Brak dostępu do dokumentów pracownika.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Pracownik nie istnieje.',
+  })
+  getDocumentUploadUrl(
+    @Param('id') id: string,
+    @Query('fileName') fileName: string,
+    @Query('facilityId') facilityId: string | undefined,
+    @Req() req: AuthenticatedEmployeeRequest,
+  ) {
+    return this.employeesService.getDocumentUploadUrl(
+      id,
+      fileName,
+      facilityId,
+      req.user,
+    );
+  }
+
   @Post(':id/documents')
   @Roles(UserRole.ADMIN, UserRole.HR)
   @ApiOperation({
