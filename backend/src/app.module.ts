@@ -8,7 +8,8 @@ import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { StorageModule } from './storage/storage.module';
-import { PayrollModule } from './payroll/payroll.module'; // <--- DODAJ TO
+import { PayrollModule } from './payroll/payroll.module';
+import { TimeEventsModule } from './time-events/time-events.module';
 
 @Module({
   imports: [
@@ -19,7 +20,8 @@ import { PayrollModule } from './payroll/payroll.module'; // <--- DODAJ TO
     ProjectsModule,
     DashboardModule,
     StorageModule,
-    PayrollModule, // <--- I DODAJ TUTAJ
+    PayrollModule,
+    TimeEventsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
