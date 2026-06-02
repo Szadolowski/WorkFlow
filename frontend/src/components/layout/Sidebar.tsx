@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { HardHat } from "lucide-react";
+import { HardHat, WalletCards } from "lucide-react";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
 
 import { useFacility } from "@/hooks/useFacility";
@@ -26,10 +26,16 @@ const NAV_ITEMS = [
     roles: ["ADMIN", "HR", "OFFICE", "ACCOUNTING"],
   },
   {
-    label: "Projekty i Budowy", // Zmienione z 'title' na 'label'
+    label: "Płace",
+    href: "/dashboard/payroll",
+    icon: <WalletCards className="w-5 h-5 mr-2 inline-block" />,
+    roles: ["ADMIN", "ACCOUNTING"],
+  },
+  {
+    label: "Projekty i Budowy",
     href: "/dashboard/projects",
-    icon: <HardHat className="w-5 h-5 mr-2 inline-block" />, // Opcjonalnie: ułożenie ikony
-    roles: ["ADMIN", "OFFICE", "HR", "FOREMAN"], // Zmienione z 'allowedRoles' na 'roles'
+    icon: <HardHat className="w-5 h-5 mr-2 inline-block" />,
+    roles: ["ADMIN", "OFFICE", "HR", "FOREMAN"],
   },
 ];
 
