@@ -12,19 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import EmployeeAccessDialog from "@/components/employees/EmployeeAccessDialog";
-import { UserRole } from "@/app/actions/employees.actions";
-
-// Definicja typu, żeby linter nie krzyczał o "any"
-type EmployeeListDto = {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string | null;
-  pesel: string | null;
-  role: UserRole;
-  isActive: boolean;
-  isLoginEnabled: boolean;
-};
+import type { EmployeeListItem } from "@/types/employees";
 
 export default function EmployeesPage() {
   const { data, isLoading, isError } = useEmployeesQuery();
@@ -81,7 +69,7 @@ export default function EmployeesPage() {
                   </TableCell>
                 </TableRow>
               ) : (
-                data.data.map((employee: EmployeeListDto) => (
+                data.data.map((employee: EmployeeListItem) => (
                   <TableRow
                     key={employee.id}
                     // Dodajemy zdarzenie kliknięcia i style UX

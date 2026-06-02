@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { UserRole } from "@/app/actions/employees.actions";
+import type { UserRole } from "@/types/employees";
 import {
   useRevokeEmployeeAccessMutation,
   useUpdateEmployeeAccessMutation,

@@ -3,13 +3,10 @@
 import { serverFetch } from "@/lib/api-client";
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
-// Typy wejściowe (DTO) dla frontendu
-export type CreateEmployeePayload = {
-  firstName: string;
-  lastName: string;
-  pesel: string;
-  email: string;
-};
+import type {
+  CreateEmployeePayload,
+  UpdateEmployeeAccessPayload,
+} from "@/types/employees";
 
 export async function getEmployeesAction(
   page = 1,
@@ -75,19 +72,6 @@ export async function getEmployeeProfileAction(
 
   return res.json();
 }
-
-export type UserRole =
-  | "ADMIN"
-  | "HR"
-  | "OFFICE"
-  | "FOREMAN"
-  | "ACCOUNTING"
-  | "WORKER";
-
-export type UpdateEmployeeAccessPayload = {
-  role: UserRole;
-  temporaryPassword: string;
-};
 
 export async function updateEmployeeAccessAction(
   employeeId: string,

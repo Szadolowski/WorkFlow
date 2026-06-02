@@ -1,16 +1,18 @@
 "use client";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   getEmployeesAction,
   createEmployeeAction,
   getEmployeeProfileAction,
   updateEmployeeAccessAction,
-  CreateEmployeePayload,
-  UpdateEmployeeAccessPayload,
   revokeEmployeeAccessAction,
 } from "@/app/actions/employees.actions";
 import { useFacility } from "@/hooks/useFacility";
+import type {
+  CreateEmployeePayload,
+  UpdateEmployeeAccessPayload,
+} from "@/types/employees";
 
 export function useEmployeesQuery(
   page = 1,
@@ -70,8 +72,8 @@ export function useEmployeeProfileQuery(employeeId: string) {
   return useQuery({
     queryKey: ["employeeProfile", activeFacilityId, employeeId],
     queryFn: () => getEmployeeProfileAction(employeeId, activeFacilityId),
-    enabled: !!employeeId, // Uruchom zapytanie tylko wtedy, gdy posiadamy ID
-    staleTime: 1000 * 60 * 5, // Trzymaj dane w cache przez 5 minut
+    enabled: !!employeeId,
+    staleTime: 1000 * 60 * 5,
   });
 }
 
