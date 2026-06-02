@@ -10,6 +10,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
 import { StorageModule } from './storage/storage.module';
 import { PayrollModule } from './payroll/payroll.module';
 import { TimeEventsModule } from './time-events/time-events.module';
+import { TimeEntriesModule } from './time-entries/time-entries.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { TimeEventsModule } from './time-events/time-events.module';
     StorageModule,
     PayrollModule,
     TimeEventsModule,
+    TimeEntriesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
