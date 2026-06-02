@@ -36,6 +36,7 @@ type AuthenticatedEmployeeRequest = {
   user: {
     role: UserRole;
     sub: string;
+    facilityIds: string[];
   };
 };
 
@@ -164,12 +165,11 @@ export class EmployeesController {
   ) {
     const user = req.user;
 
-    return this.employeesService.getProfile(
-      id,
-      user.role,
-      facilityId,
-      user.sub,
-    );
+    return this.employeesService.getProfile(id, facilityId, {
+      sub: user.sub,
+      role: user.role,
+      facilityIds: user.facilityIds,
+    });
   }
 
   @Post(':id/documents')

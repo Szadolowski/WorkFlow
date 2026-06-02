@@ -248,8 +248,6 @@ export class EmployeesService {
       where.isActive = query.isActive === 'true';
     }
 
-    // Zawsze filtrujemy po aktywnym zakładzie. Nawet ADMIN będzie widział tylko
-    // pracowników przypisanych do aktualnego `facilityId` (zgodnie z wymaganiem).
     if (!query.facilityId) {
       throw new ForbiddenException('Brak aktywnego zakładu.');
     }
@@ -300,21 +298,37 @@ export class EmployeesService {
 
   async getProfile(
     id: string,
-    _role: UserRole,
-    facilityId?: string,
-    requestingUserId?: string,
+    facilityId: string | undefined,
+    requestingUser: { sub: string; role: UserRole; facilityIds: string[] },
   ) {
-    if (requestingUserId !== id) {
+    const isOwnProfile = requestingUser.sub === id;
+    const isAdmin = requestingUser.role === UserRole.ADMIN;
+
+    if (!isOwnProfile && !isAdmin) {
+      const allowedRoles: UserRole[] = [
+        UserRole.HR,
+        UserRole.OFFICE,
+        UserRole.ACCOUNTING,
+      ];
+
+      if (!allowedRoles.includes(requestingUser.role)) {
+        throw new ForbiddenException('Brak uprawnień do przeglądania profilu.');
+      }
+
       if (!facilityId) {
         throw new ForbiddenException('Brak aktywnego zakładu.');
       }
 
+      if (!requestingUser.facilityIds.includes(facilityId)) {
+        throw new ForbiddenException('Brak dostępu do wybranego zakładu.');
+      }
+
       const accessRows = await this.prisma.$queryRaw<{ id: string }[]>`
-        SELECT 1 AS id
-        FROM "EmployeeFacilityAccess"
-        WHERE "employeeId" = ${id} AND "facilityId" = ${facilityId}
-        LIMIT 1
-      `;
+    SELECT 1 AS id
+    FROM "EmployeeFacilityAccess"
+    WHERE "employeeId" = ${id} AND "facilityId" = ${facilityId}
+    LIMIT 1
+  `;
 
       if (accessRows.length === 0) {
         throw new ForbiddenException('Brak dostępu do tego profilu.');
@@ -340,7 +354,7 @@ export class EmployeesService {
             dictionary: true,
           },
         },
-        // ---> TUTAJ POBIERAMY DOKUMENTY <---
+
         documents: {
           orderBy: { createdAt: 'desc' },
         },
@@ -353,7 +367,6 @@ export class EmployeesService {
       );
     }
 
-    // ---> DODALIŚMY 'documents' DO DESTRUKTURYZACJI <---
     const {
       contracts,
       assignments,
@@ -372,7 +385,7 @@ export class EmployeesService {
         currentContract: contracts.length > 0 ? contracts[0] : null,
         activeAssignments: assignments,
         validCertifications: certifications,
-        documents: documents, // ---> WYSTAWIAMY DOKUMENTY NA FRONTEND <---
+        documents: documents,
       },
     };
   }
