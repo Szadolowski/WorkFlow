@@ -21,6 +21,9 @@ export default function EmployeesPage() {
   const router = useRouter();
 
   const isAdmin = currentUser.role === "ADMIN";
+  const isForeman = currentUser.role === "FOREMAN";
+  const canViewSensitiveEmployeeData = !isForeman;
+  const canOpenEmployeeProfile = !isForeman;
 
   return (
     <div className="bg-white rounded-xl shadow-sm border p-6">
@@ -54,7 +57,7 @@ export default function EmployeesPage() {
               <TableRow>
                 <TableHead>Imię i nazwisko</TableHead>
                 <TableHead>Email</TableHead>
-                <TableHead>PESEL</TableHead>
+                {canViewSensitiveEmployeeData && <TableHead>PESEL</TableHead>}
                 <TableHead>Rola</TableHead>
                 <TableHead>Status</TableHead>
                 {isAdmin && <TableHead>Dostęp</TableHead>}
@@ -65,7 +68,11 @@ export default function EmployeesPage() {
               {data.data.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={isAdmin ? 7 : 5}
+                    colSpan={
+                      (canViewSensitiveEmployeeData ? 4 : 3) +
+                      (isAdmin ? 2 : 0) +
+                      1
+                    }
                     className="text-center py-8 text-slate-500"
                   >
                     Brak pracowników w bazie. Kliknij &quot;Dodaj
@@ -77,10 +84,16 @@ export default function EmployeesPage() {
                   <TableRow
                     key={employee.id}
                     // Dodajemy zdarzenie kliknięcia i style UX
-                    onClick={() =>
-                      router.push(`/dashboard/employees/${employee.id}`)
+                    onClick={() => {
+                      if (canOpenEmployeeProfile) {
+                        router.push(`/dashboard/employees/${employee.id}`);
+                      }
+                    }}
+                    className={
+                      canOpenEmployeeProfile
+                        ? "cursor-pointer hover:bg-slate-50 transition-colors"
+                        : "cursor-default"
                     }
-                    className="cursor-pointer hover:bg-slate-50 transition-colors"
                   >
                     <TableCell className="font-medium text-slate-900">
                       {employee.firstName} {employee.lastName}
@@ -88,9 +101,11 @@ export default function EmployeesPage() {
                     <TableCell className="text-slate-600">
                       {employee.email}
                     </TableCell>
-                    <TableCell className="text-slate-600">
-                      {employee.pesel}
-                    </TableCell>
+                    {canViewSensitiveEmployeeData && (
+                      <TableCell className="text-slate-600">
+                        {employee.pesel}
+                      </TableCell>
+                    )}
                     <TableCell>
                       <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-800 border">
                         {employee.role}
