@@ -9,10 +9,19 @@ export type FacilityOption = {
   address: string | null;
 };
 
+export type CurrentUser = {
+  id: string;
+  email: string | null;
+  firstName: string;
+  lastName: string;
+  role: string;
+};
+
 type FacilityContextValue = {
   facilities: FacilityOption[];
   activeFacilityId: string;
   activeFacility: FacilityOption | null;
+  currentUser: CurrentUser;
   setActiveFacilityId: (facilityId: string) => void;
 };
 
@@ -27,10 +36,12 @@ export default function FacilityProvider({
   children,
   facilities,
   initialActiveFacilityId,
+  currentUser,
 }: {
   children: React.ReactNode;
   facilities: FacilityOption[];
   initialActiveFacilityId: string;
+  currentUser: CurrentUser;
 }) {
   const [activeFacilityId, setActiveFacilityIdState] = useState(
     initialActiveFacilityId,
@@ -50,6 +61,7 @@ export default function FacilityProvider({
       facilities,
       activeFacilityId,
       activeFacility,
+      currentUser,
       setActiveFacilityId: (facilityId: string) => {
         writeActiveFacilityCookie(facilityId);
         setActiveFacilityIdState(facilityId);
@@ -57,7 +69,7 @@ export default function FacilityProvider({
     };
 
     return v;
-  }, [activeFacilityId, facilities]);
+  }, [activeFacilityId, facilities, currentUser]);
 
   return (
     <FacilityContext.Provider value={value}>

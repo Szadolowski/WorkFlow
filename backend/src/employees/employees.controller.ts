@@ -126,7 +126,13 @@ export class EmployeesController {
     return this.employeesService.revokeAccess(id, req.user.sub);
   }
 
-  @Roles(UserRole.ADMIN, UserRole.HR, UserRole.OFFICE, UserRole.ACCOUNTING)
+  @Roles(
+    UserRole.ADMIN,
+    UserRole.HR,
+    UserRole.OFFICE,
+    UserRole.ACCOUNTING,
+    UserRole.FOREMAN,
+  )
   @Get()
   @ApiOperation({
     summary: 'Pobiera listę pracowników',

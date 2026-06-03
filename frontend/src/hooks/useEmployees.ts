@@ -72,8 +72,10 @@ export function useEmployeeProfileQuery(employeeId: string) {
   return useQuery({
     queryKey: ["employeeProfile", activeFacilityId, employeeId],
     queryFn: () => getEmployeeProfileAction(employeeId, activeFacilityId),
-    enabled: !!employeeId,
-    staleTime: 1000 * 60 * 5,
+    enabled: !!employeeId && !!activeFacilityId,
+    staleTime: 0,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
   });
 }
 

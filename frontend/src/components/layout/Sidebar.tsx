@@ -23,7 +23,7 @@ const NAV_ITEMS = [
   {
     label: "Pracownicy",
     href: "/dashboard/employees",
-    roles: ["ADMIN", "HR", "OFFICE", "ACCOUNTING"],
+    roles: ["ADMIN", "HR", "OFFICE", "ACCOUNTING", "FOREMAN"],
   },
   {
     label: "Płace",

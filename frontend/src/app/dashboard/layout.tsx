@@ -41,6 +41,13 @@ export default async function DashboardLayout({
     <FacilityProvider
       facilities={user.facilities}
       initialActiveFacilityId={user.activeFacilityId}
+      currentUser={{
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role,
+      }}
     >
       <div className="flex h-screen w-full overflow-hidden bg-slate-50 dark:bg-background">
         <Sidebar role={user.role} />
