@@ -100,33 +100,60 @@ export class TimeEntriesService {
       );
     }
 
-    const updatedEntry = await this.prisma.timeEntry.update({
-      where: { id },
-      data: {
-        status: dto.status,
-      },
-      select: {
-        id: true,
-        startTime: true,
-        endTime: true,
-        calculatedHours: true,
-        status: true,
-        employee: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            role: true,
+    const updatedEntry = await this.prisma.$transaction(async (tx) => {
+      const updated = await tx.timeEntry.update({
+        where: { id },
+        data: {
+          status: dto.status,
+        },
+        select: {
+          id: true,
+          startTime: true,
+          endTime: true,
+          calculatedHours: true,
+          status: true,
+          employee: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              role: true,
+            },
+          },
+          project: {
+            select: {
+              id: true,
+              name: true,
+              facilityId: true,
+            },
           },
         },
-        project: {
-          select: {
-            id: true,
-            name: true,
-            facilityId: true,
+      });
+
+      await tx.auditLog.create({
+        data: {
+          employeeId: user.sub,
+          action:
+            dto.status === TimeEntryStatus.APPROVED
+              ? 'TIME_ENTRY_APPROVED'
+              : 'TIME_ENTRY_REJECTED',
+          entityName: 'TimeEntry',
+          entityId: id,
+          oldValues: {
+            status: entry.status,
+          },
+          newValues: {
+            status: dto.status,
+            employeeId: updated.employee.id,
+            projectId: updated.project.id,
+            startTime: updated.startTime,
+            endTime: updated.endTime,
+            calculatedHours: updated.calculatedHours.toString(),
           },
         },
-      },
+      });
+
+      return updated;
     });
 
     return {

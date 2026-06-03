@@ -37,7 +37,6 @@ export default function TimeEntriesPage() {
 
     if (!activeFacilityId) {
       setEntries([]);
-      setIsLoading(false);
       setError("Wybierz aktywny zakład.");
       return;
     }
@@ -59,8 +58,38 @@ export default function TimeEntriesPage() {
   }, [activeFacilityId]);
 
   useEffect(() => {
-    void loadEntries();
-  }, [loadEntries]);
+    if (!activeFacilityId) {
+      return;
+    }
+
+    let isCancelled = false;
+
+    getPendingTimeEntriesAction(activeFacilityId)
+      .then((response) => {
+        if (isCancelled) return;
+
+        setEntries(response.data);
+        setError(null);
+      })
+      .catch((err) => {
+        if (isCancelled) return;
+
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Nie udało się pobrać wpisów czasu pracy.",
+        );
+      })
+      .finally(() => {
+        if (isCancelled) return;
+
+        setIsLoading(false);
+      });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [activeFacilityId]);
 
   async function handleStatusChange(
     entryId: string,
