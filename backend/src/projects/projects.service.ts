@@ -11,6 +11,7 @@ import {
   CreateReaderDto,
 } from './dto/projects.dto';
 import { ProjectStatus, UserRole } from '@prisma/client';
+import type { JwtPayload } from '@/auth/guards/jwt-auth.guard';
 
 @Injectable()
 export class ProjectsService {
@@ -61,18 +62,63 @@ export class ProjectsService {
     `;
   }
 
-  async assignEmployees(projectId: string, dto: AssignEmployeesDto) {
-    const project = await this.prisma.project.findUnique({
-      where: { id: projectId },
+  async assignEmployees(
+    projectId: string,
+    dto: AssignEmployeesDto,
+    user: JwtPayload,
+    facilityId?: string,
+  ) {
+    this.assertCanAccessFacility(user, facilityId);
+
+    const project = await this.prisma.project.findFirst({
+      where: {
+        id: projectId,
+        ...(user.role === UserRole.ADMIN ? {} : { facilityId }),
+      },
     });
+
     if (!project) {
       throw new NotFoundException('Projekt nie istnieje.');
+    }
+
+    if (project.facilityId !== facilityId && user.role !== UserRole.ADMIN) {
+      throw new ForbiddenException('Brak dostępu do projektu.');
+    }
+
+    const allowedEmployees = await this.prisma.employee.findMany({
+      where: {
+        id: {
+          in: dto.employeeIds,
+        },
+        isActive: true,
+        OR: [
+          {
+            facilityId: project.facilityId,
+          },
+          {
+            facilityAccesses: {
+              some: {
+                facilityId: project.facilityId,
+              },
+            },
+          },
+        ],
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (allowedEmployees.length !== dto.employeeIds.length) {
+      throw new ForbiddenException(
+        'Niektórzy pracownicy nie mają dostępu do zakładu projektu.',
+      );
     }
 
     return this.prisma.$transaction(async (tx) => {
       await tx.employeeAssignment.updateMany({
         where: {
-          employeeId: { in: dto.employeeIds },
+          projectId,
           unassignedAt: null,
         },
         data: {
@@ -80,14 +126,16 @@ export class ProjectsService {
         },
       });
 
-      const newAssignments = dto.employeeIds.map((employeeId) => ({
-        employeeId,
-        projectId,
-      }));
+      if (dto.employeeIds.length > 0) {
+        const newAssignments = dto.employeeIds.map((employeeId) => ({
+          employeeId,
+          projectId,
+        }));
 
-      await tx.employeeAssignment.createMany({
-        data: newAssignments,
-      });
+        await tx.employeeAssignment.createMany({
+          data: newAssignments,
+        });
+      }
 
       return { message: 'Pracownicy zostali pomyślnie przypisani.' };
     });
@@ -165,5 +213,22 @@ export class ProjectsService {
 
     if (!project) throw new NotFoundException('Projekt nie istnieje.');
     return project;
+  }
+
+  private assertCanAccessFacility(
+    user: JwtPayload,
+    facilityId: string | undefined,
+  ) {
+    if (!facilityId) {
+      throw new ForbiddenException('Brak aktywnego zakładu.');
+    }
+
+    if (user.role === UserRole.ADMIN) {
+      return;
+    }
+
+    if (!user.facilityIds?.includes(facilityId)) {
+      throw new ForbiddenException('Brak dostępu do wybranego zakładu.');
+    }
   }
 }

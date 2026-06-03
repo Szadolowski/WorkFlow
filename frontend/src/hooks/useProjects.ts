@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   getActiveProjectsAction,
   createProjectAction,
@@ -16,7 +16,8 @@ export function useProjectDetailsQuery(projectId: string) {
 
   return useQuery({
     queryKey: ["projects", activeFacilityId, projectId],
-    queryFn: () => getProjectDetailsAction(projectId),
+    queryFn: () => getProjectDetailsAction(projectId, activeFacilityId),
+    enabled: !!projectId && !!activeFacilityId,
   });
 }
 
@@ -25,17 +26,19 @@ export function useActiveProjectsQuery() {
 
   return useQuery({
     queryKey: ["projects", "active", activeFacilityId],
-    queryFn: () => getActiveProjectsAction(),
+    queryFn: () => getActiveProjectsAction(activeFacilityId),
+    enabled: !!activeFacilityId,
   });
 }
 
 export function useCreateProjectMutation() {
   const queryClient = useQueryClient();
+  const { activeFacilityId } = useFacility();
 
   return useMutation({
-    mutationFn: (data: CreateProjectPayload) => createProjectAction(data),
+    mutationFn: (data: CreateProjectPayload) =>
+      createProjectAction(data, activeFacilityId),
     onSuccess: () => {
-      // Automatyczne odświeżenie tabeli projektów po dodaniu nowej budowy
       queryClient.invalidateQueries({ queryKey: ["projects"] });
     },
   });
@@ -43,13 +46,18 @@ export function useCreateProjectMutation() {
 
 export function useAssignEmployeesMutation(projectId: string) {
   const queryClient = useQueryClient();
+  const { activeFacilityId } = useFacility();
 
   return useMutation({
     mutationFn: (data: AssignEmployeesPayload) =>
-      assignEmployeesAction(projectId, data),
+      assignEmployeesAction(projectId, {
+        ...data,
+        facilityId: activeFacilityId,
+      }),
     onSuccess: () => {
-      // Odświeżenie danych o konkretnym projekcie po zmianie obsady
       queryClient.invalidateQueries({ queryKey: ["projects"] });
+      queryClient.invalidateQueries({ queryKey: ["employees"] });
+      queryClient.invalidateQueries({ queryKey: ["employeeProfile"] });
     },
   });
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState, useEffect } from "react";
+import { use, useMemo, useState } from "react";
 import {
   useAssignEmployeesMutation,
   useProjectDetailsQuery,
@@ -37,33 +37,36 @@ export default function ProjectDetailsPage({
 
   const assignMutation = useAssignEmployeesMutation(projectId);
 
-  const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<string[]>([]);
+  const [selectedEmployeeIds, setSelectedEmployeeIds] = useState<
+    string[] | null
+  >(null);
 
-  useEffect(() => {
-    // Odwołujemy się do poprawnej nazwy: assignments
-    if (projectDetails?.assignments) {
-      const activeIds = projectDetails.assignments.map(
-        (assignment: Assignment) => assignment.employee.id,
-      );
-
-      // Wyłączamy restrykcyjne reguły lintera dla tej konkretnej linii
-
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setSelectedEmployeeIds(activeIds);
+  const assignedEmployeeIds = useMemo(() => {
+    if (!projectDetails?.assignments) {
+      return [];
     }
+
+    return projectDetails.assignments.map(
+      (assignment: Assignment) => assignment.employee.id,
+    );
   }, [projectDetails]);
 
+  const selectedIds = selectedEmployeeIds ?? assignedEmployeeIds;
+
   const toggleEmployee = (employeeId: string) => {
-    setSelectedEmployeeIds((prev) =>
-      prev.includes(employeeId)
-        ? prev.filter((id) => id !== employeeId)
-        : [...prev, employeeId],
-    );
+    setSelectedEmployeeIds((prev: string[] | null) => {
+      const current: string[] = prev ?? assignedEmployeeIds;
+
+      return current.includes(employeeId)
+        ? current.filter((id: string) => id !== employeeId)
+        : [...current, employeeId];
+    });
   };
 
   const handleSaveAssignments = async () => {
     try {
-      await assignMutation.mutateAsync({ employeeIds: selectedEmployeeIds });
+      await assignMutation.mutateAsync({ employeeIds: selectedIds });
+      setSelectedEmployeeIds(null);
     } catch (error) {
       console.error("Błąd podczas przypisywania", error);
     }
@@ -137,7 +140,7 @@ export default function ProjectDetailsPage({
                 className="flex items-center space-x-3 p-3 border rounded-md cursor-pointer hover:bg-slate-50 transition-colors"
               >
                 <Checkbox
-                  checked={selectedEmployeeIds.includes(employee.id)}
+                  checked={selectedIds.includes(employee.id)}
                   onCheckedChange={() => toggleEmployee(employee.id)}
                 />
                 <div className="flex flex-col">

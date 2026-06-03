@@ -47,14 +47,15 @@ export class ProjectsController {
     return this.projectsService.getActiveProjects(req.user.role, facilityId);
   }
 
-  // Obsada budowy (przypisanie pracowników)
   @Post(':id/assignments')
-  @Roles(UserRole.ADMIN, UserRole.OFFICE, UserRole.HR)
+  @Roles(UserRole.ADMIN, UserRole.OFFICE, UserRole.HR, UserRole.FOREMAN)
   async assignEmployees(
     @Param('id') id: string,
     @Body() dto: AssignEmployeesDto,
+    @Req() req: AuthenticatedRequest,
+    @Query('facilityId') facilityId: string | undefined,
   ) {
-    return this.projectsService.assignEmployees(id, dto);
+    return this.projectsService.assignEmployees(id, dto, req.user, facilityId);
   }
 
   // Rejestracja fizycznego czytnika do projektu
