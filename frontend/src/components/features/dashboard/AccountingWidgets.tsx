@@ -38,11 +38,11 @@ export function AccountingWidgets() {
           isLoading={isLoading}
         />
         <WidgetCard
-          title="Gotowe do eksportu (APPROVED)"
-          value={stats?.approvedTimeEntriesCount || 0}
-          subtitle="Zatwierdzone w obecnym miesiącu"
+          title="Zatwierdzone godziny"
+          value={`${Number(stats?.approvedHoursThisMonth || 0).toFixed(2)} h`}
+          subtitle={`Bieżący miesiąc • ${stats?.approvedTimeEntriesCount || 0} wpisów`}
           icon={CheckCircle2}
-          statusType="success" // Użyje naszego koloru Teal/Mint z Design Systemu
+          statusType="success"
           isLoading={isLoading}
         />
       </div>
