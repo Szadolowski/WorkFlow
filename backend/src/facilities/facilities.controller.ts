@@ -21,6 +21,7 @@ import { Roles } from '@/auth/decorators/roles.decorator';
 import { FacilitiesService } from './facilities.service';
 import { CreateFacilityDto } from './dto/create-facility.dto';
 import { UpdateFacilityDto } from './dto/update-facility.dto';
+import { UpdateFacilityEmployeesDto } from './dto/update-facility-employees.dto';
 
 @ApiTags('Facilities')
 @ApiBearerAuth()
@@ -77,5 +78,34 @@ export class FacilitiesController {
     @Body() dto: UpdateFacilityDto,
   ) {
     return this.facilitiesService.update(id, dto);
+  }
+
+  @Roles(UserRole.ADMIN)
+  @Get(':id/employees')
+  @ApiOperation({
+    summary: 'Pobiera pracowników przypisanych do zakładu',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista pracowników wraz z informacją o dostępie do zakładu.',
+  })
+  findEmployees(@Param('id', new ParseUUIDPipe()) id: string) {
+    return this.facilitiesService.findEmployees(id);
+  }
+
+  @Roles(UserRole.ADMIN)
+  @Patch(':id/employees')
+  @ApiOperation({
+    summary: 'Aktualizuje przypisanie pracowników do zakładu',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista przypisań została zaktualizowana.',
+  })
+  updateEmployees(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() dto: UpdateFacilityEmployeesDto,
+  ) {
+    return this.facilitiesService.updateEmployees(id, dto.employeeIds);
   }
 }

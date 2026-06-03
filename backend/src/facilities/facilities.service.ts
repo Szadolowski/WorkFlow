@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -97,5 +98,137 @@ export class FacilitiesService {
     return {
       data: updated,
     };
+  }
+  async findEmployees(facilityId: string) {
+    const facility = await this.prisma.facility.findUnique({
+      where: { id: facilityId },
+      select: {
+        id: true,
+        name: true,
+        code: true,
+        address: true,
+        isActive: true,
+      },
+    });
+
+    if (!facility) {
+      throw new NotFoundException('Zakład nie istnieje.');
+    }
+
+    const employees = await this.prisma.employee.findMany({
+      where: {
+        isActive: true,
+      },
+      orderBy: [{ lastName: 'asc' }, { firstName: 'asc' }],
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        role: true,
+        facilityId: true,
+        facility: {
+          select: {
+            id: true,
+            name: true,
+            code: true,
+          },
+        },
+        facilityAccesses: {
+          where: {
+            facilityId,
+          },
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+
+    return {
+      data: {
+        facility,
+        employees: employees.map((employee) => {
+          const isPrimaryFacility = employee.facilityId === facilityId;
+          const hasAdditionalAccess = employee.facilityAccesses.length > 0;
+
+          return {
+            id: employee.id,
+            firstName: employee.firstName,
+            lastName: employee.lastName,
+            email: employee.email,
+            role: employee.role,
+            primaryFacility: employee.facility,
+            isPrimaryFacility,
+            hasAdditionalAccess,
+            isAssigned: isPrimaryFacility || hasAdditionalAccess,
+          };
+        }),
+      },
+    };
+  }
+
+  async updateEmployees(facilityId: string, employeeIds: string[]) {
+    const facility = await this.prisma.facility.findUnique({
+      where: { id: facilityId },
+      select: { id: true },
+    });
+
+    if (!facility) {
+      throw new NotFoundException('Zakład nie istnieje.');
+    }
+
+    const uniqueEmployeeIds = [...new Set(employeeIds)];
+
+    const selectedEmployees =
+      uniqueEmployeeIds.length > 0
+        ? await this.prisma.employee.findMany({
+            where: {
+              id: {
+                in: uniqueEmployeeIds,
+              },
+              isActive: true,
+            },
+            select: {
+              id: true,
+              facilityId: true,
+            },
+          })
+        : [];
+
+    if (selectedEmployees.length !== uniqueEmployeeIds.length) {
+      throw new BadRequestException(
+        'Niektórzy pracownicy nie istnieją albo są nieaktywni.',
+      );
+    }
+
+    const additionalAccessRows = selectedEmployees
+      .filter((employee) => employee.facilityId !== facilityId)
+      .map((employee) => ({
+        employeeId: employee.id,
+        facilityId,
+      }));
+
+    await this.prisma.$transaction(async (tx) => {
+      await tx.employeeFacilityAccess.deleteMany({
+        where: {
+          facilityId,
+          employee: {
+            facilityId: {
+              not: facilityId,
+            },
+          },
+        },
+      });
+
+      if (additionalAccessRows.length > 0) {
+        await tx.employeeFacilityAccess.createMany({
+          data: additionalAccessRows,
+          skipDuplicates: true,
+        });
+      }
+    });
+
+    return this.findEmployees(facilityId);
   }
 }
