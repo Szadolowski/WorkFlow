@@ -13,10 +13,14 @@ import {
 } from "@/components/ui/table";
 import EmployeeAccessDialog from "@/components/employees/EmployeeAccessDialog";
 import type { EmployeeListItem } from "@/types/employees";
+import { useFacility } from "@/hooks/useFacility";
 
 export default function EmployeesPage() {
   const { data, isLoading, isError } = useEmployeesQuery();
-  const router = useRouter(); // <-- Inicjalizacja routera
+  const { currentUser } = useFacility();
+  const router = useRouter();
+
+  const isAdmin = currentUser.role === "ADMIN";
 
   return (
     <div className="bg-white rounded-xl shadow-sm border p-6">
@@ -53,15 +57,15 @@ export default function EmployeesPage() {
                 <TableHead>PESEL</TableHead>
                 <TableHead>Rola</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Dostęp</TableHead>
-                <TableHead className="text-right">Akcje</TableHead>
+                {isAdmin && <TableHead>Dostęp</TableHead>}
+                {isAdmin && <TableHead className="text-right">Akcje</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
               {data.data.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={7}
+                    colSpan={isAdmin ? 7 : 5}
                     className="text-center py-8 text-slate-500"
                   >
                     Brak pracowników w bazie. Kliknij &quot;Dodaj
@@ -103,25 +107,29 @@ export default function EmployeesPage() {
                         </span>
                       )}
                     </TableCell>
-                    <TableCell>
-                      {employee.isLoginEnabled ? (
-                        <span className="text-blue-600 font-medium text-sm">
-                          Konto aktywne
-                        </span>
-                      ) : (
-                        <span className="text-slate-500 font-medium text-sm">
-                          Brak dostępu
-                        </span>
-                      )}
-                    </TableCell>
+                    {isAdmin && (
+                      <>
+                        <TableCell>
+                          {employee.isLoginEnabled ? (
+                            <span className="text-blue-600 font-medium text-sm">
+                              Konto aktywne
+                            </span>
+                          ) : (
+                            <span className="text-slate-500 font-medium text-sm">
+                              Brak dostępu
+                            </span>
+                          )}
+                        </TableCell>
 
-                    <TableCell className="text-right">
-                      <EmployeeAccessDialog
-                        employeeId={employee.id}
-                        currentRole={employee.role}
-                        isLoginEnabled={employee.isLoginEnabled}
-                      />
-                    </TableCell>
+                        <TableCell className="text-right">
+                          <EmployeeAccessDialog
+                            employeeId={employee.id}
+                            currentRole={employee.role}
+                            isLoginEnabled={employee.isLoginEnabled}
+                          />
+                        </TableCell>
+                      </>
+                    )}
                   </TableRow>
                 ))
               )}
