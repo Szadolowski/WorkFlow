@@ -1,24 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Building2, Pencil, Plus, Power } from "lucide-react";
+import { Building2, Pencil, Plus, Power, Users } from "lucide-react";
 import {
   createFacilityAction,
   getFacilitiesAction,
   updateFacilityAction,
 } from "@/app/actions/facilities.actions";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import type {
   CreateFacilityPayload,
   FacilityListItem,
 } from "@/types/facilities";
+import Link from "next/link";
 
 type FacilityFormState = {
   name: string;
@@ -60,7 +56,33 @@ export default function FacilitiesPage() {
   }
 
   useEffect(() => {
-    void loadFacilities();
+    let isCancelled = false;
+
+    getFacilitiesAction()
+      .then((response) => {
+        if (isCancelled) return;
+
+        setFacilities(response.data);
+        setError(null);
+      })
+      .catch((err) => {
+        if (isCancelled) return;
+
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Nie udało się pobrać listy zakładów.",
+        );
+      })
+      .finally(() => {
+        if (isCancelled) return;
+
+        setIsLoading(false);
+      });
+
+    return () => {
+      isCancelled = true;
+    };
   }, []);
 
   function startCreate() {
@@ -241,24 +263,16 @@ export default function FacilitiesPage() {
                     <th className="px-4 py-3 font-medium">Pracownicy</th>
                     <th className="px-4 py-3 font-medium">Projekty</th>
                     <th className="px-4 py-3 font-medium">Czytniki</th>
-                    <th className="px-4 py-3 font-medium text-right">
-                      Akcje
-                    </th>
+                    <th className="px-4 py-3 font-medium text-right">Akcje</th>
                   </tr>
                 </thead>
 
                 <tbody>
                   {facilities.map((facility) => (
                     <tr key={facility.id} className="border-t">
-                      <td className="px-4 py-3 font-medium">
-                        {facility.name}
-                      </td>
-                      <td className="px-4 py-3">
-                        {facility.code || "—"}
-                      </td>
-                      <td className="px-4 py-3">
-                        {facility.address || "—"}
-                      </td>
+                      <td className="px-4 py-3 font-medium">{facility.name}</td>
+                      <td className="px-4 py-3">{facility.code || "—"}</td>
+                      <td className="px-4 py-3">{facility.address || "—"}</td>
                       <td className="px-4 py-3">
                         {facility.isActive ? (
                           <span className="text-green-600 font-medium">
@@ -270,15 +284,9 @@ export default function FacilitiesPage() {
                           </span>
                         )}
                       </td>
-                      <td className="px-4 py-3">
-                        {facility._count.employees}
-                      </td>
-                      <td className="px-4 py-3">
-                        {facility._count.projects}
-                      </td>
-                      <td className="px-4 py-3">
-                        {facility._count.readers}
-                      </td>
+                      <td className="px-4 py-3">{facility._count.employees}</td>
+                      <td className="px-4 py-3">{facility._count.projects}</td>
+                      <td className="px-4 py-3">{facility._count.readers}</td>
                       <td className="px-4 py-3">
                         <div className="flex justify-end gap-2">
                           <Button
@@ -298,6 +306,14 @@ export default function FacilitiesPage() {
                           >
                             <Power className="mr-1 h-4 w-4" />
                             {facility.isActive ? "Dezaktywuj" : "Aktywuj"}
+                          </Button>
+                          <Button asChild size="sm" variant="outline">
+                            <Link
+                              href={`/dashboard/facilities/${facility.id}/employees`}
+                            >
+                              <Users className="mr-1 h-4 w-4" />
+                              Pracownicy
+                            </Link>
                           </Button>
                         </div>
                       </td>

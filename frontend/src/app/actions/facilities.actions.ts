@@ -6,6 +6,8 @@ import type {
   FacilitiesResponse,
   FacilitySingleResponse,
   UpdateFacilityPayload,
+  FacilityEmployeesResponse,
+  UpdateFacilityEmployeesPayload,
 } from "@/types/facilities";
 
 export async function getFacilitiesAction(): Promise<FacilitiesResponse> {
@@ -47,6 +49,38 @@ export async function updateFacilityAction(
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.message || "Nie udało się zaktualizować zakładu.");
+  }
+
+  return res.json();
+}
+
+export async function getFacilityEmployeesAction(
+  facilityId: string,
+): Promise<FacilityEmployeesResponse> {
+  const res = await serverFetch(`/facilities/${facilityId}/employees`);
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || "Nie udało się pobrać pracowników zakładu.");
+  }
+
+  return res.json();
+}
+
+export async function updateFacilityEmployeesAction(
+  facilityId: string,
+  payload: UpdateFacilityEmployeesPayload,
+): Promise<FacilityEmployeesResponse> {
+  const res = await serverFetch(`/facilities/${facilityId}/employees`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(
+      err.message || "Nie udało się zaktualizować pracowników zakładu.",
+    );
   }
 
   return res.json();

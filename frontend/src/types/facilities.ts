@@ -31,3 +31,36 @@ export type CreateFacilityPayload = {
 export type UpdateFacilityPayload = Partial<CreateFacilityPayload> & {
   isActive?: boolean;
 };
+
+export type FacilityEmployeeAccessItem = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string | null;
+  role: string;
+  primaryFacility: {
+    id: string;
+    name: string;
+    code: string | null;
+  };
+  isPrimaryFacility: boolean;
+  hasAdditionalAccess: boolean;
+  isAssigned: boolean;
+};
+
+export type FacilityEmployeesResponse = {
+  data: {
+    facility: {
+      id: string;
+      name: string;
+      code: string | null;
+      address: string | null;
+      isActive: boolean;
+    };
+    employees: FacilityEmployeeAccessItem[];
+  };
+};
+
+export type UpdateFacilityEmployeesPayload = {
+  employeeIds: string[];
+};
