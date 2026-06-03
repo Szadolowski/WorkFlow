@@ -11,6 +11,7 @@ import { StorageModule } from './storage/storage.module';
 import { PayrollModule } from './payroll/payroll.module';
 import { TimeEventsModule } from './time-events/time-events.module';
 import { TimeEntriesModule } from './time-entries/time-entries.module';
+import { FacilitiesModule } from './facilities/facilities.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { TimeEntriesModule } from './time-entries/time-entries.module';
     PayrollModule,
     TimeEventsModule,
     TimeEntriesModule,
+    FacilitiesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
