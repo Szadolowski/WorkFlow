@@ -126,21 +126,28 @@ export class DashboardService {
     const now = new Date();
     const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-    // 1. Alerty (Copper/Orange) - Niezatwierdzone godziny z danego zakładu
     const pendingTimeEntriesCount = await this.prisma.timeEntry.count({
       where: { project: { facilityId }, status: 'PENDING' },
     });
 
-    // 2. Sukces (Teal/Mint) - Zatwierdzone godziny w tym miesiącu
-    const approvedTimeEntriesCount = await this.prisma.timeEntry.count({
+    const approvedTimeEntries = await this.prisma.timeEntry.findMany({
       where: {
         project: { facilityId },
         status: 'APPROVED',
         startTime: { gte: firstDayOfMonth },
       },
+      select: {
+        calculatedHours: true,
+      },
     });
 
-    // 3. Dane do wykresu (Ostatnie 7 dni roboczogodzin)
+    const approvedTimeEntriesCount = approvedTimeEntries.length;
+
+    const approvedHoursThisMonth = approvedTimeEntries.reduce(
+      (sum, entry) => sum + Number(entry.calculatedHours),
+      0,
+    );
+
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
     sevenDaysAgo.setHours(0, 0, 0, 0);
@@ -164,6 +171,9 @@ export class DashboardService {
       data: {
         pendingTimeEntriesCount,
         approvedTimeEntriesCount,
+        approvedHoursThisMonth,
+        currentMonthStart: firstDayOfMonth.toISOString(),
+        currentMonthEnd: now.toISOString(),
         weeklyChartData,
       },
     };
@@ -220,12 +230,10 @@ export class DashboardService {
       const dateString = d.toISOString().split('T')[0]; // Format: YYYY-MM-DD
       const shortDate = `${d.getDate().toString().padStart(2, '0')}.${(d.getMonth() + 1).toString().padStart(2, '0')}`;
 
-      // Sumujemy godziny z danego dnia
       const sum = entries
         .filter((e) => e.startTime.toISOString().split('T')[0] === dateString)
         .reduce((acc, curr) => acc + Number(curr.calculatedHours), 0);
 
-      // Taka struktura (name, value) jest idealna dla wykresów Recharts na frontendzie
       days.push({ name: shortDate, hours: sum });
     }
     return days;
