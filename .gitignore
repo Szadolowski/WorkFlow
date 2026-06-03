@@ -12,6 +12,7 @@ node_modules/
 .env.development
 .env.test
 .env.production
+tools/device-simulator/device-events.local.json
 
 # =========================
 # NEXT.JS (Frontend)

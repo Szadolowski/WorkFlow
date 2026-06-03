@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { HardHat, WalletCards } from "lucide-react";
+import { HardHat, WalletCards, Clock3 } from "lucide-react";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
 
 import { useFacility } from "@/hooks/useFacility";
@@ -36,6 +36,12 @@ const NAV_ITEMS = [
     href: "/dashboard/projects",
     icon: <HardHat className="w-5 h-5 mr-2 inline-block" />,
     roles: ["ADMIN", "OFFICE", "HR", "FOREMAN"],
+  },
+  {
+    label: "Czas pracy",
+    href: "/dashboard/time-entries",
+    icon: <Clock3 className="w-5 h-5 mr-2 inline-block" />,
+    roles: ["ADMIN", "FOREMAN"],
   },
 ];
 
