@@ -16,7 +16,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Briefcase,
   FileText,
-  Award,
   CalendarOff,
   FolderOpen,
   ShieldAlert,
@@ -39,6 +38,7 @@ import {
 } from "@/app/actions/storage.actions";
 import { addDocumentAction } from "@/app/actions/employees.actions";
 import { EmployeeContractsSection } from "@/components/employees/EmployeeContractsSection";
+import { EmployeeCertificationsSection } from "@/components/employees/EmployeeCertificationsSection";
 
 // Definicje typów, aby uciszyć linter
 type Assignment = {
@@ -57,17 +57,6 @@ type EmployeeDocument = {
   fileName: string;
   fileUrl: string;
   createdAt: string;
-};
-
-type Certification = {
-  id: string;
-  certificateNumber: string | null;
-  issuedAt: Date;
-  expiresAt: Date;
-  dictionary: {
-    name: string;
-    type: string;
-  };
 };
 
 export default function EmployeeProfilePage({
@@ -111,7 +100,11 @@ export default function EmployeeProfilePage({
   }
 
   const employee = data.data;
+
   const canManageContracts =
+    currentUser.role === "ADMIN" || currentUser.role === "HR";
+
+  const canManageCertifications =
     currentUser.role === "ADMIN" || currentUser.role === "HR";
 
   const initials =
@@ -232,80 +225,11 @@ export default function EmployeeProfilePage({
         </TabsContent>
 
         <TabsContent value="certifications">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Award className="w-5 h-5 text-primary" /> Kwalifikacje i
-                Badania
-              </CardTitle>
-              <CardDescription>
-                Lista ważnych certyfikatów i szkoleń (BHP, Lekarskie, UDT).
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {employee.validCertifications.length === 0 ? (
-                <div className="text-center p-6 border border-dashed rounded-lg">
-                  <p className="text-muted-foreground text-sm">
-                    Brak ważnych szkoleń w bazie.
-                  </p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {employee.validCertifications.map((cert: Certification) => {
-                    const daysToExpiry = Math.ceil(
-                      (new Date(cert.expiresAt).getTime() -
-                        new Date().getTime()) /
-                        (1000 * 3600 * 24),
-                    );
-                    const isExpiringSoon = daysToExpiry <= 30;
-
-                    return (
-                      <div
-                        key={cert.id}
-                        className={`p-4 border rounded-md flex flex-col justify-between ${isExpiringSoon ? "border-orange-200 bg-orange-50/50" : "bg-slate-50/50"}`}
-                      >
-                        <div className="flex justify-between items-start mb-4">
-                          <div>
-                            <p className="font-semibold">
-                              {cert.dictionary.name}
-                            </p>
-                            <p className="text-xs text-muted-foreground mt-1">
-                              Nr: {cert.certificateNumber || "Brak numeru"}
-                            </p>
-                          </div>
-                          <Badge
-                            variant={
-                              cert.dictionary.type === "BHP"
-                                ? "default"
-                                : "secondary"
-                            }
-                          >
-                            {cert.dictionary.type}
-                          </Badge>
-                        </div>
-                        <div className="flex justify-between items-center text-sm border-t pt-3">
-                          <span className="text-muted-foreground">
-                            Wydano:{" "}
-                            {new Date(cert.issuedAt).toLocaleDateString(
-                              "pl-PL",
-                            )}
-                          </span>
-                          <span
-                            className={`font-semibold ${isExpiringSoon ? "text-orange-600" : "text-primary"}`}
-                          >
-                            Ważne do:{" "}
-                            {new Date(cert.expiresAt).toLocaleDateString(
-                              "pl-PL",
-                            )}
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          <EmployeeCertificationsSection
+            employeeId={employeeId}
+            activeFacilityId={activeFacilityId}
+            canManageCertifications={canManageCertifications}
+          />
         </TabsContent>
 
         <TabsContent value="absences">
