@@ -50,3 +50,24 @@ Thumbs.db
 # DOCKER
 # =========================
 docker-compose.override.yml
+
+
+# LaTeX build files
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.lof
+*.lol
+*.lot
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+*.nav
+*.snm
+*.vrb
+*.bbl-SAVE-ERROR
