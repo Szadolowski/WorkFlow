@@ -158,7 +158,7 @@ export default function EmployeesPage() {
 
   return (
     <div className="bg-card text-card-foreground rounded-xl shadow-sm border p-6">
-      <div className="flex items-center justify-between mb-6">
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Pracownicy</h1>
           <p className="text-muted-foreground">
@@ -205,7 +205,7 @@ export default function EmployeesPage() {
             )}
           </div>
 
-          <div className="grid gap-3 md:grid-cols-5">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-5">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
@@ -253,7 +253,7 @@ export default function EmployeesPage() {
 
       {!isLoading && !isError && data && (
         <div className="rounded-md border">
-          <Table>
+          <Table className="min-w-275">
             <TableHeader>
               <TableRow>
                 <TableHead>

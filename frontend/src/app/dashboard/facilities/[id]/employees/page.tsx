@@ -234,83 +234,87 @@ export default function FacilityEmployeesPage({
                 nazwiska albo e-maila.
               </p>
 
-              <div className="overflow-x-auto rounded-md border">
-                <table className="w-full text-sm">
-                  <thead className="bg-muted/50 text-left">
-                    <tr>
-                      <th className="px-4 py-3 font-medium">Przypisany</th>
-                      <th className="px-4 py-3 font-medium">Pracownik</th>
-                      <th className="px-4 py-3 font-medium">Email</th>
-                      <th className="px-4 py-3 font-medium">Rola</th>
-                      <th className="px-4 py-3 font-medium">Główny zakład</th>
-                      <th className="px-4 py-3 font-medium">Typ dostępu</th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    {visibleEmployees.length === 0 ? (
+              <div className="rounded-md border">
+                <div className="overflow-x-auto">
+                  <table className="min-w-245 w-full text-sm">
+                    <thead className="bg-muted/50 text-left">
                       <tr>
-                        <td
-                          colSpan={6}
-                          className="px-4 py-8 text-center text-sm text-muted-foreground"
-                        >
-                          {searchQuery.trim()
-                            ? "Brak pracowników pasujących do wyszukiwania."
-                            : "Brak przypisanych pracowników. Użyj wyszukiwarki, aby dodać osoby do zakładu."}
-                        </td>
+                        <th className="px-4 py-3 font-medium">Przypisany</th>
+                        <th className="px-4 py-3 font-medium">Pracownik</th>
+                        <th className="px-4 py-3 font-medium">Email</th>
+                        <th className="px-4 py-3 font-medium">Rola</th>
+                        <th className="px-4 py-3 font-medium">Główny zakład</th>
+                        <th className="px-4 py-3 font-medium">Typ dostępu</th>
                       </tr>
-                    ) : (
-                      visibleEmployees.map((employee) => {
-                        const isChecked = selectedIds.includes(employee.id);
+                    </thead>
 
-                        return (
-                          <tr key={employee.id} className="border-t">
-                            <td className="px-4 py-3">
-                              <Checkbox
-                                checked={isChecked}
-                                disabled={employee.isPrimaryFacility}
-                                onCheckedChange={() => toggleEmployee(employee)}
-                              />
-                            </td>
+                    <tbody>
+                      {visibleEmployees.length === 0 ? (
+                        <tr>
+                          <td
+                            colSpan={6}
+                            className="px-4 py-8 text-center text-sm text-muted-foreground"
+                          >
+                            {searchQuery.trim()
+                              ? "Brak pracowników pasujących do wyszukiwania."
+                              : "Brak przypisanych pracowników. Użyj wyszukiwarki, aby dodać osoby do zakładu."}
+                          </td>
+                        </tr>
+                      ) : (
+                        visibleEmployees.map((employee) => {
+                          const isChecked = selectedIds.includes(employee.id);
 
-                            <td className="px-4 py-3 font-medium">
-                              {employee.firstName} {employee.lastName}
-                            </td>
+                          return (
+                            <tr key={employee.id} className="border-t">
+                              <td className="px-4 py-3">
+                                <Checkbox
+                                  checked={isChecked}
+                                  disabled={employee.isPrimaryFacility}
+                                  onCheckedChange={() =>
+                                    toggleEmployee(employee)
+                                  }
+                                />
+                              </td>
 
-                            <td className="px-4 py-3">
-                              {employee.email || "—"}
-                            </td>
+                              <td className="px-4 py-3 font-medium">
+                                {employee.firstName} {employee.lastName}
+                              </td>
 
-                            <td className="px-4 py-3">{employee.role}</td>
+                              <td className="px-4 py-3">
+                                {employee.email || "—"}
+                              </td>
 
-                            <td className="px-4 py-3">
-                              {employee.primaryFacility.name}
-                              {employee.primaryFacility.code
-                                ? ` (${employee.primaryFacility.code})`
-                                : ""}
-                            </td>
+                              <td className="px-4 py-3">{employee.role}</td>
 
-                            <td className="px-4 py-3">
-                              {employee.isPrimaryFacility ? (
-                                <span className="font-medium text-green-600">
-                                  Główny zakład
-                                </span>
-                              ) : employee.hasAdditionalAccess ? (
-                                <span className="font-medium text-blue-600">
-                                  Dodatkowy dostęp
-                                </span>
-                              ) : (
-                                <span className="text-muted-foreground">
-                                  Brak dostępu
-                                </span>
-                              )}
-                            </td>
-                          </tr>
-                        );
-                      })
-                    )}
-                  </tbody>
-                </table>
+                              <td className="px-4 py-3">
+                                {employee.primaryFacility.name}
+                                {employee.primaryFacility.code
+                                  ? ` (${employee.primaryFacility.code})`
+                                  : ""}
+                              </td>
+
+                              <td className="px-4 py-3">
+                                {employee.isPrimaryFacility ? (
+                                  <span className="font-medium text-green-600">
+                                    Główny zakład
+                                  </span>
+                                ) : employee.hasAdditionalAccess ? (
+                                  <span className="font-medium text-blue-600">
+                                    Dodatkowy dostęp
+                                  </span>
+                                ) : (
+                                  <span className="text-muted-foreground">
+                                    Brak dostępu
+                                  </span>
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </>
           )}
