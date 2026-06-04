@@ -1,2 +1,2 @@
-\contentsline {lstlisting}{\numberline {1}Definicja tabeli Pracownicy i Ewidencja Czasu}{30}{lstlisting.1}%
-\contentsline {lstlisting}{\numberline {2}Zapytanie wyliczajace wynagrodzenia za okres kwiecien 2026}{31}{lstlisting.2}%
+\contentsline {lstlisting}{\numberline {1}Fragment modelu TimeEntry w schemacie Prisma}{63}{lstlisting.1}%
+\contentsline {lstlisting}{\numberline {2}Synchronizacja bazy danych ze schematem Prisma}{64}{lstlisting.2}%

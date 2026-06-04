@@ -1,31 +1,147 @@
 % ================= ROZDZIAŁ 4.3 =================
 \subsection{Wymagania integracyjne}
 
-Wymagania integracyjne określają architekturę połączeń systemu \texttt{WorkFlow} z zewnętrznymi usługami, narzędziami oraz wewnętrznymi mikrousługami. Aby zapewnić bezpieczeństwo i elastyczność całego rozwiązania, wprowadzono rygorystyczną zasadę architektoniczną: każda integracja musi być odseparowana za pomocą warstwy abstrakcji (wzorzec projektowy \textit{Adapter}) \cite{adapter}. Zapobiega to bezpośredniemu wiązaniu rdzennej logiki biznesowej z konkretnymi dostawcami usług (np. zmiana operatora e-mail nie może wymagać ingerencji w logikę kadrową).
+Wymagania integracyjne opisują sposób współpracy systemu \texttt{WorkFlow} z usługami technicznymi, komponentami infrastruktury oraz zewnętrznymi źródłami zdarzeń. W aktualnym zakresie projektu integracje dotyczą przede wszystkim bazy danych, magazynu plików, czytników RCP, komunikacji pomiędzy frontendem i backendem oraz środowiska uruchomieniowego opartego o kontenery.
 
-\subsubsection{Zarządzanie plikami i pamięcią masową (Storage)}
-Integracja z systemem składowania obiektów jest krytyczna ze względu na konieczność bezpiecznego przechowywania cyfrowej dokumentacji pracowniczej.
+Celem wymagań integracyjnych jest określenie, jakie elementy muszą ze sobą współpracować, aby system działał jako kompletna aplikacja webowa. Wymagania te nie opisują pojedynczych funkcji użytkownika, lecz zależności pomiędzy usługami i warstwami systemu.
+
+\subsubsection{Integracja z bazą danych}
+
+System powinien integrować się z relacyjną bazą danych PostgreSQL. Baza danych stanowi główne miejsce przechowywania informacji biznesowych, takich jak pracownicy, zakłady, projekty, umowy, certyfikaty, nieobecności, dokumenty, zdarzenia czasu pracy, wpisy czasu pracy oraz eksporty rozliczeniowe.
+
+Komunikacja backendu z bazą danych odbywa się z wykorzystaniem narzędzia Prisma ORM. Schemat bazy został zdefiniowany w pliku \texttt{schema.prisma}, co umożliwia utrzymanie spójności pomiędzy modelem danych aplikacji a strukturą fizycznej bazy danych.
+
+Wymagania w tym obszarze obejmują:
 \begin{itemize}
-    \item \textbf{Dostawca S3-compatible:} System musi integrować się z bezpieczną, obiektową pamięcią masową (np. dedykowaną instancją \textit{MinIO} lub usługą \textit{AWS S3}).
-    \item \textbf{Kryptograficzne linki dostępu:} Ze względów bezpieczeństwa, magazyn danych musi być odcięty od publicznego dostępu. Pobieranie plików przez autoryzowanych użytkowników (np. podgląd zwolnienia) musi odbywać się wyłącznie za pośrednictwem tymczasowych, podpisywanych adresów (\textit{Signed URLs}).
+    \item możliwość połączenia backendu z bazą PostgreSQL za pomocą zmiennej środowiskowej,
+    \item odwzorowanie encji biznesowych w modelach Prisma,
+    \item obsługę relacji pomiędzy tabelami,
+    \item możliwość synchronizacji struktury bazy danych ze schematem Prisma,
+    \item możliwość inicjalizacji bazy danymi startowymi.
 \end{itemize}
 
-\subsubsection{Przetwarzanie asynchroniczne i harmonogramowanie}
-Architektura aplikacji musi zakładać odciążenie głównego wątku serwera dla operacji czasochłonnych i cyklicznych.
+\subsubsection{Integracja z magazynem plików}
+
+System powinien współpracować z magazynem obiektowym MinIO. Pliki dokumentów nie są przechowywane bezpośrednio w tabelach bazy danych. W bazie zapisywane są jedynie metadane dokumentu, takie jak nazwa pliku, właściciel dokumentu oraz ścieżka do pliku w magazynie.
+
+Takie rozwiązanie pozwala oddzielić dane relacyjne od plików binarnych. Jest to szczególnie istotne w przypadku dokumentów kadrowych, skanów umów, zaświadczeń, certyfikatów lub dokumentów powiązanych z nieobecnościami.
+
+Wymagania w zakresie integracji z magazynem plików obejmują:
 \begin{itemize}
-    \item \textbf{Broker wiadomości:} Integracja z systemem kolejkowym (np. \textit{Redis + BullMQ} lub \textit{RabbitMQ}) w celu asynchronicznego przetwarzania zdarzeń w architekturze \textit{event-driven}. System musi obsługiwać mechanizmy ponawiania żądań po błędzie (\textit{retry}) oraz precyzyjne monitorowanie stanu kolejek.
-    \item \textbf{Harmonogramowanie (Cron/Scheduler):} System musi posiadać integrację z modułem zadań cyklicznych, którego rolą jest automatyczne weryfikowanie bazy danych (np. sprawdzanie ważności certyfikatów pracowniczych o godzinie 01:00 w nocy) i wypychanie zdarzeń do kolejki alertów.
+    \item konfigurację endpointu MinIO za pomocą zmiennych środowiskowych,
+    \item obsługę danych dostępowych do magazynu plików,
+    \item wskazanie nazwy bucketu przechowującego dokumenty,
+    \item zapisywanie w bazie danych ścieżki lub adresu pliku,
+    \item możliwość powiązania dokumentu z pracownikiem, umową, certyfikatem lub nieobecnością.
 \end{itemize}
 
-\subsubsection{Komunikacja API i powiadomienia zewnętrze}
+\subsubsection{Integracja z czytnikami RCP}
+
+System powinien udostępniać techniczny endpoint przeznaczony do odbierania zdarzeń z czytników RCP. Czytnik jest powiązany z zakładem oraz projektem, dzięki czemu zdarzenia wejścia i wyjścia mogą zostać przypisane do konkretnego pracownika oraz miejsca pracy.
+
+Zdarzenie przekazywane do systemu powinno zawierać:
 \begin{itemize}
-    \item \textbf{RESTful API:} Całość komunikacji pomiędzy klientem (frontend webowy/mobilny) a serwerem musi odbywać się poprzez ustrukturyzowane, wersjonowane API. Każdy żądany zasób musi przechodzić przez rygorystyczną walidację wejścia i weryfikację tokenu \textit{JWT}.
-    \item \textbf{Bramka E-mail:} System musi być zintegrowany z zewnętrznym dostawcą usług e-mail do wysyłki szablonowych alertów bezpieczeństwa i powiadomień operacyjnych.
+    \item numer seryjny czytnika,
+    \item identyfikator karty RFID,
+    \item typ zdarzenia: \texttt{IN} albo \texttt{OUT},
+    \item czas zdarzenia,
+    \item opcjonalny zewnętrzny identyfikator zdarzenia.
 \end{itemize}
 
-\subsubsection{Integracje rozszerzone i opcjonalne (Przyszłościowe)}
-Dokumentacja zakłada przygotowanie punktów styku dla przyszłych systemów klasy \textit{Enterprise}:
+Endpoint urządzeń powinien być zabezpieczony tokenem technicznym, niezależnym od tokenów użytkowników logujących się do aplikacji. Pozwala to oddzielić komunikację maszynową od standardowej komunikacji użytkownika z systemem.
+
+Po odebraniu zdarzenia backend powinien:
+\begin{enumerate}
+    \item zweryfikować token urządzenia,
+    \item odnaleźć aktywny czytnik na podstawie numeru seryjnego,
+    \item odnaleźć aktywnego pracownika na podstawie identyfikatora karty RFID,
+    \item zapisać surowe zdarzenie w tabeli \texttt{TimeEvent},
+    \item w przypadku zdarzenia \texttt{OUT} spróbować utworzyć wpis czasu pracy na podstawie wcześniejszego zdarzenia \texttt{IN}.
+\end{enumerate}
+
+\subsubsection{Komunikacja pomiędzy frontendem i backendem}
+
+Frontend powinien komunikować się z backendem za pomocą API HTTP. Backend udostępnia punkty końcowe odpowiedzialne za logowanie, pobieranie danych, tworzenie rekordów, aktualizację informacji oraz obsługę operacji biznesowych.
+
+Frontend odpowiada za:
 \begin{itemize}
-    \item \textbf{Systemy ERP / Księgowość:} Udostępnienie dedykowanych punktów końcowych API oraz modułu eksportu plików CSV, które pozwolą na bezpieczny import zagregowanych paczek płacowych (czas pracy, stawki) do zewnętrznych systemów finansowych.
-    \item \textbf{Zewnętrzny dostawca tożsamości (IAM):} Architektura logowania musi wspierać późniejszą migrację do scentralizowanego systemu zarządzania tożsamością i dostępem (np. \textit{Keycloak}), z obsługą protokołu OAuth 2.0 / OpenID Connect.
+    \item prezentację danych użytkownikowi,
+    \item obsługę formularzy,
+    \item wyświetlanie list i szczegółów rekordów,
+    \item kierowanie użytkownika do odpowiednich widoków,
+    \item przekazywanie danych do backendu.
 \end{itemize}
+
+Backend odpowiada za:
+\begin{itemize}
+    \item autoryzację żądań,
+    \item walidację danych wejściowych,
+    \item realizację logiki biznesowej,
+    \item komunikację z bazą danych,
+    \item komunikację z magazynem plików,
+    \item obsługę technicznych endpointów, takich jak odbieranie zdarzeń RCP.
+\end{itemize}
+
+Taki podział umożliwia oddzielenie warstwy prezentacji od logiki biznesowej i ułatwia dalsze utrzymanie aplikacji.
+
+\subsubsection{Integracja przez Nginx}
+
+W środowisku Docker Compose system wykorzystuje Nginx jako reverse proxy. Oznacza to, że użytkownik korzysta z jednego adresu aplikacji, a Nginx przekierowuje ruch do odpowiedniej usługi.
+
+Wymagania dotyczące Nginx obejmują:
+\begin{itemize}
+    \item przekierowanie ruchu aplikacji do frontendu,
+    \item przekierowanie zapytań API do backendu,
+    \item uproszczenie adresów wykorzystywanych przez użytkownika,
+    \item oddzielenie wewnętrznych nazw usług od adresu widocznego z poziomu przeglądarki.
+\end{itemize}
+
+Przykładowy podział ruchu wygląda następująco:
+\begin{itemize}
+    \item ścieżka \texttt{/} kierowana jest do frontendu,
+    \item ścieżka \texttt{/api} kierowana jest do backendu.
+\end{itemize}
+
+Dzięki temu użytkownik nie musi znać portów poszczególnych usług, a aplikacja może być dostępna pod jednym adresem.
+
+\subsubsection{Środowisko Docker Compose}
+
+System powinien być możliwy do uruchomienia za pomocą Docker Compose. Plik konfiguracyjny opisuje usługi niezbędne do działania aplikacji oraz zależności pomiędzy nimi.
+
+Środowisko powinno obejmować:
+\begin{itemize}
+    \item usługę frontendu,
+    \item usługę backendu,
+    \item usługę PostgreSQL,
+    \item usługę MinIO,
+    \item usługę Nginx.
+\end{itemize}
+
+Konfiguracja powinna korzystać ze zmiennych środowiskowych przechowywanych w pliku \texttt{.env}. W repozytorium powinien znajdować się wyłącznie plik przykładowy \texttt{.env.example}, który opisuje wymagane zmienne bez ujawniania rzeczywistych haseł, tokenów i sekretów.
+
+\subsubsection{Inicjalizacja danych}
+
+System powinien umożliwiać przygotowanie bazy danych do pracy po pierwszym uruchomieniu. W projekcie przewidziano dwa mechanizmy inicjalizacji danych:
+\begin{itemize}
+    \item \textbf{seed minimalny} -- tworzący podstawowy zakład oraz konta startowe dla głównych ról użytkowników,
+    \item \textbf{seed demonstracyjny} -- tworzący komplet danych potrzebnych do prezentacji działania systemu.
+\end{itemize}
+
+Seed minimalny jest przeznaczony do czystego uruchomienia aplikacji. Seed demonstracyjny służy natomiast do przygotowania środowiska pokazowego i zawiera między innymi pracowników, projekty, czytniki RCP, umowy, certyfikaty, nieobecności, dokumenty, wpisy czasu pracy oraz przykładowy eksport rozliczeniowy.
+
+Ze względu na to, że seed demonstracyjny może czyścić istniejące dane, jego uruchomienie powinno wymagać dodatkowej zmiennej środowiskowej potwierdzającej intencję wykonania operacji.
+
+\subsubsection{Integracje możliwe do rozbudowy}
+
+Aktualna wersja systemu skupia się na podstawowych integracjach wymaganych do działania aplikacji. Przyjęta architektura pozwala jednak na późniejsze rozszerzenie systemu o kolejne mechanizmy.
+
+Do możliwych kierunków rozwoju należą:
+\begin{itemize}
+    \item integracja z zewnętrznym systemem księgowym,
+    \item wysyłka powiadomień e-mail,
+    \item integracja z zewnętrznym dostawcą tożsamości,
+    \item rozbudowa harmonogramów zadań cyklicznych,
+    \item bardziej zaawansowany eksport danych rozliczeniowych.
+\end{itemize}
+
+Wymienione elementy nie są wymagane do działania aktualnej wersji projektu. Zostały wskazane jako potencjalne rozszerzenia, które mogą zostać dodane w przyszłości bez zmiany podstawowych założeń architektonicznych systemu.
