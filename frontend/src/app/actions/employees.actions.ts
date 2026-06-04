@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import type {
   CreateEmployeePayload,
   UpdateEmployeeAccessPayload,
+  UpdateEmployeePayload,
 } from "@/types/employees";
 
 export async function getEmployeesAction(
@@ -52,6 +53,36 @@ export async function createEmployeeAction(
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.message || "Nie udało się dodać pracownika.");
+  }
+
+  return res.json();
+}
+
+export async function updateEmployeeAction(
+  employeeId: string,
+  data: UpdateEmployeePayload,
+  facilityId?: string,
+) {
+  const params = new URLSearchParams();
+
+  if (facilityId) {
+    params.set("facilityId", facilityId);
+  }
+
+  const url = `/employees/${employeeId}${
+    params.toString() ? `?${params.toString()}` : ""
+  }`;
+
+  const res = await serverFetch(url, {
+    method: "PATCH",
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(
+      err.message || "Nie udało się zaktualizować danych pracownika.",
+    );
   }
 
   return res.json();

@@ -7,6 +7,7 @@ import {
   Query,
   UseGuards,
   Param,
+  ParseUUIDPipe,
   Req,
   Delete,
 } from '@nestjs/common';
@@ -31,6 +32,7 @@ import {
 import { UpdateEmployeeAccessDto } from './dto/update-employee-access.dto';
 import { AddEmployeeDocumentDto } from './dto/add-employee-document.dto';
 import { EmployeeDocumentSingleResponseDto } from './dto/employee-document-response.dto';
+import { UpdateEmployeeDto } from './dto/update-employee.dto';
 
 type AuthenticatedEmployeeRequest = {
   user: {
@@ -73,6 +75,36 @@ export class EmployeesController {
     @Query('facilityId') facilityId: string | undefined,
   ) {
     return this.employeesService.create(createEmployeeDto, facilityId);
+  }
+
+  @Roles(UserRole.ADMIN, UserRole.HR)
+  @Patch(':id')
+  @ApiOperation({
+    summary: 'Aktualizuje dane kadrowe pracownika',
+    description:
+      'Pozwala edytować dane pracownika bez zmiany roli systemowej, hasła i dostępu do logowania.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Dane pracownika zostały zaktualizowane.',
+    type: EmployeeSingleResponseDto,
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Brak uprawnień do edycji danych pracownika.',
+  })
+  @ApiResponse({
+    status: 409,
+    description:
+      'Email, PESEL albo RFID są już używane przez innego pracownika.',
+  })
+  update(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() dto: UpdateEmployeeDto,
+    @Req() req: AuthenticatedEmployeeRequest,
+    @Query('facilityId') facilityId: string | undefined,
+  ) {
+    return this.employeesService.update(id, dto, req.user, facilityId);
   }
 
   @Roles(UserRole.ADMIN)

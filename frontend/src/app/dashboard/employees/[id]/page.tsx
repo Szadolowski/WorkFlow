@@ -20,6 +20,7 @@ import {
   FolderOpen,
   ShieldAlert,
   Download,
+  Pencil,
 } from "lucide-react";
 import {
   Select,
@@ -39,6 +40,7 @@ import {
 import { addDocumentAction } from "@/app/actions/employees.actions";
 import { EmployeeContractsSection } from "@/components/employees/EmployeeContractsSection";
 import { EmployeeCertificationsSection } from "@/components/employees/EmployeeCertificationsSection";
+import { EmployeeEditForm } from "@/components/employees/EmployeeEditForm";
 
 // Definicje typów, aby uciszyć linter
 type Assignment = {
@@ -69,7 +71,8 @@ export default function EmployeeProfilePage({
 
   const { activeFacilityId, currentUser } = useFacility();
   const [docCategory, setDocCategory] = useState("Ogólny");
-  const [customFileName, setCustomFileName] = useState(""); // <--- Nowy stan na własną nazwę pliku
+  const [customFileName, setCustomFileName] = useState("");
+  const [isEditingEmployee, setIsEditingEmployee] = useState(false);
 
   const { data, isLoading, isError, error } =
     useEmployeeProfileQuery(employeeId);
@@ -107,11 +110,22 @@ export default function EmployeeProfilePage({
   const canManageCertifications =
     currentUser.role === "ADMIN" || currentUser.role === "HR";
 
+  const canEditEmployee =
+    currentUser.role === "ADMIN" || currentUser.role === "HR";
+
   const initials =
     `${employee.firstName.charAt(0)}${employee.lastName.charAt(0)}`.toUpperCase();
 
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-8">
+      {isEditingEmployee && canEditEmployee && (
+        <EmployeeEditForm
+          employee={employee}
+          activeFacilityId={activeFacilityId}
+          onCancel={() => setIsEditingEmployee(false)}
+          onSaved={() => setIsEditingEmployee(false)}
+        />
+      )}
       <div className="flex flex-col md:flex-row md:items-center gap-6 bg-card p-6 rounded-xl border shadow-sm">
         <Avatar className="w-24 h-24 border-2 border-primary/10">
           <AvatarImage
@@ -124,9 +138,22 @@ export default function EmployeeProfilePage({
         </Avatar>
 
         <div className="flex-1">
-          <h1 className="text-3xl font-bold tracking-tight mb-2">
-            {employee.firstName} {employee.lastName}
-          </h1>
+          <div className="mb-2 flex flex-wrap items-center gap-3">
+            <h1 className="text-3xl font-bold tracking-tight">
+              {employee.firstName} {employee.lastName}
+            </h1>
+
+            {canEditEmployee && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setIsEditingEmployee((prev) => !prev)}
+              >
+                <Pencil className="mr-2 h-4 w-4" />
+                {isEditingEmployee ? "Zamknij edycję" : "Edytuj dane"}
+              </Button>
+            )}
+          </div>
           <div className="flex flex-wrap items-center gap-3">
             <Badge variant="outline" className="text-sm px-3 py-1 bg-slate-50">
               {employee.role}

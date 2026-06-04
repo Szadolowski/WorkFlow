@@ -99,8 +99,6 @@ export default function ExpiringCertificationsPage() {
 
     let isCancelled = false;
 
-    setIsLoading(true);
-
     getExpiringCertificationsAction(activeFacilityId, days)
       .then((result) => {
         if (isCancelled) return;
@@ -128,7 +126,7 @@ export default function ExpiringCertificationsPage() {
     };
   }, [activeFacilityId, days]);
 
-  const certifications = response?.data || [];
+  const certifications = useMemo(() => response?.data ?? [], [response]);
 
   const visibleCertifications = useMemo(() => {
     const query = normalizeSearchValue(searchQuery.trim());

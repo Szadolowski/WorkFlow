@@ -13,6 +13,7 @@ import * as bcrypt from 'bcrypt';
 import { UpdateEmployeeAccessDto } from './dto/update-employee-access.dto';
 import { AddEmployeeDocumentDto } from './dto/add-employee-document.dto';
 import { StorageService } from '@/storage/storage.service';
+import { UpdateEmployeeDto } from './dto/update-employee.dto';
 
 @Injectable()
 export class EmployeesService {
@@ -85,6 +86,174 @@ export class EmployeesService {
 
     return {
       data: this.toEmployeeResponse(newEmployee),
+    };
+  }
+
+  async update(
+    employeeId: string,
+    dto: UpdateEmployeeDto,
+    requestingUser: {
+      sub: string;
+      role: UserRole;
+      facilityIds: string[];
+    },
+    facilityId?: string,
+  ) {
+    const employee = await this.prisma.employee.findUnique({
+      where: { id: employeeId },
+      select: {
+        id: true,
+        facilityId: true,
+        firstName: true,
+        lastName: true,
+        pesel: true,
+        rfidCardId: true,
+        email: true,
+        isActive: true,
+      },
+    });
+
+    if (!employee || !employee.isActive) {
+      throw new NotFoundException(
+        'Pracownik nie został znaleziony lub jest nieaktywny.',
+      );
+    }
+
+    const isAdmin = requestingUser.role === UserRole.ADMIN;
+    const isHr = requestingUser.role === UserRole.HR;
+
+    if (!isAdmin && !isHr) {
+      throw new ForbiddenException(
+        'Brak uprawnień do edycji danych pracownika.',
+      );
+    }
+
+    if (!isAdmin) {
+      if (!facilityId) {
+        throw new ForbiddenException('Brak aktywnego zakładu.');
+      }
+
+      if (!requestingUser.facilityIds.includes(facilityId)) {
+        throw new ForbiddenException('Brak dostępu do wybranego zakładu.');
+      }
+
+      const accessRows = await this.prisma.$queryRaw<{ id: string }[]>`
+      SELECT 1 AS id
+      FROM "EmployeeFacilityAccess"
+      WHERE "employeeId" = ${employeeId} AND "facilityId" = ${facilityId}
+      LIMIT 1
+    `;
+
+      if (accessRows.length === 0 && employee.facilityId !== facilityId) {
+        throw new ForbiddenException('Brak dostępu do tego pracownika.');
+      }
+    }
+
+    const normalizedEmail = dto.email?.trim() || null;
+    const normalizedPesel = dto.pesel?.trim() || null;
+    const normalizedRfidCardId = dto.rfidCardId?.trim() || null;
+
+    const conflicts = await this.prisma.employee.findFirst({
+      where: {
+        id: {
+          not: employeeId,
+        },
+        OR: [
+          ...(normalizedEmail ? [{ email: normalizedEmail }] : []),
+          ...(normalizedPesel ? [{ pesel: normalizedPesel }] : []),
+          ...(normalizedRfidCardId
+            ? [{ rfidCardId: normalizedRfidCardId }]
+            : []),
+        ],
+      },
+      select: {
+        id: true,
+        email: true,
+        pesel: true,
+        rfidCardId: true,
+      },
+    });
+
+    if (conflicts) {
+      if (normalizedEmail && conflicts.email === normalizedEmail) {
+        throw new ConflictException(
+          'Pracownik z tym adresem e-mail już istnieje.',
+        );
+      }
+
+      if (normalizedPesel && conflicts.pesel === normalizedPesel) {
+        throw new ConflictException(
+          'Pracownik z tym numerem PESEL już istnieje.',
+        );
+      }
+
+      if (
+        normalizedRfidCardId &&
+        conflicts.rfidCardId === normalizedRfidCardId
+      ) {
+        throw new ConflictException(
+          'Pracownik z tym numerem karty RFID już istnieje.',
+        );
+      }
+    }
+
+    const updatedEmployee = await this.prisma.$transaction(async (tx) => {
+      const updated = await tx.employee.update({
+        where: { id: employeeId },
+        data: {
+          ...(dto.firstName !== undefined
+            ? { firstName: dto.firstName.trim() }
+            : {}),
+          ...(dto.lastName !== undefined
+            ? { lastName: dto.lastName.trim() }
+            : {}),
+          ...(dto.pesel !== undefined ? { pesel: normalizedPesel } : {}),
+          ...(dto.rfidCardId !== undefined
+            ? { rfidCardId: normalizedRfidCardId }
+            : {}),
+          ...(dto.email !== undefined ? { email: normalizedEmail } : {}),
+        },
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          pesel: true,
+          email: true,
+          role: true,
+          isActive: true,
+          isLoginEnabled: true,
+          createdAt: true,
+        },
+      });
+
+      await tx.auditLog.create({
+        data: {
+          employeeId: requestingUser.sub,
+          action: 'EMPLOYEE_PROFILE_UPDATED',
+          entityName: 'Employee',
+          entityId: employeeId,
+          oldValues: {
+            firstName: employee.firstName,
+            lastName: employee.lastName,
+            pesel: employee.pesel,
+            rfidCardId: employee.rfidCardId,
+            email: employee.email,
+          },
+          newValues: {
+            firstName: updated.firstName,
+            lastName: updated.lastName,
+            pesel: updated.pesel,
+            rfidCardId: normalizedRfidCardId,
+            email: updated.email,
+          },
+        },
+      });
+
+      return updated;
+    });
+
+    return {
+      data: this.toEmployeeResponse(updatedEmployee),
     };
   }
 
