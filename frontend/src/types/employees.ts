@@ -54,3 +54,11 @@ export type EmployeeResponse = {
 export type EmployeeSingleResponse = {
   data: EmployeeResponse;
 };
+
+export type UpdateEmployeePayload = {
+  firstName?: string;
+  lastName?: string;
+  pesel?: string;
+  email?: string;
+  rfidCardId?: string;
+};
