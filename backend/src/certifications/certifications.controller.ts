@@ -104,4 +104,25 @@ export class CertificationsController {
       facilityId,
     );
   }
+
+  @Roles(UserRole.ADMIN, UserRole.HR)
+  @Get('certifications/expiring')
+  @ApiOperation({
+    summary: 'Pobiera certyfikaty wygasające w podanym zakresie dni',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista wygasających certyfikatów.',
+  })
+  findExpiringCertifications(
+    @Req() req: AuthenticatedRequest,
+    @Query('facilityId') facilityId: string | undefined,
+    @Query('days') days: string | undefined,
+  ) {
+    return this.certificationsService.findExpiringCertifications(
+      req.user,
+      facilityId,
+      days,
+    );
+  }
 }

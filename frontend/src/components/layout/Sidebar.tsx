@@ -7,6 +7,7 @@ import {
   HardHat,
   WalletCards,
   Clock3,
+  AlertTriangle,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
 
@@ -59,6 +60,12 @@ const NAV_ITEMS = [
     label: "BHP i uprawnienia",
     href: "/dashboard/certifications/dictionary",
     icon: <BookOpenCheck className="w-5 h-5 mr-2 inline-block" />,
+    roles: ["ADMIN", "HR"],
+  },
+  {
+    label: "Wygasające BHP",
+    href: "/dashboard/certifications/expiring",
+    icon: <AlertTriangle className="w-5 h-5 mr-2 inline-block" />,
     roles: ["ADMIN", "HR"],
   },
 ];

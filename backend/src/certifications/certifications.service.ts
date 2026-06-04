@@ -16,6 +16,26 @@ import { CreateEmployeeCertificationDto } from './dto/create-employee-certificat
 export class CertificationsService {
   constructor(private readonly prisma: PrismaService) {}
 
+  private resolveFacilityIdForScopedUser(
+    user: JwtPayload,
+    facilityIdParam?: string,
+  ) {
+    const facilityId = facilityIdParam || user.activeFacilityId;
+
+    if (!facilityId) {
+      throw new ForbiddenException('Brak aktywnego zakładu.');
+    }
+
+    if (
+      user.role !== UserRole.ADMIN &&
+      !user.facilityIds?.includes(facilityId)
+    ) {
+      throw new ForbiddenException('Brak dostępu do wybranego zakładu.');
+    }
+
+    return facilityId;
+  }
+
   private async assertCanManageEmployeeCertifications(
     employeeId: string,
     user: JwtPayload,
@@ -117,6 +137,110 @@ export class CertificationsService {
 
     return {
       data: item,
+    };
+  }
+
+  async findExpiringCertifications(
+    user: JwtPayload,
+    facilityIdParam?: string,
+    daysParam?: string,
+  ) {
+    const facilityId = this.resolveFacilityIdForScopedUser(
+      user,
+      facilityIdParam,
+    );
+
+    const days = daysParam ? Number(daysParam) : 30;
+
+    if (!Number.isInteger(days) || days < 1 || days > 365) {
+      throw new BadRequestException(
+        'Zakres dni musi być liczbą całkowitą od 1 do 365.',
+      );
+    }
+
+    const now = new Date();
+    const expiresTo = new Date();
+    expiresTo.setDate(now.getDate() + days);
+
+    const certifications = await this.prisma.employeeCertification.findMany({
+      where: {
+        employee: {
+          isActive: true,
+          OR: [
+            {
+              facilityId,
+            },
+            {
+              facilityAccesses: {
+                some: {
+                  facilityId,
+                },
+              },
+            },
+          ],
+        },
+        expiresAt: {
+          gte: now,
+          lte: expiresTo,
+        },
+      },
+      orderBy: [{ expiresAt: 'asc' }],
+      include: {
+        dictionary: true,
+        employee: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+            role: true,
+            facility: {
+              select: {
+                id: true,
+                name: true,
+                code: true,
+              },
+            },
+          },
+        },
+        documents: {
+          select: {
+            id: true,
+            fileName: true,
+            fileUrl: true,
+            createdAt: true,
+          },
+        },
+      },
+    });
+
+    return {
+      data: certifications.map((certification) => {
+        const daysToExpiry = Math.ceil(
+          (certification.expiresAt.getTime() - now.getTime()) /
+            (1000 * 3600 * 24),
+        );
+
+        return {
+          id: certification.id,
+          employeeId: certification.employeeId,
+          dictionaryId: certification.dictionaryId,
+          certificateNumber: certification.certificateNumber,
+          issuedAt: certification.issuedAt,
+          expiresAt: certification.expiresAt,
+          daysToExpiry,
+          dictionary: certification.dictionary,
+          employee: certification.employee,
+          documents: certification.documents,
+        };
+      }),
+      meta: {
+        facilityId,
+        days,
+        from: now.toISOString(),
+        to: expiresTo.toISOString(),
+        total: certifications.length,
+      },
     };
   }
 
