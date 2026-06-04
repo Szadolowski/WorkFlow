@@ -12,6 +12,7 @@ import { PayrollModule } from './payroll/payroll.module';
 import { TimeEventsModule } from './time-events/time-events.module';
 import { TimeEntriesModule } from './time-entries/time-entries.module';
 import { FacilitiesModule } from './facilities/facilities.module';
+import { ContractsModule } from './contracts/contracts.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { FacilitiesModule } from './facilities/facilities.module';
     TimeEventsModule,
     TimeEntriesModule,
     FacilitiesModule,
+    ContractsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -38,6 +38,7 @@ import {
   getEmployeeDocumentUploadUrlAction,
 } from "@/app/actions/storage.actions";
 import { addDocumentAction } from "@/app/actions/employees.actions";
+import { EmployeeContractsSection } from "@/components/employees/EmployeeContractsSection";
 
 // Definicje typów, aby uciszyć linter
 type Assignment = {
@@ -77,7 +78,7 @@ export default function EmployeeProfilePage({
   const resolvedParams = use(params);
   const employeeId = resolvedParams.id;
 
-  const { activeFacilityId } = useFacility();
+  const { activeFacilityId, currentUser } = useFacility();
   const [docCategory, setDocCategory] = useState("Ogólny");
   const [customFileName, setCustomFileName] = useState(""); // <--- Nowy stan na własną nazwę pliku
 
@@ -110,6 +111,8 @@ export default function EmployeeProfilePage({
   }
 
   const employee = data.data;
+  const canManageContracts =
+    currentUser.role === "ADMIN" || currentUser.role === "HR";
 
   const initials =
     `${employee.firstName.charAt(0)}${employee.lastName.charAt(0)}`.toUpperCase();
@@ -219,61 +222,12 @@ export default function EmployeeProfilePage({
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <FileText className="w-5 h-5 text-primary" /> Aktualna Umowa
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {!employee.currentContract ? (
-                  <p className="text-muted-foreground text-sm">
-                    Pracownik nie posiada aktualnej umowy wpisanej do systemu.
-                  </p>
-                ) : (
-                  <div className="p-4 border rounded-md bg-slate-50/50 grid grid-cols-2 gap-y-4">
-                    <div>
-                      <p className="text-xs font-medium text-muted-foreground">
-                        Rodzaj umowy
-                      </p>
-                      <p className="font-semibold">
-                        {employee.currentContract.type}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-xs font-medium text-muted-foreground">
-                        Wynagrodzenie
-                      </p>
-                      <p className="font-semibold">
-                        {employee.currentContract.salaryAmount} PLN
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-xs font-medium text-muted-foreground">
-                        Od kiedy
-                      </p>
-                      <p>
-                        {new Date(
-                          employee.currentContract.startDate,
-                        ).toLocaleDateString("pl-PL")}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-xs font-medium text-muted-foreground">
-                        Do kiedy
-                      </p>
-                      <p>
-                        {employee.currentContract.endDate
-                          ? new Date(
-                              employee.currentContract.endDate,
-                            ).toLocaleDateString("pl-PL")
-                          : "Czas nieokreślony"}
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+            <EmployeeContractsSection
+              employeeId={employeeId}
+              activeFacilityId={activeFacilityId}
+              currentContract={employee.currentContract}
+              canManageContracts={canManageContracts}
+            />
           </div>
         </TabsContent>
 
