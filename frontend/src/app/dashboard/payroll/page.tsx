@@ -68,8 +68,8 @@ export default function PayrollPage() {
         facilityId: activeFacilityId,
       });
 
-      const response = await fetch(`/api/payroll/export?${params.toString()}`, {
-        method: "GET",
+      const response = await fetch(`/download/payroll/export?${params.toString()}`, {
+  	method: "GET",
       });
 
       if (!response.ok) {

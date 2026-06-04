@@ -116,7 +116,12 @@ export class PayrollService {
       { header: 'Stanowisko', key: 'role', width: 15 },
       { header: 'Typ umowy', key: 'contractType', width: 15 },
       {
-        header: 'Stawka / wynagrodzenie',
+        header: 'Model rozliczenia',
+        key: 'settlementModel',
+        width: 22,
+      },
+      {
+        header: 'Stawka / wynagrodzenie brutto',
         key: 'salaryAmount',
         width: 22,
         style: { numFmt: '#,##0.00 "zł"' },
@@ -153,6 +158,15 @@ export class PayrollService {
         salaryAmount: data.salaryAmount,
         totalHours: data.totalHours,
         totalPay: this.calculateGrossPay(data),
+        settlementModel:
+          data.contractType === ContractType.UOP
+            ? 'Miesięcznie'
+            : data.contractType === ContractType.UD
+              ? 'Kwota za dzieło'
+              : data.contractType === ContractType.UZ ||
+                  data.contractType === ContractType.B2B
+                ? 'Godzinowo'
+                : 'Brak umowy',
       });
     });
     res.setHeader(
