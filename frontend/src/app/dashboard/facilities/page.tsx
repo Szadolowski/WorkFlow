@@ -252,75 +252,85 @@ export default function FacilitiesPage() {
               Brak zakładów w systemie.
             </div>
           ) : (
-            <div className="overflow-x-auto rounded-md border">
-              <table className="w-full text-sm">
-                <thead className="bg-muted/50 text-left">
-                  <tr>
-                    <th className="px-4 py-3 font-medium">Nazwa</th>
-                    <th className="px-4 py-3 font-medium">Kod</th>
-                    <th className="px-4 py-3 font-medium">Adres</th>
-                    <th className="px-4 py-3 font-medium">Status</th>
-                    <th className="px-4 py-3 font-medium">Pracownicy</th>
-                    <th className="px-4 py-3 font-medium">Projekty</th>
-                    <th className="px-4 py-3 font-medium">Czytniki</th>
-                    <th className="px-4 py-3 font-medium text-right">Akcje</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {facilities.map((facility) => (
-                    <tr key={facility.id} className="border-t">
-                      <td className="px-4 py-3 font-medium">{facility.name}</td>
-                      <td className="px-4 py-3">{facility.code || "—"}</td>
-                      <td className="px-4 py-3">{facility.address || "—"}</td>
-                      <td className="px-4 py-3">
-                        {facility.isActive ? (
-                          <span className="text-green-600 font-medium">
-                            Aktywny
-                          </span>
-                        ) : (
-                          <span className="text-red-600 font-medium">
-                            Nieaktywny
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-4 py-3">{facility._count.employees}</td>
-                      <td className="px-4 py-3">{facility._count.projects}</td>
-                      <td className="px-4 py-3">{facility._count.readers}</td>
-                      <td className="px-4 py-3">
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => startEdit(facility)}
-                          >
-                            <Pencil className="mr-1 h-4 w-4" />
-                            Edytuj
-                          </Button>
-
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            disabled={processingId === facility.id}
-                            onClick={() => toggleActive(facility)}
-                          >
-                            <Power className="mr-1 h-4 w-4" />
-                            {facility.isActive ? "Dezaktywuj" : "Aktywuj"}
-                          </Button>
-                          <Button asChild size="sm" variant="outline">
-                            <Link
-                              href={`/dashboard/facilities/${facility.id}/employees`}
-                            >
-                              <Users className="mr-1 h-4 w-4" />
-                              Pracownicy
-                            </Link>
-                          </Button>
-                        </div>
-                      </td>
+            <div className="rounded-md border">
+              <div className="overflow-x-auto">
+                <table className="min-w-245 w-full text-sm">
+                  <thead className="bg-muted/50 text-left">
+                    <tr>
+                      <th className="px-4 py-3 font-medium">Nazwa</th>
+                      <th className="px-4 py-3 font-medium">Kod</th>
+                      <th className="px-4 py-3 font-medium">Adres</th>
+                      <th className="px-4 py-3 font-medium">Status</th>
+                      <th className="px-4 py-3 font-medium">Pracownicy</th>
+                      <th className="px-4 py-3 font-medium">Projekty</th>
+                      <th className="px-4 py-3 font-medium">Czytniki</th>
+                      <th className="px-4 py-3 font-medium text-right">
+                        Akcje
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+
+                  <tbody>
+                    {facilities.map((facility) => (
+                      <tr key={facility.id} className="border-t">
+                        <td className="px-4 py-3 font-medium">
+                          {facility.name}
+                        </td>
+                        <td className="px-4 py-3">{facility.code || "—"}</td>
+                        <td className="px-4 py-3">{facility.address || "—"}</td>
+                        <td className="px-4 py-3">
+                          {facility.isActive ? (
+                            <span className="text-green-600 font-medium">
+                              Aktywny
+                            </span>
+                          ) : (
+                            <span className="text-red-600 font-medium">
+                              Nieaktywny
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3">
+                          {facility._count.employees}
+                        </td>
+                        <td className="px-4 py-3">
+                          {facility._count.projects}
+                        </td>
+                        <td className="px-4 py-3">{facility._count.readers}</td>
+                        <td className="px-4 py-3">
+                          <div className="flex justify-end gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => startEdit(facility)}
+                            >
+                              <Pencil className="mr-1 h-4 w-4" />
+                              Edytuj
+                            </Button>
+
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              disabled={processingId === facility.id}
+                              onClick={() => toggleActive(facility)}
+                            >
+                              <Power className="mr-1 h-4 w-4" />
+                              {facility.isActive ? "Dezaktywuj" : "Aktywuj"}
+                            </Button>
+                            <Button asChild size="sm" variant="outline">
+                              <Link
+                                href={`/dashboard/facilities/${facility.id}/employees`}
+                              >
+                                <Users className="mr-1 h-4 w-4" />
+                                Pracownicy
+                              </Link>
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
         </CardContent>

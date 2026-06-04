@@ -245,76 +245,80 @@ export default function ExpiringCertificationsPage() {
               Brak certyfikatów pasujących do wybranego zakresu lub filtra.
             </div>
           ) : (
-            <div className="overflow-x-auto rounded-md border">
-              <table className="w-full text-sm">
-                <thead className="bg-muted/50 text-left">
-                  <tr>
-                    <th className="px-4 py-3 font-medium">Pracownik</th>
-                    <th className="px-4 py-3 font-medium">Certyfikat</th>
-                    <th className="px-4 py-3 font-medium">Typ</th>
-                    <th className="px-4 py-3 font-medium">Numer</th>
-                    <th className="px-4 py-3 font-medium">Ważne do</th>
-                    <th className="px-4 py-3 font-medium">Pozostało</th>
-                    <th className="px-4 py-3 font-medium text-right">Akcje</th>
-                  </tr>
-                </thead>
+            <div className="rounded-md border">
+              <div className="overflow-x-auto">
+                <table className="min-w-245 w-full text-sm">
+                  <thead className="bg-muted/50 text-left">
+                    <tr>
+                      <th className="px-4 py-3 font-medium">Pracownik</th>
+                      <th className="px-4 py-3 font-medium">Certyfikat</th>
+                      <th className="px-4 py-3 font-medium">Typ</th>
+                      <th className="px-4 py-3 font-medium">Numer</th>
+                      <th className="px-4 py-3 font-medium">Ważne do</th>
+                      <th className="px-4 py-3 font-medium">Pozostało</th>
+                      <th className="px-4 py-3 font-medium text-right">
+                        Akcje
+                      </th>
+                    </tr>
+                  </thead>
 
-                <tbody>
-                  {visibleCertifications.map((certification) => {
-                    const status = getExpiryStatus(certification);
+                  <tbody>
+                    {visibleCertifications.map((certification) => {
+                      const status = getExpiryStatus(certification);
 
-                    return (
-                      <tr key={certification.id} className="border-t">
-                        <td className="px-4 py-3">
-                          <div className="font-medium">
-                            {certification.employee.firstName}{" "}
-                            {certification.employee.lastName}
-                          </div>
-                          <div className="text-xs text-muted-foreground">
-                            {certification.employee.email || "Brak e-maila"}
-                          </div>
-                        </td>
+                      return (
+                        <tr key={certification.id} className="border-t">
+                          <td className="px-4 py-3">
+                            <div className="font-medium">
+                              {certification.employee.firstName}{" "}
+                              {certification.employee.lastName}
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              {certification.employee.email || "Brak e-maila"}
+                            </div>
+                          </td>
 
-                        <td className="px-4 py-3 font-medium">
-                          {certification.dictionary.name}
-                        </td>
+                          <td className="px-4 py-3 font-medium">
+                            {certification.dictionary.name}
+                          </td>
 
-                        <td className="px-4 py-3">
-                          <Badge variant="outline">
-                            {getTypeLabel(certification.dictionary.type)}
-                          </Badge>
-                        </td>
+                          <td className="px-4 py-3">
+                            <Badge variant="outline">
+                              {getTypeLabel(certification.dictionary.type)}
+                            </Badge>
+                          </td>
 
-                        <td className="px-4 py-3">
-                          {certification.certificateNumber || "—"}
-                        </td>
+                          <td className="px-4 py-3">
+                            {certification.certificateNumber || "—"}
+                          </td>
 
-                        <td className="px-4 py-3">
-                          {formatDate(certification.expiresAt)}
-                        </td>
+                          <td className="px-4 py-3">
+                            {formatDate(certification.expiresAt)}
+                          </td>
 
-                        <td className="px-4 py-3">
-                          <Badge variant={status.badgeVariant}>
-                            <span className={status.className}>
-                              {status.label}
-                            </span>
-                          </Badge>
-                        </td>
+                          <td className="px-4 py-3">
+                            <Badge variant={status.badgeVariant}>
+                              <span className={status.className}>
+                                {status.label}
+                              </span>
+                            </Badge>
+                          </td>
 
-                        <td className="px-4 py-3 text-right">
-                          <Button asChild size="sm" variant="outline">
-                            <Link
-                              href={`/dashboard/employees/${certification.employee.id}`}
-                            >
-                              Profil
-                            </Link>
-                          </Button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                          <td className="px-4 py-3 text-right">
+                            <Button asChild size="sm" variant="outline">
+                              <Link
+                                href={`/dashboard/employees/${certification.employee.id}`}
+                              >
+                                Profil
+                              </Link>
+                            </Button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
         </CardContent>

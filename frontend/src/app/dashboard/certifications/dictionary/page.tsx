@@ -374,67 +374,71 @@ export default function CertificationDictionaryPage() {
               Brak pozycji pasujących do wyszukiwania.
             </div>
           ) : (
-            <div className="overflow-x-auto rounded-md border">
-              <table className="w-full text-sm">
-                <thead className="bg-muted/50 text-left">
-                  <tr>
-                    <th className="px-4 py-3 font-medium">Nazwa</th>
-                    <th className="px-4 py-3 font-medium">Typ</th>
-                    <th className="px-4 py-3 font-medium">Ważność</th>
-                    <th className="px-4 py-3 font-medium">Opis</th>
-                    <th className="px-4 py-3 font-medium">Status</th>
-                    <th className="px-4 py-3 font-medium text-right">Akcje</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {visibleItems.map((item) => (
-                    <tr key={item.id} className="border-t">
-                      <td className="px-4 py-3 font-medium">{item.name}</td>
-                      <td className="px-4 py-3">{getTypeLabel(item.type)}</td>
-                      <td className="px-4 py-3">
-                        {item.defaultValidityMonths
-                          ? `${item.defaultValidityMonths} mies.`
-                          : "Brak"}
-                      </td>
-                      <td className="px-4 py-3">{item.description || "—"}</td>
-                      <td className="px-4 py-3">
-                        {item.isActive ? (
-                          <span className="font-medium text-green-600">
-                            Aktywna
-                          </span>
-                        ) : (
-                          <span className="font-medium text-red-600">
-                            Nieaktywna
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => startEdit(item)}
-                          >
-                            <Pencil className="mr-1 h-4 w-4" />
-                            Edytuj
-                          </Button>
-
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            disabled={processingId === item.id}
-                            onClick={() => toggleActive(item)}
-                          >
-                            <Power className="mr-1 h-4 w-4" />
-                            {item.isActive ? "Dezaktywuj" : "Aktywuj"}
-                          </Button>
-                        </div>
-                      </td>
+            <div className="rounded-md border">
+              <div className="overflow-x-auto">
+                <table className="min-w-245 w-full text-sm">
+                  <thead className="bg-muted/50 text-left">
+                    <tr>
+                      <th className="px-4 py-3 font-medium">Nazwa</th>
+                      <th className="px-4 py-3 font-medium">Typ</th>
+                      <th className="px-4 py-3 font-medium">Ważność</th>
+                      <th className="px-4 py-3 font-medium">Opis</th>
+                      <th className="px-4 py-3 font-medium">Status</th>
+                      <th className="px-4 py-3 font-medium text-right">
+                        Akcje
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+
+                  <tbody>
+                    {visibleItems.map((item) => (
+                      <tr key={item.id} className="border-t">
+                        <td className="px-4 py-3 font-medium">{item.name}</td>
+                        <td className="px-4 py-3">{getTypeLabel(item.type)}</td>
+                        <td className="px-4 py-3">
+                          {item.defaultValidityMonths
+                            ? `${item.defaultValidityMonths} mies.`
+                            : "Brak"}
+                        </td>
+                        <td className="px-4 py-3">{item.description || "—"}</td>
+                        <td className="px-4 py-3">
+                          {item.isActive ? (
+                            <span className="font-medium text-green-600">
+                              Aktywna
+                            </span>
+                          ) : (
+                            <span className="font-medium text-red-600">
+                              Nieaktywna
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex justify-end gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => startEdit(item)}
+                            >
+                              <Pencil className="mr-1 h-4 w-4" />
+                              Edytuj
+                            </Button>
+
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              disabled={processingId === item.id}
+                              onClick={() => toggleActive(item)}
+                            >
+                              <Power className="mr-1 h-4 w-4" />
+                              {item.isActive ? "Dezaktywuj" : "Aktywuj"}
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
         </CardContent>

@@ -25,14 +25,12 @@ export default async function DashboardLayout({
       user = data.user;
     }
   } catch (error) {
-    // Od teraz wiemy DOKŁADNIE, jeśli fetch rzuci jakimś błędem (np. brak sieci, 401 z api-client)
     console.error(
       "[DashboardLayout] Wyjątek podczas pobierania użytkownika:",
       error,
     );
   }
 
-  // Wyrzucamy redirect poza blok try/catch (dobre praktyki Next.js)
   if (!user) {
     redirect("/login");
   }
@@ -49,30 +47,32 @@ export default async function DashboardLayout({
         role: user.role,
       }}
     >
-      <div className="flex h-screen w-full overflow-hidden bg-background">
+      <div className="min-h-screen w-full bg-background md:flex">
         <Sidebar role={user.role} />
 
-        <div className="flex h-full flex-1 flex-col overflow-hidden">
-          <header className="flex h-16 shrink-0 items-center justify-between border-b bg-card border-border px-8">
-            <div className="text-sm text-muted-foreground">
-              Zalogowano jako:{" "}
+        <div className="flex min-w-0 flex-1 flex-col">
+          <header className="flex min-h-14 shrink-0 items-center justify-between gap-3 border-b border-border bg-card px-4 py-3 md:h-16 md:px-8 md:py-0">
+            <div className="min-w-0 text-xs text-muted-foreground sm:text-sm">
+              <span className="hidden sm:inline">Zalogowano jako: </span>
               <span className="font-semibold text-foreground">
                 {user.firstName} {user.lastName}
               </span>{" "}
-              ({user.role})
+              <span className="whitespace-nowrap">({user.role})</span>
             </div>
 
-            <form action={logoutAction}>
+            <form action={logoutAction} className="shrink-0">
               <button
                 type="submit"
-                className="text-sm font-medium text-red-600 transition-colors hover:text-red-700 dark:text-destructive"
+                className="text-xs font-medium text-red-600 transition-colors hover:text-red-700 sm:text-sm dark:text-destructive"
               >
                 Wyloguj się
               </button>
             </form>
           </header>
 
-          <main className="flex-1 overflow-y-auto p-8">{children}</main>
+          <main className="min-w-0 flex-1 overflow-y-auto px-4 py-4 sm:px-6 md:p-8">
+            {children}
+          </main>
         </div>
       </div>
     </FacilityProvider>

@@ -161,75 +161,79 @@ export default function TimeEntriesPage() {
               Brak wpisów oczekujących na zatwierdzenie.
             </div>
           ) : (
-            <div className="overflow-x-auto rounded-md border">
-              <table className="w-full text-sm">
-                <thead className="bg-muted/50 text-left">
-                  <tr>
-                    <th className="px-4 py-3 font-medium">Pracownik</th>
-                    <th className="px-4 py-3 font-medium">Projekt</th>
-                    <th className="px-4 py-3 font-medium">Start</th>
-                    <th className="px-4 py-3 font-medium">Koniec</th>
-                    <th className="px-4 py-3 font-medium">Godziny</th>
-                    <th className="px-4 py-3 font-medium text-right">Akcje</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {entries.map((entry) => (
-                    <tr key={entry.id} className="border-t">
-                      <td className="px-4 py-3">
-                        <div className="font-medium">
-                          {entry.employee.firstName} {entry.employee.lastName}
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          {entry.employee.role}
-                        </div>
-                      </td>
-
-                      <td className="px-4 py-3">{entry.project.name}</td>
-
-                      <td className="px-4 py-3">
-                        {formatDateTime(entry.startTime)}
-                      </td>
-
-                      <td className="px-4 py-3">
-                        {formatDateTime(entry.endTime)}
-                      </td>
-
-                      <td className="px-4 py-3">
-                        {Number(entry.calculatedHours).toFixed(2)} h
-                      </td>
-
-                      <td className="px-4 py-3">
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            disabled={processingId === entry.id}
-                            onClick={() =>
-                              handleStatusChange(entry.id, "REJECTED")
-                            }
-                          >
-                            <X className="mr-1 h-4 w-4" />
-                            Odrzuć
-                          </Button>
-
-                          <Button
-                            size="sm"
-                            disabled={processingId === entry.id}
-                            onClick={() =>
-                              handleStatusChange(entry.id, "APPROVED")
-                            }
-                          >
-                            <Check className="mr-1 h-4 w-4" />
-                            Zatwierdź
-                          </Button>
-                        </div>
-                      </td>
+            <div className="rounded-md border">
+              <div className="overflow-x-auto">
+                <table className="min-w-215 w-full text-sm">
+                  <thead className="bg-muted/50 text-left">
+                    <tr>
+                      <th className="px-4 py-3 font-medium">Pracownik</th>
+                      <th className="px-4 py-3 font-medium">Projekt</th>
+                      <th className="px-4 py-3 font-medium">Start</th>
+                      <th className="px-4 py-3 font-medium">Koniec</th>
+                      <th className="px-4 py-3 font-medium">Godziny</th>
+                      <th className="px-4 py-3 font-medium text-right">
+                        Akcje
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+
+                  <tbody>
+                    {entries.map((entry) => (
+                      <tr key={entry.id} className="border-t">
+                        <td className="px-4 py-3">
+                          <div className="font-medium">
+                            {entry.employee.firstName} {entry.employee.lastName}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            {entry.employee.role}
+                          </div>
+                        </td>
+
+                        <td className="px-4 py-3">{entry.project.name}</td>
+
+                        <td className="px-4 py-3">
+                          {formatDateTime(entry.startTime)}
+                        </td>
+
+                        <td className="px-4 py-3">
+                          {formatDateTime(entry.endTime)}
+                        </td>
+
+                        <td className="px-4 py-3">
+                          {Number(entry.calculatedHours).toFixed(2)} h
+                        </td>
+
+                        <td className="px-4 py-3">
+                          <div className="flex justify-end gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              disabled={processingId === entry.id}
+                              onClick={() =>
+                                handleStatusChange(entry.id, "REJECTED")
+                              }
+                            >
+                              <X className="mr-1 h-4 w-4" />
+                              Odrzuć
+                            </Button>
+
+                            <Button
+                              size="sm"
+                              disabled={processingId === entry.id}
+                              onClick={() =>
+                                handleStatusChange(entry.id, "APPROVED")
+                              }
+                            >
+                              <Check className="mr-1 h-4 w-4" />
+                              Zatwierdź
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
         </CardContent>

@@ -34,7 +34,7 @@ export default function ProjectsPage() {
 
   return (
     <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold">Aktywne Budowy</h1>
         <CreateProjectDialog />
       </div>
