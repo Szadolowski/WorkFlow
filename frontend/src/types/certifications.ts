@@ -47,3 +47,19 @@ export type CreateEmployeeCertificationPayload = {
   expiresAt: string;
   documentIds?: string[];
 };
+
+export type CreateCertificationDictionaryPayload = {
+  type: CertificationType;
+  name: string;
+  description?: string;
+  defaultValidityMonths?: number;
+};
+
+export type UpdateCertificationDictionaryPayload =
+  Partial<CreateCertificationDictionaryPayload> & {
+    isActive?: boolean;
+  };
+
+export type CertificationDictionarySingleResponse = {
+  data: CertificationDictionaryItem;
+};
