@@ -1,0 +1,46 @@
+% ================= SEKCJA 1 =================
+\section{Tytuł}
+
+Oficjalnym tytułem projektowanego rozwiązania jest: \textbf{WorkFlow -- system wspierający zarządzanie pracownikami, czasem pracy i dokumentacją kadrową}. Tytuł ten odzwierciedla główny zakres aplikacji, który obejmuje ewidencję pracowników, przypisywanie ich do zakładów i projektów, rejestrację czasu pracy, obsługę dokumentów kadrowych, kontrolę certyfikatów oraz przygotowanie danych do rozliczeń.
+
+Nazwa \texttt{WorkFlow} została przyjęta jako nazwa techniczna i projektowa systemu. Wskazuje ona na uporządkowany przepływ informacji pomiędzy poszczególnymi modułami aplikacji oraz rolami użytkowników. W projekcie istotne jest nie tylko samo przechowywanie danych, lecz także zachowanie zależności pomiędzy pracownikiem, zakładem, projektem, czasem pracy, dokumentacją oraz procesem rozliczeniowym.
+
+\subsection{Definicja i zakres przedmiotowy}
+
+System \texttt{WorkFlow} jest aplikacją webową typu full-stack, zaprojektowaną w celu wsparcia podstawowych procesów kadrowo-organizacyjnych w przedsiębiorstwie. Rozwiązanie składa się z warstwy frontendowej, warstwy backendowej, relacyjnej bazy danych, magazynu plików oraz infrastruktury uruchomieniowej opartej o kontenery.
+
+Zakres przedmiotowy projektu obejmuje kilka powiązanych ze sobą obszarów:
+\begin{itemize}
+    \item \textbf{Zarządzanie pracownikami} -- prowadzenie centralnej ewidencji pracowników, ich danych podstawowych, statusu aktywności, roli systemowej oraz przypisania do zakładu.
+    \item \textbf{Obsługa zakładów i projektów} -- organizowanie danych według zakładów oraz przypisywanie pracowników do projektów, które reprezentują miejsca lub obszary wykonywania pracy.
+    \item \textbf{Rejestracja czasu pracy} -- przyjmowanie zdarzeń wejścia i wyjścia z czytników RCP oraz tworzenie na ich podstawie wpisów czasu pracy.
+    \item \textbf{Dokumentacja kadrowa} -- przechowywanie informacji o umowach, dokumentach, certyfikatach, badaniach, szkoleniach oraz nieobecnościach pracowników.
+    \item \textbf{Rozliczenia} -- przygotowanie uporządkowanych danych na potrzeby rozliczeń kadrowo-płacowych, w szczególności na podstawie zatwierdzonych wpisów czasu pracy.
+\end{itemize}
+
+W takim ujęciu system nie jest pełnym systemem ERP ani kompletnym narzędziem księgowym. Jego zadaniem jest wsparcie wybranego zakresu procesów związanych z obsługą pracowników i czasu pracy oraz przygotowanie danych, które mogą zostać wykorzystane przez osoby odpowiedzialne za kadry i rozliczenia.
+
+\subsection{Charakterystyka rozwiązania}
+
+Projekt ma charakter praktyczny i został przygotowany jako działająca aplikacja, możliwa do uruchomienia w środowisku lokalnym lub serwerowym. Przyjęta architektura rozdziela odpowiedzialności pomiędzy kilka warstw systemu:
+\begin{itemize}
+    \item \textbf{frontend} odpowiada za interfejs użytkownika i komunikację z użytkownikiem końcowym,
+    \item \textbf{backend} realizuje logikę biznesową, autoryzację, walidację danych oraz komunikację z bazą danych,
+    \item \textbf{baza danych PostgreSQL} przechowuje dane relacyjne systemu,
+    \item \textbf{MinIO} służy jako magazyn plików i dokumentów,
+    \item \textbf{Nginx} pełni funkcję reverse proxy dla aplikacji.
+\end{itemize}
+
+Istotnym elementem projektu jest również podział użytkowników według ról. System przewiduje role takie jak administrator, pracownik HR, księgowość, brygadzista, pracownik oraz rola biurowa. Dzięki temu dostęp do funkcji i danych może być ograniczany zgodnie z zakresem odpowiedzialności danej osoby.
+
+\subsection{Zakres dokumentacji}
+
+Niniejsza dokumentacja przedstawia zarówno założenia projektowe, jak i techniczne aspekty wykonania systemu. Obejmuje ona opis celu projektu, analizę wymagań, przypadki użycia, scenariusze działania, makiety interfejsu, model danych oraz zastosowany stos technologiczny.
+
+Szczególną uwagę poświęcono modelowi danych, ponieważ to on stanowi podstawę działania większości modułów systemu. Relacje pomiędzy pracownikami, zakładami, projektami, czasem pracy, dokumentami, certyfikatami i rozliczeniami zostały przedstawione w postaci diagramu ERD oraz opisane w dalszej części dokumentu.
+
+\subsection{Znaczenie dla dalszej części dokumentu}
+
+Tak sformułowany tytuł i zakres projektu stanowią punkt wyjścia dla dalszej analizy. W kolejnych rozdziałach opisano nazwę kodową systemu, cele jego realizacji, wymagania funkcjonalne i niefunkcjonalne, scenariusze użycia oraz strukturę danych.
+
+Dokumentacja ma na celu przedstawienie aktualnego stanu projektu w sposób uporządkowany i możliwy do zweryfikowania. Z tego względu opis skupia się na funkcjach rzeczywiście przewidzianych lub zaimplementowanych w systemie, bez rozszerzania zakresu o moduły, które nie są częścią obecnej wersji aplikacji.

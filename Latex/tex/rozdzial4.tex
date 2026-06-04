@@ -1,0 +1,64 @@
+% ================= SEKCJA 4 =================
+\section{Analiza wymagań}
+
+Analiza wymagań stanowi jeden z kluczowych etapów projektowania systemu informatycznego. Jej celem jest określenie, jakie funkcje powinien realizować system \texttt{WorkFlow}, jakie ograniczenia techniczne należy uwzględnić oraz w jaki sposób poszczególne moduły aplikacji powinny ze sobą współpracować.
+
+W przypadku projektu \texttt{WorkFlow} wymagania wynikają z potrzeby uporządkowania procesów związanych z obsługą pracowników, czasu pracy, dokumentacji kadrowej oraz danych wykorzystywanych przy rozliczeniach. System nie jest projektowany jako pełny system ERP, lecz jako aplikacja wspierająca wybrany, jasno określony zakres procesów kadrowo-organizacyjnych.
+
+\subsection{Podejście do analizy}
+
+Wymagania zostały opracowane z podziałem na trzy główne grupy: wymagania niefunkcyjne, funkcjonalne oraz integracyjne. Taki podział pozwala oddzielić opis konkretnych funkcji systemu od cech jakościowych i technicznych, które wpływają na sposób działania aplikacji.
+
+W analizie przyjęto, że system powinien być możliwy do uruchomienia w środowisku kontenerowym oraz składać się z kilku niezależnych usług. Pozwala to na czytelny podział odpowiedzialności pomiędzy warstwę interfejsu użytkownika, logikę biznesową, bazę danych, magazyn plików oraz reverse proxy.
+
+Z punktu widzenia użytkownika końcowego najważniejsze jest to, aby system umożliwiał sprawną obsługę podstawowych operacji: zarządzanie pracownikami, przypisywanie ich do zakładów i projektów, rejestrowanie czasu pracy, kontrolowanie certyfikatów, przechowywanie dokumentów, obsługę nieobecności oraz przygotowanie danych rozliczeniowych.
+
+\subsection{Zakres wymagań}
+
+Zakres wymagań został dostosowany do aktualnego stanu projektu oraz funkcji przewidzianych do prezentacji. Obejmuje on następujące obszary:
+\begin{itemize}
+    \item obsługę kont użytkowników i ról systemowych,
+    \item zarządzanie pracownikami oraz ich przypisaniem do zakładów,
+    \item zarządzanie projektami i przypisaniami pracowników,
+    \item rejestrowanie zdarzeń czasu pracy z czytników RCP,
+    \item tworzenie i weryfikację wpisów czasu pracy,
+    \item obsługę umów pracowników,
+    \item obsługę certyfikatów, badań i szkoleń,
+    \item rejestrowanie nieobecności,
+    \item przechowywanie dokumentów pracowniczych,
+    \item przygotowanie danych do rozliczeń,
+    \item uruchomienie systemu w środowisku Docker Compose.
+\end{itemize}
+
+Z zakresu projektu wyłączono moduły, które nie są częścią aktualnej wersji aplikacji. Dotyczy to w szczególności funkcji związanych z obsługą wypożyczonego sprzętu. Pozwala to zachować spójność pomiędzy dokumentacją, modelem danych prezentowanym w diagramach oraz rzeczywistym zakresem systemu.
+
+\subsection{Założenia techniczne}
+
+Podczas definiowania wymagań przyjęto kilka założeń technicznych, które mają wpływ na dalszy projekt systemu:
+\begin{itemize}
+    \item aplikacja działa jako system webowy dostępny z poziomu przeglądarki internetowej,
+    \item frontend i backend są oddzielnymi komponentami,
+    \item backend udostępnia API wykorzystywane przez frontend oraz przez techniczny endpoint czytników RCP,
+    \item dane relacyjne są przechowywane w bazie PostgreSQL,
+    \item pliki dokumentów są przechowywane poza bazą danych, w magazynie obiektowym MinIO,
+    \item komunikacja użytkownika z systemem odbywa się przez Nginx pełniący rolę reverse proxy,
+    \item konfiguracja środowiska jest oparta o plik \texttt{.env},
+    \item projekt posiada dane demonstracyjne umożliwiające szybkie zaprezentowanie działania systemu.
+\end{itemize}
+
+Przyjęta architektura ułatwia rozdzielenie odpowiedzialności pomiędzy poszczególne części systemu. Warstwa frontendowa odpowiada za prezentację danych, warstwa backendowa za logikę biznesową i autoryzację, baza danych za trwałe przechowywanie informacji, a magazyn plików za obsługę dokumentów.
+
+\subsection{Podział wymagań}
+
+Dalsza część rozdziału została podzielona na trzy podrozdziały:
+\begin{enumerate}
+    \item \textbf{Wymagania niefunkcyjne} -- opisujące cechy jakościowe systemu, takie jak bezpieczeństwo, kontrola dostępu, przenośność środowiska oraz spójność danych.
+    \item \textbf{Wymagania funkcjonalne} -- opisujące konkretne operacje wykonywane przez użytkowników oraz główne moduły aplikacji.
+    \item \textbf{Wymagania integracyjne} -- opisujące sposób współpracy systemu z bazą danych, magazynem plików, czytnikami RCP oraz usługami infrastrukturalnymi.
+\end{enumerate}
+
+Taki układ pozwala uporządkować opis systemu i ułatwia powiązanie wymagań z późniejszym modelem danych, przypadkami użycia oraz scenariuszami działania.
+
+\input{tex/rozdzial41.tex}
+\input{tex/rozdzial42.tex}
+\input{tex/rozdzial43.tex}

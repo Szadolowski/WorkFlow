@@ -1,0 +1,243 @@
+% ================= ROZDZIAŁ 4.2 =================
+\subsection{Wymagania funkcjonalne}
+
+Wymagania funkcjonalne określają operacje, które system \texttt{WorkFlow} powinien udostępniać użytkownikom oraz procesy, które powinny być obsługiwane przez aplikację. Wymagania zostały pogrupowane według głównych modułów systemu, aby zachować zgodność pomiędzy opisem funkcjonalnym, przypadkami użycia, modelem danych oraz implementacją.
+
+Zakres funkcjonalny systemu obejmuje obsługę pracowników, zakładów, projektów, czasu pracy, umów, certyfikatów, nieobecności, dokumentów oraz danych rozliczeniowych. Dodatkowo system powinien zapewniać logowanie użytkowników, kontrolę dostępu oraz możliwość uruchomienia danych demonstracyjnych potrzebnych do prezentacji projektu.
+
+\subsubsection{Logowanie i obsługa użytkowników}
+
+System powinien umożliwiać użytkownikowi zalogowanie się do aplikacji przy użyciu adresu e-mail oraz hasła. Po poprawnym logowaniu użytkownik otrzymuje dostęp do panelu systemu zgodnie ze swoją rolą oraz zakresem dostępu do zakładów.
+
+Wymagania w tym obszarze obejmują:
+\begin{itemize}
+    \item logowanie użytkownika za pomocą adresu e-mail i hasła,
+    \item wylogowanie użytkownika z systemu,
+    \item przechowywanie informacji o zalogowanym użytkowniku w ramach sesji,
+    \item rozpoznawanie roli użytkownika,
+    \item ograniczanie dostępu do wybranych widoków i operacji na podstawie roli,
+    \item obsługę dostępu użytkownika do jednego lub wielu zakładów.
+\end{itemize}
+
+Mechanizm logowania stanowi punkt wejścia do systemu i jest powiązany z modelem pracownika, ponieważ użytkownik aplikacji jest jednocześnie rekordem w tabeli pracowników.
+
+\subsubsection{Zarządzanie zakładami}
+
+System powinien umożliwiać prowadzenie ewidencji zakładów, które reprezentują jednostki organizacyjne firmy. Zakład jest nadrzędnym elementem struktury organizacyjnej, do którego mogą być przypisani pracownicy, projekty oraz czytniki RCP.
+
+Wymagania funkcjonalne dla modułu zakładów obejmują:
+\begin{itemize}
+    \item dodawanie nowych zakładów,
+    \item edycję danych zakładu,
+    \item wyświetlanie listy zakładów,
+    \item oznaczanie zakładu jako aktywny lub nieaktywny,
+    \item przypisywanie pracowników do zakładu,
+    \item przypisywanie projektów do zakładu,
+    \item obsługę dostępu użytkowników do wybranych zakładów.
+\end{itemize}
+
+Dzięki temu system może obsługiwać organizację posiadającą więcej niż jedną lokalizację lub jednostkę administracyjną.
+
+\subsubsection{Zarządzanie pracownikami}
+
+Jednym z głównych modułów systemu jest moduł pracowników. Powinien on umożliwiać prowadzenie centralnej ewidencji osób zatrudnionych lub obsługiwanych w systemie.
+
+System powinien umożliwiać:
+\begin{itemize}
+    \item dodawanie pracowników,
+    \item edycję danych pracownika,
+    \item przeglądanie listy pracowników,
+    \item wyszukiwanie i filtrowanie pracowników,
+    \item przejście do szczegółowego profilu pracownika,
+    \item oznaczenie pracownika jako aktywnego lub nieaktywnego,
+    \item przypisanie pracownika do zakładu,
+    \item przypisanie pracownikowi roli systemowej,
+    \item zapis identyfikatora karty RFID wykorzystywanej przy rejestracji czasu pracy.
+\end{itemize}
+
+Profil pracownika powinien gromadzić informacje powiązane z daną osobą. Obejmuje to dane podstawowe, umowy, certyfikaty, dokumenty, nieobecności, przypisania do projektów oraz wpisy czasu pracy. Taki układ pozwala traktować profil pracownika jako centralne miejsce dostępu do danych kadrowych.
+
+\subsubsection{Zarządzanie projektami}
+
+System powinien umożliwiać prowadzenie ewidencji projektów. Projekt reprezentuje miejsce, kontrakt lub obszar pracy, do którego mogą być przypisywani pracownicy i z którym mogą być powiązane wpisy czasu pracy.
+
+Wymagania w zakresie projektów obejmują:
+\begin{itemize}
+    \item tworzenie projektów,
+    \item przypisywanie projektu do zakładu,
+    \item określanie nazwy, kodu wewnętrznego oraz adresu projektu,
+    \item oznaczanie statusu projektu,
+    \item określanie daty rozpoczęcia i zakończenia,
+    \item przypisywanie pracowników do projektu,
+    \item przechowywanie historii przypisań pracowników do projektów.
+\end{itemize}
+
+Status projektu powinien umożliwiać rozróżnienie projektów planowanych, aktywnych, zakończonych oraz wstrzymanych. Informacja ta jest istotna przy filtrowaniu projektów oraz przy analizie czasu pracy.
+
+\subsubsection{Przypisania pracowników do projektów}
+
+System powinien umożliwiać powiązanie pracownika z projektem. Przypisanie powinno zawierać datę rozpoczęcia, opcjonalną datę zakończenia oraz dodatkowe uwagi.
+
+Wymagania w tym zakresie obejmują:
+\begin{itemize}
+    \item przypisanie pracownika do projektu,
+    \item zapis daty przypisania,
+    \item możliwość zakończenia przypisania,
+    \item przechowywanie historii przypisań,
+    \item prezentację przypisań w profilu pracownika lub widoku projektu.
+\end{itemize}
+
+Mechanizm przypisań pozwala odwzorować fakt, że jeden pracownik może pracować przy różnych projektach w różnych okresach.
+
+\subsubsection{Rejestracja zdarzeń czasu pracy}
+
+System powinien przyjmować zdarzenia czasu pracy pochodzące z czytników RCP. Czytnik jest powiązany z zakładem oraz projektem, dzięki czemu zdarzenie odbicia karty może zostać przypisane do właściwego miejsca pracy.
+
+Zdarzenie czasu pracy powinno zawierać:
+\begin{itemize}
+    \item numer seryjny czytnika,
+    \item identyfikator karty RFID pracownika,
+    \item typ zdarzenia: \texttt{IN} lub \texttt{OUT},
+    \item dokładny czas zdarzenia,
+    \item opcjonalny zewnętrzny identyfikator zdarzenia.
+\end{itemize}
+
+Po odebraniu zdarzenia system powinien sprawdzić, czy istnieje aktywny czytnik oraz pracownik o podanym identyfikatorze karty RFID. Surowe zdarzenie powinno zostać zapisane w bazie danych jako rekord \texttt{TimeEvent}.
+
+\subsubsection{Tworzenie wpisów czasu pracy}
+
+Na podstawie zdarzeń \texttt{IN} oraz \texttt{OUT} system powinien tworzyć przetworzone wpisy czasu pracy. Wpis czasu pracy powinien zawierać pracownika, projekt, godzinę rozpoczęcia, godzinę zakończenia, wyliczoną liczbę godzin oraz status.
+
+Wymagania w tym obszarze obejmują:
+\begin{itemize}
+    \item wyszukanie ostatniego zdarzenia \texttt{IN} dla pracownika,
+    \item utworzenie wpisu czasu pracy po odebraniu zdarzenia \texttt{OUT},
+    \item powiązanie wpisu z projektem wynikającym z czytnika RCP,
+    \item wyliczenie liczby przepracowanych godzin,
+    \item oznaczenie wpisu statusem początkowym,
+    \item możliwość późniejszej weryfikacji lub zatwierdzenia wpisu.
+\end{itemize}
+
+Rozdzielenie tabel \texttt{TimeEvent} i \texttt{TimeEntry} pozwala zachować zarówno surowe dane z urządzenia, jak i dane przetworzone wykorzystywane później w raportowaniu oraz rozliczeniach.
+
+\subsubsection{Obsługa umów}
+
+System powinien umożliwiać przechowywanie informacji o umowach pracowników. Umowa zawiera typ, kwotę wynagrodzenia lub stawkę, datę rozpoczęcia, opcjonalną datę zakończenia oraz informację, czy jest aktualna.
+
+Wymagania funkcjonalne obejmują:
+\begin{itemize}
+    \item dodanie umowy pracownika,
+    \item edycję danych umowy,
+    \item przechowywanie typu umowy,
+    \item zapis kwoty wynagrodzenia,
+    \item określenie daty rozpoczęcia i zakończenia,
+    \item oznaczenie umowy jako aktualnej,
+    \item przechowywanie historii wcześniejszych umów.
+\end{itemize}
+
+Historia umów jest istotna, ponieważ warunki zatrudnienia mogą zmieniać się w czasie. Zachowanie poprzednich rekordów pozwala analizować dane pracownika w kontekście okresu obowiązywania danej umowy.
+
+\subsubsection{Obsługa certyfikatów, badań i szkoleń}
+
+System powinien umożliwiać obsługę certyfikatów, badań lekarskich, szkoleń BHP, uprawnień UDT oraz innych dokumentów potwierdzających kwalifikacje pracownika.
+
+Moduł powinien obejmować:
+\begin{itemize}
+    \item zarządzanie słownikiem certyfikatów,
+    \item określenie typu certyfikatu,
+    \item zapis domyślnego okresu ważności,
+    \item przypisywanie certyfikatu do pracownika,
+    \item zapis numeru certyfikatu lub zaświadczenia,
+    \item określenie daty wydania,
+    \item określenie daty wygaśnięcia,
+    \item prezentację certyfikatów wygasających w wybranym okresie.
+\end{itemize}
+
+Funkcja monitorowania dat ważności pozwala szybciej wykryć certyfikaty, które wymagają odnowienia. Jest to szczególnie ważne w przypadku dokumentów wymaganych do wykonywania określonych obowiązków.
+
+\subsubsection{Obsługa nieobecności}
+
+System powinien umożliwiać rejestrowanie nieobecności pracowników. Nieobecność powinna zawierać typ, datę rozpoczęcia, datę zakończenia, status zatwierdzenia oraz opcjonalny dokument.
+
+Wymagania funkcjonalne dla nieobecności obejmują:
+\begin{itemize}
+    \item dodanie nieobecności pracownika,
+    \item określenie typu nieobecności,
+    \item wskazanie zakresu dat,
+    \item oznaczenie nieobecności jako zatwierdzonej lub oczekującej,
+    \item powiązanie nieobecności z dokumentem,
+    \item wyświetlanie nieobecności w profilu pracownika.
+\end{itemize}
+
+W systemie przewidziano typy nieobecności takie jak urlop, zwolnienie lekarskie, nieobecność nieusprawiedliwiona oraz nieobecność specjalna.
+
+\subsubsection{Obsługa dokumentów}
+
+System powinien umożliwiać przechowywanie informacji o dokumentach pracowników. Plik dokumentu powinien być przechowywany w magazynie obiektowym, natomiast baza danych powinna przechowywać metadane pliku oraz powiązania z innymi rekordami.
+
+Wymagania w tym obszarze obejmują:
+\begin{itemize}
+    \item zapis nazwy pliku,
+    \item zapis lokalizacji pliku w magazynie obiektowym,
+    \item powiązanie dokumentu z pracownikiem,
+    \item opcjonalne powiązanie dokumentu z umową,
+    \item opcjonalne powiązanie dokumentu z certyfikatem,
+    \item opcjonalne powiązanie dokumentu z nieobecnością.
+\end{itemize}
+
+Takie rozwiązanie pozwala utrzymać logiczne powiązanie dokumentów z danymi kadrowymi bez przechowywania plików bezpośrednio w tabelach relacyjnych.
+
+\subsubsection{Rozliczenia i eksport danych}
+
+System powinien wspierać przygotowanie danych potrzebnych do rozliczeń. Podstawą rozliczeń są zatwierdzone wpisy czasu pracy oraz informacje o pracownikach i ich umowach.
+
+Wymagania funkcjonalne obejmują:
+\begin{itemize}
+    \item zebranie wpisów czasu pracy z wybranego okresu,
+    \item wykorzystanie wyłącznie danych zatwierdzonych,
+    \item utworzenie eksportu rozliczeniowego,
+    \item zapis miesiąca i roku rozliczeniowego,
+    \item zapis informacji o użytkowniku generującym eksport,
+    \item powiązanie wpisów czasu pracy z eksportem,
+    \item ograniczenie ryzyka ponownego rozliczenia tych samych godzin.
+\end{itemize}
+
+Moduł rozliczeniowy nie zastępuje pełnego systemu księgowego. Jego zadaniem jest przygotowanie uporządkowanych danych, które mogą zostać wykorzystane przez osobę odpowiedzialną za rozliczenia.
+
+\subsubsection{Audit log}
+
+System powinien umożliwiać rejestrowanie wybranych operacji wykonywanych na danych. Rejestr audytowy powinien zawierać informację o użytkowniku wykonującym operację, nazwie akcji, encji, identyfikatorze rekordu oraz opcjonalnie poprzednich i nowych wartościach.
+
+Wymagania w tym zakresie obejmują:
+\begin{itemize}
+    \item zapis użytkownika wykonującego operację,
+    \item zapis rodzaju wykonanej akcji,
+    \item zapis nazwy encji, której dotyczy operacja,
+    \item zapis identyfikatora modyfikowanego rekordu,
+    \item możliwość przechowywania wartości przed zmianą i po zmianie.
+\end{itemize}
+
+Mechanizm audytu zwiększa przejrzystość pracy systemu i ułatwia analizę zmian w danych wrażliwych, takich jak umowy lub dane pracowników.
+
+\subsubsection{Dane inicjalizacyjne i demonstracyjne}
+
+System powinien posiadać mechanizmy ułatwiające uruchomienie nowego środowiska. W projekcie przewidziano dwa rodzaje danych inicjalizacyjnych.
+
+Pierwszy z nich to seed minimalny, który tworzy podstawowy zakład oraz konta startowe dla głównych ról użytkowników. Drugi to seed demonstracyjny, który generuje pełniejszy zestaw danych potrzebnych do prezentacji działania systemu.
+
+Dane demonstracyjne powinny obejmować:
+\begin{itemize}
+    \item konta użytkowników,
+    \item zakłady,
+    \item pracowników,
+    \item projekty,
+    \item czytniki RCP,
+    \item umowy,
+    \item certyfikaty,
+    \item dokumenty,
+    \item nieobecności,
+    \item zdarzenia i wpisy czasu pracy,
+    \item przykładowy eksport rozliczeniowy.
+\end{itemize}
+
+Dzięki temu możliwe jest szybkie przygotowanie środowiska do testów lub prezentacji bez ręcznego wprowadzania danych.

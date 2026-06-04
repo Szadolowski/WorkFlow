@@ -1,0 +1,53 @@
+% ================= SEKCJA 2 =================
+\section{Nazwa kodowa}
+
+Na potrzeby projektu przyjęto nazwę kodową \texttt{WorkFlow}. Nazwa ta jest wykorzystywana w dokumentacji, repozytorium kodu źródłowego, konfiguracji środowiska uruchomieniowego oraz w interfejsie użytkownika aplikacji.
+
+\begin{itemize}
+    \item \textbf{Nazwa projektu:} \texttt{WorkFlow}
+    \item \textbf{Typ rozwiązania:} aplikacja webowa typu full-stack
+    \item \textbf{Główna domena:} zarządzanie pracownikami, czasem pracy, dokumentacją kadrową i danymi rozliczeniowymi
+\end{itemize}
+
+\subsection{Znaczenie nazwy}
+
+Nazwa \texttt{WorkFlow} odnosi się do przepływu pracy oraz przepływu informacji pomiędzy modułami systemu. W projekcie dane nie są traktowane jako niezależne rekordy, lecz jako elementy powiązanego procesu. Przykładowo pracownik jest przypisany do zakładu, może zostać przydzielony do projektu, posiada umowę, certyfikaty, dokumenty, nieobecności oraz wpisy czasu pracy.
+
+Z tego względu nazwa systemu dobrze oddaje jego podstawowe założenie: uporządkowanie informacji i operacji wykonywanych przez różne role użytkowników. System wspiera przepływ danych pomiędzy częścią kadrową, organizacyjną, ewidencją czasu pracy oraz rozliczeniami.
+
+\subsection{Zastosowanie nazwy w strukturze projektu}
+
+Nazwa \texttt{WorkFlow} została zastosowana jako wspólny identyfikator całego rozwiązania. W praktyce występuje ona w kilku obszarach:
+\begin{itemize}
+    \item jako nazwa aplikacji widoczna dla użytkownika,
+    \item jako nazwa repozytorium projektu,
+    \item jako nazwa środowiska uruchomieniowego w konfiguracji Docker Compose,
+    \item jako element nazw kontenerów i usług technicznych,
+    \item jako określenie systemu w dokumentacji projektowej.
+\end{itemize}
+
+Takie podejście pozwala zachować spójność pomiędzy warstwą techniczną, dokumentacją oraz sposobem prezentowania projektu użytkownikowi końcowemu.
+
+\subsection{Uzasadnienie wyboru}
+
+Wybór nazwy \texttt{WorkFlow} wynika z charakteru aplikacji. System nie ogranicza się do jednej funkcji, takiej jak samo przechowywanie danych pracowników lub sama ewidencja czasu pracy. Jego zadaniem jest połączenie kilku powiązanych procesów w jedną aplikację.
+
+Najważniejszymi procesami objętymi projektem są:
+\begin{itemize}
+    \item utworzenie i utrzymanie profilu pracownika,
+    \item przypisanie pracownika do zakładu i projektu,
+    \item rejestracja zdarzeń czasu pracy,
+    \item utworzenie wpisów czasu pracy na podstawie zdarzeń z czytników RCP,
+    \item obsługa umów i dokumentów kadrowych,
+    \item kontrola certyfikatów, badań i szkoleń,
+    \item rejestrowanie nieobecności,
+    \item przygotowanie danych do rozliczeń.
+\end{itemize}
+
+Nazwa jest krótka, czytelna i neutralna technologicznie. Nie wskazuje na jedną konkretną funkcję, lecz na ogólną ideę organizacji pracy i danych w systemie.
+
+\subsection{Rola nazwy w dalszej dokumentacji}
+
+W dalszej części dokumentacji nazwa \texttt{WorkFlow} będzie stosowana jako określenie całego systemu. Obejmuje ona zarówno część frontendową, backendową, bazę danych, magazyn plików, jak i konfigurację uruchomieniową.
+
+Dzięki temu możliwe jest jednoznaczne odróżnienie systemu jako całości od jego poszczególnych modułów, takich jak moduł pracowników, projektów, czasu pracy, certyfikatów, nieobecności, dokumentów czy rozliczeń.

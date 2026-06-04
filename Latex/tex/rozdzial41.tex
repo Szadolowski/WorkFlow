@@ -1,0 +1,107 @@
+% ================= ROZDZIAŁ 4.1 =================
+\subsection{Wymagania niefunkcyjne}
+
+Wymagania niefunkcyjne określają cechy jakościowe systemu \texttt{WorkFlow}, które wpływają na sposób jego działania, bezpieczeństwo, utrzymanie oraz możliwość uruchomienia w przygotowanym środowisku. Nie opisują one pojedynczych funkcji użytkownika, lecz warunki, jakie powinny zostać spełnione przez całą aplikację.
+
+W przypadku systemu \texttt{WorkFlow} szczególne znaczenie mają: bezpieczeństwo danych pracowników, kontrola dostępu, spójność danych, możliwość uruchomienia systemu w środowisku kontenerowym oraz czytelność interfejsu użytkownika.
+
+\subsubsection{Bezpieczeństwo danych}
+
+System przetwarza dane pracowników, informacje o umowach, certyfikatach, nieobecnościach, dokumentach oraz czasie pracy. Z tego względu dostęp do aplikacji powinien być ograniczony do zalogowanych użytkowników.
+
+Podstawowe wymagania bezpieczeństwa obejmują:
+\begin{itemize}
+    \item uwierzytelnianie użytkowników za pomocą adresu e-mail i hasła,
+    \item przechowywanie haseł w postaci zahashowanej,
+    \item stosowanie tokenów JWT do autoryzacji żądań,
+    \item ograniczenie dostępu do funkcji systemu na podstawie roli użytkownika,
+    \item ograniczenie dostępu do danych zakładów zgodnie z przypisanymi uprawnieniami,
+    \item zabezpieczenie technicznego endpointu czytników RCP osobnym tokenem urządzenia.
+\end{itemize}
+
+W środowisku produkcyjnym system powinien być uruchamiany za pośrednictwem połączenia szyfrowanego HTTPS. W środowisku lokalnym dopuszczalne jest uruchomienie po protokole HTTP, co zostało uwzględnione w konfiguracji plików środowiskowych.
+
+\subsubsection{Kontrola dostępu i role użytkowników}
+
+System powinien realizować kontrolę dostępu opartą na rolach użytkowników. Każda rola odpowiada innemu zakresowi odpowiedzialności w systemie.
+
+W projekcie przewidziano następujące role:
+\begin{itemize}
+    \item \textbf{Administrator} -- posiada najszerszy zakres dostępu do systemu,
+    \item \textbf{HR} -- odpowiada za obsługę danych kadrowych, pracowników, umów, certyfikatów, dokumentów i nieobecności,
+    \item \textbf{Księgowość} -- korzysta z danych potrzebnych do rozliczeń,
+    \item \textbf{Brygadzista} -- ma dostęp do danych związanych z pracownikami, projektami i zakładem, za który odpowiada,
+    \item \textbf{Pracownik} -- reprezentuje podstawowego użytkownika systemu,
+    \item \textbf{Użytkownik biurowy} -- rola pomocnicza przewidziana dla prac administracyjnych.
+\end{itemize}
+
+Takie rozdzielenie dostępu pozwala ograniczyć widoczność danych wrażliwych oraz zmniejsza ryzyko przypadkowej modyfikacji informacji przez użytkowników, którzy nie powinni mieć dostępu do danego obszaru systemu.
+
+\subsubsection{Spójność i integralność danych}
+
+Dane systemu powinny być przechowywane w relacyjnej bazie danych w sposób zapewniający spójność pomiędzy encjami. Pracownik jest powiązany z zakładem, projektami, umowami, certyfikatami, dokumentami, nieobecnościami oraz wpisami czasu pracy. Z tego względu istotne jest zachowanie poprawnych relacji pomiędzy tabelami.
+
+Wymagania w tym obszarze obejmują:
+\begin{itemize}
+    \item stosowanie jednoznacznych identyfikatorów rekordów,
+    \item wykorzystywanie kluczy obcych do opisu relacji pomiędzy tabelami,
+    \item ograniczenie duplikowania danych,
+    \item przechowywanie historii wybranych informacji, na przykład umów i przypisań do projektów,
+    \item oddzielenie surowych zdarzeń czasu pracy od przetworzonych wpisów czasu pracy.
+\end{itemize}
+
+Szczególnie ważne jest rozróżnienie pomiędzy tabelą \texttt{TimeEvent} a tabelą \texttt{TimeEntry}. Pierwsza z nich przechowuje surowe zdarzenia z czytników RCP, natomiast druga zawiera przetworzone wpisy czasu pracy utworzone na podstawie pary zdarzeń wejścia i wyjścia.
+
+\subsubsection{Przenośność środowiska}
+
+System powinien być możliwy do uruchomienia w powtarzalny sposób na różnych środowiskach. W tym celu wykorzystano konteneryzację oraz plik Docker Compose, który definiuje zestaw usług potrzebnych do działania aplikacji.
+
+Środowisko uruchomieniowe powinno obejmować:
+\begin{itemize}
+    \item kontener frontendu,
+    \item kontener backendu,
+    \item kontener bazy danych PostgreSQL,
+    \item kontener magazynu plików MinIO,
+    \item kontener Nginx pełniący funkcję reverse proxy.
+\end{itemize}
+
+Takie podejście upraszcza uruchomienie projektu oraz ogranicza liczbę ręcznych kroków konfiguracyjnych. Użytkownik nie musi oddzielnie instalować i konfigurować każdej usługi, ponieważ ich podstawowa konfiguracja znajduje się w pliku \texttt{docker-compose.prod.yml} oraz pliku środowiskowym \texttt{.env}.
+
+\subsubsection{Konfigurowalność}
+
+System powinien umożliwiać zmianę podstawowych parametrów środowiska bez modyfikowania kodu źródłowego. W tym celu wykorzystano zmienne środowiskowe zapisane w pliku \texttt{.env}.
+
+Do najważniejszych parametrów konfiguracyjnych należą:
+\begin{itemize}
+    \item dane dostępowe do bazy PostgreSQL,
+    \item sekret JWT,
+    \item token techniczny urządzeń RCP,
+    \item dane dostępowe do MinIO,
+    \item adres API wykorzystywany przez frontend,
+    \item porty usług,
+    \item ustawienia związane z ciasteczkami autoryzacyjnymi,
+    \item parametry seedów inicjalizujących dane.
+\end{itemize}
+
+Do repozytorium nie powinien trafiać rzeczywisty plik \texttt{.env}. Zamiast niego przechowywany jest plik \texttt{.env.example}, który opisuje wymagane zmienne bez ujawniania haseł i tokenów.
+
+\subsubsection{Użyteczność interfejsu}
+
+Interfejs użytkownika powinien być czytelny i dostosowany do typowych zadań administracyjnych. Użytkownik powinien mieć możliwość szybkiego przejścia do najważniejszych modułów, takich jak pracownicy, zakłady, projekty, czas pracy, certyfikaty czy nieobecności.
+
+Wymagania dotyczące użyteczności obejmują:
+\begin{itemize}
+    \item przejrzysty układ nawigacji,
+    \item możliwość wyszukiwania i filtrowania danych,
+    \item czytelne formularze dodawania i edycji rekordów,
+    \item spójny wygląd widoków w trybie jasnym i ciemnym,
+    \item wyraźne oznaczanie statusów, na przykład aktywności pracownika, ważności certyfikatu lub statusu wpisu czasu pracy.
+\end{itemize}
+
+System powinien działać w aktualnych wersjach popularnych przeglądarek internetowych. Ponieważ aplikacja ma charakter administracyjny, podstawowym środowiskiem pracy jest komputer z przeglądarką internetową.
+
+\subsubsection{Niezawodność i odtwarzalność danych demonstracyjnych}
+
+Aplikacja powinna umożliwiać ponowne uruchomienie usług bez konieczności ręcznego odtwarzania całej konfiguracji. Dane bazy i magazynu plików powinny być przechowywane w wolumenach Docker, dzięki czemu nie są usuwane przy zwykłym restarcie kontenerów.
+
+Na potrzeby prezentacji projektu przygotowano również dane demonstracyjne. Seed demonstracyjny pozwala odtworzyć przykładowy stan systemu zawierający użytkowników, zakłady, pracowników, projekty, umowy, certyfikaty, nieobecności, dokumenty oraz wpisy czasu pracy. Dzięki temu możliwe jest szybkie przygotowanie środowiska pokazowego bez ręcznego wprowadzania wszystkich danych.

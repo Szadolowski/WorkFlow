@@ -1,0 +1,297 @@
+% ================= SEKCJA 6 =================
+\section{Scenariusze}
+
+W niniejszym rozdziale przedstawiono scenariusze wybranych przypadków użycia systemu \texttt{WorkFlow}. Scenariusze opisują przebieg najważniejszych operacji z punktu widzenia użytkownika lub komponentu technicznego, a także wskazują warunki początkowe, przebieg podstawowy oraz możliwe warianty alternatywne.
+
+Opisane scenariusze odpowiadają aktualnemu zakresowi projektu i obejmują logowanie, zarządzanie profilem pracownika, rejestrację czasu pracy z czytnika RCP, obsługę certyfikatów, nieobecności, umów, dokumentów oraz przygotowanie danych rozliczeniowych.
+
+\subsection{SC-01: Logowanie użytkownika}
+\begin{itemize}
+    \item \textbf{Numer:} SC-01
+    \item \textbf{Nazwa:} Logowanie użytkownika
+    \item \textbf{Aktor:} Użytkownik systemu
+    \item \textbf{Stan wejścia:}
+    \begin{itemize}
+        \item Użytkownik posiada konto w systemie.
+        \item Konto ma przypisany adres e-mail, hash hasła oraz rolę systemową.
+        \item Konto jest aktywne i ma włączoną możliwość logowania.
+    \end{itemize}
+    \item \textbf{Przebieg:}
+    \begin{enumerate}
+        \item Użytkownik otwiera formularz logowania.
+        \item Wprowadza adres e-mail oraz hasło.
+        \item System przesyła dane logowania do backendu.
+        \item Backend wyszukuje użytkownika po adresie e-mail.
+        \item Backend weryfikuje poprawność hasła.
+        \item Po poprawnej weryfikacji system generuje token JWT.
+        \item Token zostaje zapisany w ciasteczku sesyjnym.
+        \item Użytkownik zostaje przekierowany do panelu aplikacji.
+    \end{enumerate}
+    \item \textbf{Zakończenie lub przebieg alternatywny:}
+    \begin{itemize}
+        \item \textbf{Zakończenie pozytywne:} Użytkownik zostaje zalogowany i uzyskuje dostęp do funkcji zgodnych ze swoją rolą.
+        \item \textbf{Błędne dane logowania:} System odrzuca próbę logowania i wyświetla komunikat o błędnych poświadczeniach.
+        \item \textbf{Konto nieaktywne lub bez dostępu do logowania:} System nie przyznaje dostępu do aplikacji.
+    \end{itemize}
+\end{itemize}
+
+\subsection{SC-02: Zarządzanie profilem pracownika}
+\begin{itemize}
+    \item \textbf{Numer:} SC-02
+    \item \textbf{Nazwa:} Zarządzanie profilem pracownika
+    \item \textbf{Aktor:} HR lub Administrator
+    \item \textbf{Stan wejścia:}
+    \begin{itemize}
+        \item Użytkownik jest zalogowany.
+        \item Użytkownik posiada rolę umożliwiającą zarządzanie danymi pracowników.
+        \item W systemie istnieje zakład, do którego można przypisać pracownika.
+    \end{itemize}
+    \item \textbf{Przebieg:}
+    \begin{enumerate}
+        \item Użytkownik przechodzi do listy pracowników.
+        \item System wyświetla listę pracowników zgodną z zakresem dostępu użytkownika.
+        \item Użytkownik wyszukuje pracownika lub otwiera formularz dodania nowej osoby.
+        \item Użytkownik wprowadza albo modyfikuje dane podstawowe pracownika.
+        \item Użytkownik określa zakład, rolę, status aktywności oraz opcjonalny identyfikator karty RFID.
+        \item System waliduje poprawność danych, między innymi unikalność adresu e-mail, numeru PESEL i identyfikatora karty RFID.
+        \item System zapisuje dane w bazie.
+        \item Użytkownik może przejść do profilu pracownika i zarządzać powiązanymi informacjami.
+    \end{enumerate}
+    \item \textbf{Zakończenie lub przebieg alternatywny:}
+    \begin{itemize}
+        \item \textbf{Zakończenie pozytywne:} Dane pracownika zostają zapisane lub zaktualizowane.
+        \item \textbf{Błąd walidacji:} System wyświetla komunikat i wskazuje pola wymagające poprawy.
+        \item \textbf{Brak uprawnień:} System blokuje operację, jeżeli użytkownik nie posiada odpowiedniej roli lub dostępu do zakładu.
+    \end{itemize}
+\end{itemize}
+
+\subsection{SC-03: Rejestracja czasu pracy przez czytnik RCP}
+\begin{itemize}
+    \item \textbf{Numer:} SC-03
+    \item \textbf{Nazwa:} Rejestracja czasu pracy przez czytnik RCP
+    \item \textbf{Aktor:} Czytnik RCP
+    \item \textbf{Stan wejścia:}
+    \begin{itemize}
+        \item W systemie istnieje aktywny czytnik RCP.
+        \item Czytnik jest przypisany do zakładu i projektu.
+        \item Pracownik posiada przypisany identyfikator karty RFID.
+        \item Endpoint urządzenia jest zabezpieczony tokenem technicznym.
+    \end{itemize}
+    \item \textbf{Przebieg:}
+    \begin{enumerate}
+        \item Pracownik odbija kartę RFID na czytniku.
+        \item Czytnik wysyła do backendu zdarzenie zawierające numer seryjny czytnika, identyfikator karty, typ zdarzenia oraz czas zdarzenia.
+        \item Backend weryfikuje token urządzenia.
+        \item System wyszukuje aktywny czytnik na podstawie numeru seryjnego.
+        \item System wyszukuje aktywnego pracownika na podstawie identyfikatora karty RFID.
+        \item System sprawdza, czy pracownik ma dostęp do zakładu powiązanego z czytnikiem.
+        \item System zapisuje surowe zdarzenie w tabeli \texttt{TimeEvent}.
+        \item Jeżeli zdarzenie ma typ \texttt{OUT}, system wyszukuje wcześniejsze zdarzenie \texttt{IN}.
+        \item Na podstawie pary zdarzeń \texttt{IN}/\texttt{OUT} system tworzy wpis czasu pracy w tabeli \texttt{TimeEntry}.
+    \end{enumerate}
+    \item \textbf{Zakończenie lub przebieg alternatywny:}
+    \begin{itemize}
+        \item \textbf{Zakończenie pozytywne:} Zdarzenie zostaje zapisane, a dla zdarzenia \texttt{OUT} powstaje wpis czasu pracy.
+        \item \textbf{Nieznany czytnik:} System odrzuca zdarzenie, jeżeli numer seryjny nie odpowiada aktywnemu czytnikowi.
+        \item \textbf{Nieznana karta RFID:} System odrzuca zdarzenie, jeżeli nie znajdzie aktywnego pracownika.
+        \item \textbf{Brak wcześniejszego wejścia:} System zapisuje błąd logiczny i nie tworzy wpisu czasu pracy dla zdarzenia \texttt{OUT}.
+    \end{itemize}
+\end{itemize}
+
+\subsection{SC-04: Weryfikacja wpisów czasu pracy}
+\begin{itemize}
+    \item \textbf{Numer:} SC-04
+    \item \textbf{Nazwa:} Weryfikacja wpisów czasu pracy
+    \item \textbf{Aktor:} HR, Administrator lub użytkownik uprawniony do weryfikacji
+    \item \textbf{Stan wejścia:}
+    \begin{itemize}
+        \item W systemie istnieją wpisy czasu pracy.
+        \item Wpisy posiadają status, na przykład \texttt{PENDING}.
+        \item Użytkownik posiada uprawnienia do przeglądania i weryfikowania wpisów czasu pracy.
+    \end{itemize}
+    \item \textbf{Przebieg:}
+    \begin{enumerate}
+        \item Użytkownik przechodzi do widoku czasu pracy.
+        \item System wyświetla wpisy czasu pracy z wybranego zakresu.
+        \item Użytkownik analizuje dane pracownika, projekt, czas rozpoczęcia, czas zakończenia oraz liczbę godzin.
+        \item Użytkownik zatwierdza poprawny wpis albo oznacza go jako wymagający odrzucenia.
+        \item System aktualizuje status wpisu czasu pracy.
+        \item Zatwierdzone wpisy mogą zostać wykorzystane w module rozliczeń.
+    \end{enumerate}
+    \item \textbf{Zakończenie lub przebieg alternatywny:}
+    \begin{itemize}
+        \item \textbf{Zakończenie pozytywne:} Wpis uzyskuje status \texttt{APPROVED} i może zostać uwzględniony w rozliczeniach.
+        \item \textbf{Odrzucenie wpisu:} Wpis uzyskuje status \texttt{REJECTED} i nie jest brany pod uwagę przy eksporcie payroll.
+        \item \textbf{Brak uprawnień:} System blokuje zmianę statusu wpisu.
+    \end{itemize}
+\end{itemize}
+
+\subsection{SC-05: Dodanie umowy pracownika}
+\begin{itemize}
+    \item \textbf{Numer:} SC-05
+    \item \textbf{Nazwa:} Dodanie umowy pracownika
+    \item \textbf{Aktor:} HR lub Administrator
+    \item \textbf{Stan wejścia:}
+    \begin{itemize}
+        \item Użytkownik jest zalogowany.
+        \item Użytkownik posiada dostęp do profilu pracownika.
+        \item Pracownik istnieje w systemie.
+    \end{itemize}
+    \item \textbf{Przebieg:}
+    \begin{enumerate}
+        \item Użytkownik otwiera profil pracownika.
+        \item Przechodzi do sekcji umów.
+        \item Wybiera opcję dodania nowej umowy.
+        \item Wprowadza typ umowy, kwotę wynagrodzenia, datę rozpoczęcia oraz opcjonalną datę zakończenia.
+        \item Określa, czy umowa jest aktualna.
+        \item System waliduje dane formularza.
+        \item System zapisuje umowę i przypisuje ją do pracownika.
+    \end{enumerate}
+    \item \textbf{Zakończenie lub przebieg alternatywny:}
+    \begin{itemize}
+        \item \textbf{Zakończenie pozytywne:} Umowa zostaje zapisana w historii umów pracownika.
+        \item \textbf{Brak wymaganych danych:} System wyświetla komunikat i nie zapisuje umowy.
+        \item \textbf{Brak uprawnień:} System blokuje operację.
+    \end{itemize}
+\end{itemize}
+
+\subsection{SC-06: Monitorowanie ważności certyfikatów}
+\begin{itemize}
+    \item \textbf{Numer:} SC-06
+    \item \textbf{Nazwa:} Monitorowanie ważności certyfikatów
+    \item \textbf{Aktor:} HR lub Administrator
+    \item \textbf{Stan wejścia:}
+    \begin{itemize}
+        \item W systemie istnieje słownik certyfikatów.
+        \item Pracownicy posiadają przypisane certyfikaty z datą wydania i datą ważności.
+        \item Użytkownik posiada dostęp do modułu certyfikatów.
+    \end{itemize}
+    \item \textbf{Przebieg:}
+    \begin{enumerate}
+        \item Użytkownik przechodzi do widoku certyfikatów wygasających.
+        \item Wybiera zakres czasu, na przykład 30, 90 lub 365 dni.
+        \item System pobiera certyfikaty, których data ważności mieści się w wybranym zakresie.
+        \item System prezentuje dane pracownika, typ certyfikatu, nazwę dokumentu oraz liczbę dni do wygaśnięcia.
+        \item Użytkownik może przejść do profilu pracownika i uzupełnić lub zaktualizować dane certyfikatu.
+    \end{enumerate}
+    \item \textbf{Zakończenie lub przebieg alternatywny:}
+    \begin{itemize}
+        \item \textbf{Zakończenie pozytywne:} Użytkownik otrzymuje listę certyfikatów wymagających kontroli.
+        \item \textbf{Brak wyników:} System wyświetla pustą listę dla wybranego zakresu.
+        \item \textbf{Brak dostępu do zakładu:} System nie pokazuje danych spoza zakresu uprawnień użytkownika.
+    \end{itemize}
+\end{itemize}
+
+\subsection{SC-07: Dodanie nieobecności pracownika}
+\begin{itemize}
+    \item \textbf{Numer:} SC-07
+    \item \textbf{Nazwa:} Dodanie nieobecności pracownika
+    \item \textbf{Aktor:} HR lub Administrator
+    \item \textbf{Stan wejścia:}
+    \begin{itemize}
+        \item Użytkownik jest zalogowany.
+        \item Pracownik istnieje w systemie.
+        \item Użytkownik posiada dostęp do profilu pracownika.
+    \end{itemize}
+    \item \textbf{Przebieg:}
+    \begin{enumerate}
+        \item Użytkownik otwiera profil pracownika.
+        \item Przechodzi do sekcji nieobecności.
+        \item Wybiera opcję dodania nowej nieobecności.
+        \item Określa typ nieobecności, datę rozpoczęcia i datę zakończenia.
+        \item Opcjonalnie wskazuje dokument powiązany z nieobecnością.
+        \item Określa, czy nieobecność jest zatwierdzona.
+        \item System zapisuje nieobecność i przypisuje ją do pracownika.
+    \end{enumerate}
+    \item \textbf{Zakończenie lub przebieg alternatywny:}
+    \begin{itemize}
+        \item \textbf{Zakończenie pozytywne:} Nieobecność pojawia się w profilu pracownika.
+        \item \textbf{Niepoprawny zakres dat:} System odrzuca zapis i wyświetla komunikat.
+        \item \textbf{Brak uprawnień:} System blokuje operację.
+    \end{itemize}
+\end{itemize}
+
+\subsection{SC-08: Dodanie dokumentu pracownika}
+\begin{itemize}
+    \item \textbf{Numer:} SC-08
+    \item \textbf{Nazwa:} Dodanie dokumentu pracownika
+    \item \textbf{Aktor:} HR lub Administrator
+    \item \textbf{Stan wejścia:}
+    \begin{itemize}
+        \item Użytkownik posiada dostęp do profilu pracownika.
+        \item Pracownik istnieje w systemie.
+        \item Magazyn plików jest skonfigurowany.
+    \end{itemize}
+    \item \textbf{Przebieg:}
+    \begin{enumerate}
+        \item Użytkownik otwiera profil pracownika.
+        \item Wybiera opcję dodania dokumentu.
+        \item Wskazuje plik dokumentu lub dane dokumentu.
+        \item System zapisuje plik w magazynie obiektowym albo zapisuje jego ścieżkę.
+        \item System tworzy rekord dokumentu w bazie danych.
+        \item Dokument zostaje powiązany z pracownikiem oraz opcjonalnie z umową lub certyfikatem.
+    \end{enumerate}
+    \item \textbf{Zakończenie lub przebieg alternatywny:}
+    \begin{itemize}
+        \item \textbf{Zakończenie pozytywne:} Dokument zostaje zapisany i widoczny w danych pracownika.
+        \item \textbf{Błąd zapisu pliku:} System informuje użytkownika o problemie z magazynem plików.
+        \item \textbf{Brak danych wymaganych:} System nie tworzy rekordu dokumentu.
+    \end{itemize}
+\end{itemize}
+
+\subsection{SC-09: Przygotowanie eksportu rozliczeniowego}
+\begin{itemize}
+    \item \textbf{Numer:} SC-09
+    \item \textbf{Nazwa:} Przygotowanie eksportu rozliczeniowego
+    \item \textbf{Aktor:} Księgowość
+    \item \textbf{Stan wejścia:}
+    \begin{itemize}
+        \item Użytkownik jest zalogowany i posiada rolę księgowości.
+        \item W systemie istnieją zatwierdzone wpisy czasu pracy.
+        \item Wpisy nie zostały wcześniej powiązane z eksportem payroll.
+    \end{itemize}
+    \item \textbf{Przebieg:}
+    \begin{enumerate}
+        \item Użytkownik przechodzi do modułu rozliczeń.
+        \item Wybiera miesiąc i rok rozliczeniowy.
+        \item System pobiera zatwierdzone wpisy czasu pracy z wybranego okresu.
+        \item System tworzy rekord eksportu rozliczeniowego.
+        \item System zapisuje liczbę pracowników objętych eksportem.
+        \item System wiąże wybrane wpisy czasu pracy z eksportem.
+        \item Użytkownik otrzymuje informację o przygotowaniu danych.
+    \end{enumerate}
+    \item \textbf{Zakończenie lub przebieg alternatywny:}
+    \begin{itemize}
+        \item \textbf{Zakończenie pozytywne:} Eksport zostaje utworzony, a powiązane wpisy czasu pracy są oznaczone jako rozliczone w ramach danej paczki.
+        \item \textbf{Brak zatwierdzonych wpisów:} System nie tworzy eksportu i informuje użytkownika o braku danych.
+        \item \textbf{Dane już wyeksportowane:} System pomija wpisy powiązane z wcześniejszym eksportem.
+    \end{itemize}
+\end{itemize}
+
+\subsection{SC-10: Uruchomienie danych demonstracyjnych}
+\begin{itemize}
+    \item \textbf{Numer:} SC-10
+    \item \textbf{Nazwa:} Uruchomienie danych demonstracyjnych
+    \item \textbf{Aktor:} Administrator techniczny
+    \item \textbf{Stan wejścia:}
+    \begin{itemize}
+        \item Środowisko Docker Compose jest uruchomione.
+        \item Backend ma dostęp do bazy danych.
+        \item W środowisku ustawiono zmienną potwierdzającą zgodę na wykonanie seeda demonstracyjnego.
+    \end{itemize}
+    \item \textbf{Przebieg:}
+    \begin{enumerate}
+        \item Administrator techniczny uruchamia komendę seeda demonstracyjnego.
+        \item Skrypt sprawdza obecność wymaganej zmiennej środowiskowej.
+        \item Skrypt czyści dane przeznaczone do prezentacji.
+        \item Skrypt tworzy zakłady, użytkowników, pracowników, projekty, czytniki RCP, umowy, certyfikaty, dokumenty, nieobecności, zdarzenia czasu pracy i eksport rozliczeniowy.
+        \item Administrator loguje się do aplikacji na konto testowe.
+        \item System prezentuje komplet przykładowych danych.
+    \end{enumerate}
+    \item \textbf{Zakończenie lub przebieg alternatywny:}
+    \begin{itemize}
+        \item \textbf{Zakończenie pozytywne:} Baza danych zawiera komplet danych demonstracyjnych gotowych do prezentacji projektu.
+        \item \textbf{Brak zmiennej zabezpieczającej:} Skrypt przerywa działanie i nie modyfikuje bazy.
+        \item \textbf{Błąd połączenia z bazą:} Skrypt kończy się błędem i wyświetla komunikat diagnostyczny.
+    \end{itemize}
+\end{itemize}
