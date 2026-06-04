@@ -16,7 +16,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Briefcase,
   FileText,
-  CalendarOff,
   FolderOpen,
   ShieldAlert,
   Download,
@@ -41,6 +40,7 @@ import { addDocumentAction } from "@/app/actions/employees.actions";
 import { EmployeeContractsSection } from "@/components/employees/EmployeeContractsSection";
 import { EmployeeCertificationsSection } from "@/components/employees/EmployeeCertificationsSection";
 import { EmployeeEditForm } from "@/components/employees/EmployeeEditForm";
+import { EmployeeAbsencesSection } from "@/components/employees/EmployeeAbsencesSection";
 
 // Definicje typów, aby uciszyć linter
 type Assignment = {
@@ -111,6 +111,9 @@ export default function EmployeeProfilePage({
     currentUser.role === "ADMIN" || currentUser.role === "HR";
 
   const canEditEmployee =
+    currentUser.role === "ADMIN" || currentUser.role === "HR";
+
+  const canManageAbsences =
     currentUser.role === "ADMIN" || currentUser.role === "HR";
 
   const initials =
@@ -260,29 +263,11 @@ export default function EmployeeProfilePage({
         </TabsContent>
 
         <TabsContent value="absences">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CalendarOff className="w-5 h-5 text-primary" /> Historia
-                Nieobecności
-              </CardTitle>
-              <CardDescription>
-                Trwające i nadchodzące urlopy oraz zwolnienia (L4).
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="p-12 text-center border border-dashed rounded-lg bg-slate-50/30">
-                <CalendarOff className="w-8 h-8 mx-auto text-muted-foreground mb-3 opacity-50" />
-                <p className="text-sm font-medium">
-                  Moduł nieobecności w przygotowaniu
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Dane o urlopach będą ładowane asynchronicznie (Lazy Loading) w
-                  kolejnej iteracji.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+          <EmployeeAbsencesSection
+            employeeId={employeeId}
+            activeFacilityId={activeFacilityId}
+            canManageAbsences={canManageAbsences}
+          />
         </TabsContent>
 
         <TabsContent value="documents">
