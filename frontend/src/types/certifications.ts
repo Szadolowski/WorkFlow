@@ -63,3 +63,43 @@ export type UpdateCertificationDictionaryPayload =
 export type CertificationDictionarySingleResponse = {
   data: CertificationDictionaryItem;
 };
+
+export type ExpiringCertificationItem = {
+  id: string;
+  employeeId: string;
+  dictionaryId: string;
+  certificateNumber: string | null;
+  issuedAt: string;
+  expiresAt: string;
+  daysToExpiry: number;
+  dictionary: CertificationDictionaryItem;
+  employee: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string | null;
+    role: string;
+    facility: {
+      id: string;
+      name: string;
+      code: string | null;
+    };
+  };
+  documents: {
+    id: string;
+    fileName: string;
+    fileUrl: string;
+    createdAt: string;
+  }[];
+};
+
+export type ExpiringCertificationsResponse = {
+  data: ExpiringCertificationItem[];
+  meta: {
+    facilityId: string;
+    days: number;
+    from: string;
+    to: string;
+    total: number;
+  };
+};

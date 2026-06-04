@@ -3,6 +3,7 @@
 import { useDashboardSummary } from "@/hooks/useDashboard";
 import { WidgetCard } from "./WidgetCard";
 import { Users, AlertTriangle, FileCheck, HardHat } from "lucide-react";
+import Link from "next/link";
 
 export function HrWidgets() {
   // Tylko ten mały komponent "wie" o TanStack Query i pobieraniu danych
@@ -34,14 +35,16 @@ export function HrWidgets() {
         statusType="neutral"
         isLoading={isLoading}
       />
-      <WidgetCard
-        title="Wygasające BHP (30 dni)"
-        value={stats?.expiringCertsCount || 0}
-        subtitle="Wymagają natychmiastowej akcji"
-        icon={AlertTriangle}
-        statusType="alert"
-        isLoading={isLoading}
-      />
+      <Link href="/dashboard/certifications/expiring" className="block">
+        <WidgetCard
+          title="Wygasające BHP (30 dni)"
+          value={stats?.expiringCertsCount || 0}
+          subtitle="Kliknij, aby zobaczyć szczegóły"
+          icon={AlertTriangle}
+          statusType="alert"
+          isLoading={isLoading}
+        />
+      </Link>
       <WidgetCard
         title="Wypożyczony Sprzęt"
         value={stats?.activeEquipmentCount || 0}

@@ -9,6 +9,7 @@ import type {
   EmployeeCertificationSingleResponse,
   EmployeeCertificationsResponse,
   UpdateCertificationDictionaryPayload,
+  ExpiringCertificationsResponse,
 } from "@/types/certifications";
 
 export async function getCertificationDictionaryAction(): Promise<CertificationDictionaryResponse> {
@@ -109,6 +110,29 @@ export async function updateCertificationDictionaryAction(
     const err = await res.json().catch(() => ({}));
     throw new Error(
       err.message || "Nie udało się zaktualizować pozycji słownika.",
+    );
+  }
+
+  return res.json();
+}
+
+export async function getExpiringCertificationsAction(
+  facilityId: string,
+  days: number,
+): Promise<ExpiringCertificationsResponse> {
+  const params = new URLSearchParams();
+
+  params.set("facilityId", facilityId);
+  params.set("days", String(days));
+
+  const res = await serverFetch(
+    `/certifications/expiring?${params.toString()}`,
+  );
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(
+      err.message || "Nie udało się pobrać wygasających certyfikatów.",
     );
   }
 
