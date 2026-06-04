@@ -18,7 +18,9 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "seed:payroll": "ts-node prisma/seed-payroll-test.ts"
+    "seed:payroll": "ts-node prisma/seed-payroll-test.ts",
+    "seed:demo": "node dist/prisma/seed-demo-presentation.js",
+    "seed:demo:dev": "ts-node prisma/seed-demo-presentation.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",

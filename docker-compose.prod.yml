@@ -47,6 +47,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     environment:
+      ALLOW_DEMO_SEED: ${ALLOW_DEMO_SEED:-false}
       NODE_ENV: production
       PORT: 2000
       DATABASE_URL: postgresql://${POSTGRES_USER:-workflow}:${POSTGRES_PASSWORD:-workflow_password}@postgres:5432/${POSTGRES_DB:-workflow}
