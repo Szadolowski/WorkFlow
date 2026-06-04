@@ -1,0 +1,58 @@
+% ================= SEKCJA 7 =================
+\section{Makiety interfejsu (Figma)}
+
+W celu weryfikacji założeń analitycznych oraz zapewnienia wysokiej ergonomii pracy (UX), zaprojektowano prototypy interfejsu użytkownika w narzędziu Figma. Zgodnie z wymaganiami niefunkcyjnymi dotyczącymi kompatybilności, interfejs został zrealizowany w paradygmacie \textit{Responsive Web Design} (RWD), co gwarantuje poprawne wyświetlanie zarówno na stacjach roboczych (rozdzielczość 1920px), jak i na urządzeniach mobilnych (rozdzielczość 390px).
+
+Poniżej zaprezentowano kluczowe widoki dla roli Pracownika Biurowego (Weryfikatora) oraz modułu Kadr (HR).
+
+\subsection{Pulpit Główny (Dashboard)}
+Pulpit główny stanowi centrum operacyjne pracownika biurowego, agregując najważniejsze zadania wymagające natychmiastowej reakcji.
+
+% Wstaw nazwę swojego pliku png dla pulpitu desktop
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{rys/1920w.pdf}
+    \caption{Widok desktopowy (1920px) -- Pulpit główny Pracownika Biurowego}
+    \label{fig:figma_dashboard_desktop}
+\end{figure}
+
+% Wstaw nazwę swojego pliku png dla pulpitu mobile
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.35\textwidth]{rys/390w.pdf}
+    \caption{Widok mobilny (390px) -- Pulpit główny}
+    \label{fig:figma_dashboard_mobile}
+\end{figure}
+
+\textbf{Analiza funkcjonalna ekranu:}
+\begin{itemize}
+    \item \textbf{Pilne alerty legalizacji:} Na samej górze interfejsu zaimplementowano system powiadomień ostrzegawczych (np. o wygasającej za 14 dni karcie pobytu), co bezpośrednio realizuje przypadek użycia SC-04 (Monitorowanie ważności dokumentów).
+    \item \textbf{Dane surowe z terenu:} Centralna tabela prezentująca strumień danych zasilanych przez brygadzistów (SC-01). Umożliwia pracownikowi biurowemu szybkie przejście do weryfikacji godzin pracy oraz przesłanych skanów zwolnień (L4).
+    \item \textbf{Podsumowanie:} Moduł analityczny (\textit{widget}) prezentujący globalny stan systemu, w tym zsumowane i zatwierdzone roboczogodziny z danego miesiąca, gotowe do eksportu przez księgowość.
+\end{itemize}
+
+\subsection{Profil Pracownika (Cyfrowa Teczka)}
+Ekran profilu pracownika odpowiada za realizację modułu zarządzania zasobami ludzkimi, stanowiąc tzw. \textit{Single Source of Truth} o zatrudnionym.
+
+% Wstaw nazwę swojego pliku png dla profilu desktop
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{rys/1920w_panel.pdf}
+    \caption{Widok desktopowy (1920px) -- Cyfrowa Teczka Pracownika}
+    \label{fig:figma_profile_desktop}
+\end{figure}
+
+% Wstaw nazwę swojego pliku png dla profilu mobile
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.35\textwidth]{rys/390w_panel.pdf}
+    \caption{Widok mobilny (390px) -- Profil Pracownika}
+    \label{fig:figma_profile_mobile}
+\end{figure}
+
+\textbf{Analiza funkcjonalna ekranu:}
+\begin{itemize}
+    \item \textbf{Agregacja danych rozproszonych:} Interfejs łączy dane z różnych domen biznesowych: podstawowe informacje kadrowe (PESEL, data zatrudnienia), dane finansowe (aktualna stawka godzinowa) oraz listę załączonych skanów dokumentów.
+    \item \textbf{Ostrzeżenia \textit{Compliance}:} System wizualnie wyróżnia (np. na czerwono) wygasłe uprawnienia oraz braki w dokumentacji (jak brak oświadczenia o powierzeniu pracy), minimalizując ryzyko nałożenia kar podczas kontroli PIP.
+    \item \textbf{Nawigacja i skalowalność:} Podział na zakładki (Ogólne, Dokumenty, Szkolenia, Statystyki) pozwala uniknąć przeładowania poznawczego, a elastyczny układ siatki (\textit{grid layout}) płynnie zwija się do jednej kolumny na widoku smartfona (390px).
+\end{itemize}

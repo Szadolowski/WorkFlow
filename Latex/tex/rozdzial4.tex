@@ -1,0 +1,25 @@
+% ================= SEKCJA 4 =================
+\section{Analiza wymagań}
+
+Proces analizy wymagań stanowi fundamentalny etap cyklu życia projektu informatycznego, determinujący jego końcowy sukces oraz dopasowanie do realnych potrzeb biznesowych organizacji. Aby zapewnić profesjonalny standard dokumentacji i ułatwić sprawne posługiwanie się specyfikacją systemu \texttt{WorkFlow}, jej układ został oparty na uznanych wzorcach inżynierii wymagań, takich jak standard IEEE 830-1998 oraz metodyka V-Model \cite{struktura_dokumentow}. 
+
+\subsection{Metodologia i ramy techniczne analizy}
+Przyjęcie standaryzowanej struktury dokumentu pozwala na szybsze włączenie członków zespołu do prac projektowych oraz umożliwia selektywną walidację informacji przez różnych interesariuszy \cite{struktura_dokumentow}. W ramach niniejszego opracowania dokonano uściśnienia potrzeb klienta i przełożenia ich na konkretną Specyfikację Wymagań na System, która odpowiada na pytanie o sposób implementacji zaproponowanych funkcji \cite{struktura_dokumentow}.
+
+Kluczowym założeniem analizy dla systemu \texttt{WorkFlow} jest oparcie architektury o proces konteneryzacji. Podejście to zakłada, że oprogramowanie będzie uruchamiane wraz ze wszystkimi niezbędnymi komponentami (kodem, bibliotekami i zależnościami) w odizolowanych kontenerach \cite{kontenery_i_zalety}. Wybór tej technologii już na etapie definiowania wymagań narzuca systemowi określone ramy techniczne, takie jak:
+\begin{itemize}
+    \item \textbf{Przenośność:} Gwarancja, że system będzie działał identycznie w różnych środowiskach obliczeniowych (lokalnych i chmurowych) \cite{kontenery_i_zalety}.
+    \item \textbf{Izolacja i bezpieczeństwo:} Zapewnienie autonomii procesów, co zapobiega konfliktom między usługami oraz zwiększa stabilność całego ekosystemu \cite{kontenery_i_zalety}.
+\end{itemize}
+
+Dla zachowania przejrzystości, dalsza część analizy została podzielona na trzy główne obszary zgodnie ze standardem IEEE 830 \cite{struktura_dokumentow}:
+\begin{enumerate}
+    \item \textbf{Wymagania niefunkcyjne:} Określające parametry jakościowe i standardy bezpieczeństwa.
+    \item \textbf{Wymagania funkcjonalne:} Precyzujące konkretne operacje biznesowe realizowane przez system.
+    \item \textbf{Wymagania integracyjne:} Definiujące interakcje z infrastrukturą zewnętrzną i bazami danych.
+\end{enumerate}
+
+
+\input{tex/rozdzial41.tex}
+\input{tex/rozdzial42.tex}
+\input{tex/rozdzial43.tex}

@@ -1,0 +1,31 @@
+% ================= ROZDZIAŁ 4.3 =================
+\subsection{Wymagania integracyjne}
+
+Wymagania integracyjne określają architekturę połączeń systemu \texttt{WorkFlow} z zewnętrznymi usługami, narzędziami oraz wewnętrznymi mikrousługami. Aby zapewnić bezpieczeństwo i elastyczność całego rozwiązania, wprowadzono rygorystyczną zasadę architektoniczną: każda integracja musi być odseparowana za pomocą warstwy abstrakcji (wzorzec projektowy \textit{Adapter}) \cite{adapter}. Zapobiega to bezpośredniemu wiązaniu rdzennej logiki biznesowej z konkretnymi dostawcami usług (np. zmiana operatora e-mail nie może wymagać ingerencji w logikę kadrową).
+
+\subsubsection{Zarządzanie plikami i pamięcią masową (Storage)}
+Integracja z systemem składowania obiektów jest krytyczna ze względu na konieczność bezpiecznego przechowywania cyfrowej dokumentacji pracowniczej.
+\begin{itemize}
+    \item \textbf{Dostawca S3-compatible:} System musi integrować się z bezpieczną, obiektową pamięcią masową (np. dedykowaną instancją \textit{MinIO} lub usługą \textit{AWS S3}).
+    \item \textbf{Kryptograficzne linki dostępu:} Ze względów bezpieczeństwa, magazyn danych musi być odcięty od publicznego dostępu. Pobieranie plików przez autoryzowanych użytkowników (np. podgląd zwolnienia) musi odbywać się wyłącznie za pośrednictwem tymczasowych, podpisywanych adresów (\textit{Signed URLs}).
+\end{itemize}
+
+\subsubsection{Przetwarzanie asynchroniczne i harmonogramowanie}
+Architektura aplikacji musi zakładać odciążenie głównego wątku serwera dla operacji czasochłonnych i cyklicznych.
+\begin{itemize}
+    \item \textbf{Broker wiadomości:} Integracja z systemem kolejkowym (np. \textit{Redis + BullMQ} lub \textit{RabbitMQ}) w celu asynchronicznego przetwarzania zdarzeń w architekturze \textit{event-driven}. System musi obsługiwać mechanizmy ponawiania żądań po błędzie (\textit{retry}) oraz precyzyjne monitorowanie stanu kolejek.
+    \item \textbf{Harmonogramowanie (Cron/Scheduler):} System musi posiadać integrację z modułem zadań cyklicznych, którego rolą jest automatyczne weryfikowanie bazy danych (np. sprawdzanie ważności certyfikatów pracowniczych o godzinie 01:00 w nocy) i wypychanie zdarzeń do kolejki alertów.
+\end{itemize}
+
+\subsubsection{Komunikacja API i powiadomienia zewnętrze}
+\begin{itemize}
+    \item \textbf{RESTful API:} Całość komunikacji pomiędzy klientem (frontend webowy/mobilny) a serwerem musi odbywać się poprzez ustrukturyzowane, wersjonowane API. Każdy żądany zasób musi przechodzić przez rygorystyczną walidację wejścia i weryfikację tokenu \textit{JWT}.
+    \item \textbf{Bramka E-mail:} System musi być zintegrowany z zewnętrznym dostawcą usług e-mail do wysyłki szablonowych alertów bezpieczeństwa i powiadomień operacyjnych.
+\end{itemize}
+
+\subsubsection{Integracje rozszerzone i opcjonalne (Przyszłościowe)}
+Dokumentacja zakłada przygotowanie punktów styku dla przyszłych systemów klasy \textit{Enterprise}:
+\begin{itemize}
+    \item \textbf{Systemy ERP / Księgowość:} Udostępnienie dedykowanych punktów końcowych API oraz modułu eksportu plików CSV, które pozwolą na bezpieczny import zagregowanych paczek płacowych (czas pracy, stawki) do zewnętrznych systemów finansowych.
+    \item \textbf{Zewnętrzny dostawca tożsamości (IAM):} Architektura logowania musi wspierać późniejszą migrację do scentralizowanego systemu zarządzania tożsamością i dostępem (np. \textit{Keycloak}), z obsługą protokołu OAuth 2.0 / OpenID Connect.
+\end{itemize}
