@@ -1,8 +1,11 @@
 "use client";
 
+import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { ArrowDown, ArrowUp, Search } from "lucide-react";
 import { useEmployeesQuery } from "@/hooks/useEmployees";
 import AddEmployeeDialog from "@/components/employees/AddEmployeeDialog";
-import { useRouter } from "next/navigation";
+import EmployeeAccessDialog from "@/components/employees/EmployeeAccessDialog";
 import {
   Table,
   TableBody,
@@ -11,19 +14,147 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import EmployeeAccessDialog from "@/components/employees/EmployeeAccessDialog";
+import { Input } from "@/components/ui/input";
 import type { EmployeeListItem } from "@/types/employees";
 import { useFacility } from "@/hooks/useFacility";
+
+type SortKey = "fullName" | "email" | "pesel" | "role" | "status";
+type SortDirection = "asc" | "desc";
+
+type ColumnFilters = {
+  fullName: string;
+  email: string;
+  pesel: string;
+  role: string;
+  status: string;
+};
+
+const emptyFilters: ColumnFilters = {
+  fullName: "",
+  email: "",
+  pesel: "",
+  role: "",
+  status: "",
+};
+
+function normalizeSearchValue(value: string | null | undefined) {
+  return (value || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
+function getEmployeeSortValue(employee: EmployeeListItem, sortKey: SortKey) {
+  switch (sortKey) {
+    case "fullName":
+      return `${employee.firstName} ${employee.lastName}`;
+    case "email":
+      return employee.email || "";
+    case "pesel":
+      return employee.pesel || "";
+    case "role":
+      return employee.role;
+    case "status":
+      return employee.isActive ? "aktywny" : "nieaktywny";
+    default:
+      return "";
+  }
+}
 
 export default function EmployeesPage() {
   const { data, isLoading, isError } = useEmployeesQuery();
   const { currentUser } = useFacility();
   const router = useRouter();
 
+  const [filters, setFilters] = useState<ColumnFilters>(emptyFilters);
+  const [sortKey, setSortKey] = useState<SortKey>("fullName");
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
+
   const isAdmin = currentUser.role === "ADMIN";
   const isForeman = currentUser.role === "FOREMAN";
   const canViewSensitiveEmployeeData = !isForeman;
   const canOpenEmployeeProfile = !isForeman;
+
+  const hasActiveFilters = Object.values(filters).some(
+    (value) => value.trim().length > 0,
+  );
+
+  const tableColumnCount =
+    1 + // imię i nazwisko
+    1 + // email
+    (canViewSensitiveEmployeeData ? 1 : 0) + // PESEL
+    1 + // rola
+    1 + // status
+    (isAdmin ? 2 : 0); // dostęp + akcje
+
+  const filteredEmployees = useMemo(() => {
+    const employees = data?.data ?? [];
+
+    const normalizedFilters = {
+      fullName: normalizeSearchValue(filters.fullName.trim()),
+      email: normalizeSearchValue(filters.email.trim()),
+      pesel: normalizeSearchValue(filters.pesel.trim()),
+      role: normalizeSearchValue(filters.role.trim()),
+      status: normalizeSearchValue(filters.status.trim()),
+    };
+
+    return employees
+      .filter((employee: EmployeeListItem) => {
+        const fullName = normalizeSearchValue(
+          `${employee.firstName} ${employee.lastName}`,
+        );
+        const email = normalizeSearchValue(employee.email);
+        const pesel = normalizeSearchValue(employee.pesel);
+        const role = normalizeSearchValue(employee.role);
+        const status = normalizeSearchValue(
+          employee.isActive ? "aktywny active" : "nieaktywny inactive",
+        );
+
+        return (
+          fullName.includes(normalizedFilters.fullName) &&
+          email.includes(normalizedFilters.email) &&
+          pesel.includes(normalizedFilters.pesel) &&
+          role.includes(normalizedFilters.role) &&
+          status.includes(normalizedFilters.status)
+        );
+      })
+      .sort((a: EmployeeListItem, b: EmployeeListItem) => {
+        const valueA = normalizeSearchValue(getEmployeeSortValue(a, sortKey));
+        const valueB = normalizeSearchValue(getEmployeeSortValue(b, sortKey));
+        const result = valueA.localeCompare(valueB, "pl");
+
+        return sortDirection === "asc" ? result : -result;
+      });
+  }, [data, filters, sortDirection, sortKey]);
+
+  function updateFilter(key: keyof ColumnFilters, value: string) {
+    setFilters((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  }
+
+  function toggleSort(nextSortKey: SortKey) {
+    if (sortKey === nextSortKey) {
+      setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+      return;
+    }
+
+    setSortKey(nextSortKey);
+    setSortDirection("asc");
+  }
+
+  function renderSortIcon(currentSortKey: SortKey) {
+    if (sortKey !== currentSortKey) {
+      return null;
+    }
+
+    return sortDirection === "asc" ? (
+      <ArrowUp className="ml-1 inline h-3 w-3" />
+    ) : (
+      <ArrowDown className="ml-1 inline h-3 w-3" />
+    );
+  }
 
   return (
     <div className="bg-white rounded-xl shadow-sm border p-6">
@@ -34,6 +165,7 @@ export default function EmployeesPage() {
             Zarządzaj kadrą, rolami i dostępami w systemie.
           </p>
         </div>
+
         <AddEmployeeDialog />
       </div>
 
@@ -51,39 +183,152 @@ export default function EmployeesPage() {
       )}
 
       {!isLoading && !isError && data && (
+        <div className="mb-4 space-y-3 rounded-lg border bg-slate-50/60 p-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="text-sm font-medium text-slate-900">
+                Filtrowanie pracowników
+              </p>
+              <p className="text-xs text-slate-500">
+                Filtry działają równocześnie i wyszukują fragment tekstu.
+              </p>
+            </div>
+
+            {hasActiveFilters && (
+              <button
+                type="button"
+                onClick={() => setFilters(emptyFilters)}
+                className="text-sm font-medium text-primary hover:underline"
+              >
+                Wyczyść filtry
+              </button>
+            )}
+          </div>
+
+          <div className="grid gap-3 md:grid-cols-5">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Input
+                value={filters.fullName}
+                onChange={(event) =>
+                  updateFilter("fullName", event.target.value)
+                }
+                placeholder="Imię lub nazwisko"
+                className="pl-9"
+              />
+            </div>
+
+            <Input
+              value={filters.email}
+              onChange={(event) => updateFilter("email", event.target.value)}
+              placeholder="Email"
+            />
+
+            {canViewSensitiveEmployeeData && (
+              <Input
+                value={filters.pesel}
+                onChange={(event) => updateFilter("pesel", event.target.value)}
+                placeholder="PESEL"
+              />
+            )}
+
+            <Input
+              value={filters.role}
+              onChange={(event) => updateFilter("role", event.target.value)}
+              placeholder="Rola"
+            />
+
+            <Input
+              value={filters.status}
+              onChange={(event) => updateFilter("status", event.target.value)}
+              placeholder="Status"
+            />
+          </div>
+
+          <p className="text-xs text-slate-500">
+            Wynik: {filteredEmployees.length} z {data.data.length} pracowników.
+          </p>
+        </div>
+      )}
+
+      {!isLoading && !isError && data && (
         <div className="rounded-md border">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Imię i nazwisko</TableHead>
-                <TableHead>Email</TableHead>
-                {canViewSensitiveEmployeeData && <TableHead>PESEL</TableHead>}
-                <TableHead>Rola</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>
+                  <button
+                    type="button"
+                    onClick={() => toggleSort("fullName")}
+                    className="font-medium hover:text-primary"
+                  >
+                    Imię i nazwisko {renderSortIcon("fullName")}
+                  </button>
+                </TableHead>
+
+                <TableHead>
+                  <button
+                    type="button"
+                    onClick={() => toggleSort("email")}
+                    className="font-medium hover:text-primary"
+                  >
+                    Email {renderSortIcon("email")}
+                  </button>
+                </TableHead>
+
+                {canViewSensitiveEmployeeData && (
+                  <TableHead>
+                    <button
+                      type="button"
+                      onClick={() => toggleSort("pesel")}
+                      className="font-medium hover:text-primary"
+                    >
+                      PESEL {renderSortIcon("pesel")}
+                    </button>
+                  </TableHead>
+                )}
+
+                <TableHead>
+                  <button
+                    type="button"
+                    onClick={() => toggleSort("role")}
+                    className="font-medium hover:text-primary"
+                  >
+                    Rola {renderSortIcon("role")}
+                  </button>
+                </TableHead>
+
+                <TableHead>
+                  <button
+                    type="button"
+                    onClick={() => toggleSort("status")}
+                    className="font-medium hover:text-primary"
+                  >
+                    Status {renderSortIcon("status")}
+                  </button>
+                </TableHead>
+
                 {isAdmin && <TableHead>Dostęp</TableHead>}
                 {isAdmin && <TableHead className="text-right">Akcje</TableHead>}
               </TableRow>
             </TableHeader>
+
             <TableBody>
-              {data.data.length === 0 ? (
+              {filteredEmployees.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={
-                      (canViewSensitiveEmployeeData ? 4 : 3) +
-                      (isAdmin ? 2 : 0) +
-                      1
-                    }
+                    colSpan={tableColumnCount}
                     className="text-center py-8 text-slate-500"
                   >
-                    Brak pracowników w bazie. Kliknij &quot;Dodaj
-                    pracownika&quot;, aby rozpocząć!
+                    {hasActiveFilters
+                      ? "Brak pracowników pasujących do wybranych filtrów."
+                      : 'Brak pracowników w bazie. Kliknij "Dodaj pracownika", aby rozpocząć!'}
                   </TableCell>
                 </TableRow>
               ) : (
-                data.data.map((employee: EmployeeListItem) => (
+                filteredEmployees.map((employee: EmployeeListItem) => (
                   <TableRow
                     key={employee.id}
-                    // Dodajemy zdarzenie kliknięcia i style UX
                     onClick={() => {
                       if (canOpenEmployeeProfile) {
                         router.push(`/dashboard/employees/${employee.id}`);
@@ -98,19 +343,23 @@ export default function EmployeesPage() {
                     <TableCell className="font-medium text-slate-900">
                       {employee.firstName} {employee.lastName}
                     </TableCell>
+
                     <TableCell className="text-slate-600">
-                      {employee.email}
+                      {employee.email || "—"}
                     </TableCell>
+
                     {canViewSensitiveEmployeeData && (
                       <TableCell className="text-slate-600">
-                        {employee.pesel}
+                        {employee.pesel || "—"}
                       </TableCell>
                     )}
+
                     <TableCell>
                       <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-800 border">
                         {employee.role}
                       </span>
                     </TableCell>
+
                     <TableCell>
                       {employee.isActive ? (
                         <span className="text-green-600 font-medium text-sm">
@@ -122,6 +371,7 @@ export default function EmployeesPage() {
                         </span>
                       )}
                     </TableCell>
+
                     {isAdmin && (
                       <>
                         <TableCell>
@@ -136,7 +386,10 @@ export default function EmployeesPage() {
                           )}
                         </TableCell>
 
-                        <TableCell className="text-right">
+                        <TableCell
+                          className="text-right"
+                          onClick={(event) => event.stopPropagation()}
+                        >
                           <EmployeeAccessDialog
                             employeeId={employee.id}
                             currentRole={employee.role}
