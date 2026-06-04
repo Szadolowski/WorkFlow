@@ -157,11 +157,11 @@ export default function EmployeesPage() {
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border p-6">
+    <div className="bg-card text-card-foreground rounded-xl shadow-sm border p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Pracownicy</h1>
-          <p className="text-slate-500">
+          <h1 className="text-2xl font-bold text-foreground">Pracownicy</h1>
+          <p className="text-muted-foreground">
             Zarządzaj kadrą, rolami i dostępami w systemie.
           </p>
         </div>
@@ -170,7 +170,7 @@ export default function EmployeesPage() {
       </div>
 
       {isLoading && (
-        <div className="py-8 text-center text-slate-500 animate-pulse">
+        <div className="py-8 text-center text-muted-foreground animate-pulse">
           Pobieranie danych z serwera...
         </div>
       )}
@@ -183,13 +183,13 @@ export default function EmployeesPage() {
       )}
 
       {!isLoading && !isError && data && (
-        <div className="mb-4 space-y-3 rounded-lg border bg-slate-50/60 p-4">
+        <div className="mb-4 space-y-3 rounded-lg border bg-muted/50 p-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-medium text-slate-900">
+              <p className="text-sm font-medium text-foreground">
                 Filtrowanie pracowników
               </p>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-muted-foreground">
                 Filtry działają równocześnie i wyszukują fragment tekstu.
               </p>
             </div>
@@ -207,7 +207,7 @@ export default function EmployeesPage() {
 
           <div className="grid gap-3 md:grid-cols-5">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 value={filters.fullName}
                 onChange={(event) =>
@@ -245,7 +245,7 @@ export default function EmployeesPage() {
             />
           </div>
 
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-muted-foreground">
             Wynik: {filteredEmployees.length} z {data.data.length} pracowników.
           </p>
         </div>
@@ -318,7 +318,7 @@ export default function EmployeesPage() {
                 <TableRow>
                   <TableCell
                     colSpan={tableColumnCount}
-                    className="text-center py-8 text-slate-500"
+                    className="text-center py-8 text-muted-foreground"
                   >
                     {hasActiveFilters
                       ? "Brak pracowników pasujących do wybranych filtrów."
@@ -336,26 +336,26 @@ export default function EmployeesPage() {
                     }}
                     className={
                       canOpenEmployeeProfile
-                        ? "cursor-pointer hover:bg-slate-50 transition-colors"
+                        ? "cursor-pointer hover:bg-muted/50 transition-colors"
                         : "cursor-default"
                     }
                   >
-                    <TableCell className="font-medium text-slate-900">
+                    <TableCell className="font-medium text-foreground">
                       {employee.firstName} {employee.lastName}
                     </TableCell>
 
-                    <TableCell className="text-slate-600">
+                    <TableCell className="text-muted-foreground">
                       {employee.email || "—"}
                     </TableCell>
 
                     {canViewSensitiveEmployeeData && (
-                      <TableCell className="text-slate-600">
+                      <TableCell className="text-muted-foreground">
                         {employee.pesel || "—"}
                       </TableCell>
                     )}
 
                     <TableCell>
-                      <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-800 border">
+                      <span className="inline-flex items-center rounded-full bg-muted px-2.5 py-0.5 text-xs font-semibold text-foreground border">
                         {employee.role}
                       </span>
                     </TableCell>
@@ -380,7 +380,7 @@ export default function EmployeesPage() {
                               Konto aktywne
                             </span>
                           ) : (
-                            <span className="text-slate-500 font-medium text-sm">
+                            <span className="text-muted-foreground font-medium text-sm">
                               Brak dostępu
                             </span>
                           )}

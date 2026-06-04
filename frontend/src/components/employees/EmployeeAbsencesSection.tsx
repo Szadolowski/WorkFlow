@@ -320,7 +320,7 @@ export function EmployeeAbsencesSection({
             Ładowanie nieobecności...
           </div>
         ) : sortedAbsences.length === 0 ? (
-          <div className="p-8 text-center border border-dashed rounded-lg bg-slate-50/30">
+          <div className="p-8 text-center border border-dashed rounded-lg bg-muted/30">
             <CalendarOff className="w-8 h-8 mx-auto text-muted-foreground mb-3 opacity-50" />
             <p className="text-sm font-medium">Brak nieobecności</p>
             <p className="text-xs text-muted-foreground mt-1">
@@ -331,7 +331,7 @@ export function EmployeeAbsencesSection({
         ) : (
           <div className="overflow-x-auto rounded-md border">
             <table className="w-full text-sm">
-              <thead className="bg-slate-50 text-left dark:bg-slate-900">
+              <thead className="bg-muted/50 text-left">
                 <tr>
                   <th className="px-4 py-3 font-medium">Typ</th>
                   <th className="px-4 py-3 font-medium">Od</th>

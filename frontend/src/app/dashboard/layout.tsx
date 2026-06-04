@@ -49,14 +49,14 @@ export default async function DashboardLayout({
         role: user.role,
       }}
     >
-      <div className="flex h-screen w-full overflow-hidden bg-slate-50 dark:bg-background">
+      <div className="flex h-screen w-full overflow-hidden bg-background">
         <Sidebar role={user.role} />
 
         <div className="flex h-full flex-1 flex-col overflow-hidden">
-          <header className="flex h-16 shrink-0 items-center justify-between border-b bg-white dark:bg-background dark:border-border px-8">
-            <div className="text-sm text-slate-500 dark:text-muted-foreground">
+          <header className="flex h-16 shrink-0 items-center justify-between border-b bg-card border-border px-8">
+            <div className="text-sm text-muted-foreground">
               Zalogowano jako:{" "}
-              <span className="font-semibold text-slate-900 dark:text-foreground">
+              <span className="font-semibold text-foreground">
                 {user.firstName} {user.lastName}
               </span>{" "}
               ({user.role})

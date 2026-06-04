@@ -333,7 +333,7 @@ export function EmployeeCertificationsSection({
                       ? "border-red-200 bg-red-50/50"
                       : isExpiringSoon
                         ? "border-orange-200 bg-orange-50/50"
-                        : "bg-slate-50/50"
+                        : "bg-muted/50"
                   }`}
                 >
                   <div className="flex justify-between items-start mb-4">

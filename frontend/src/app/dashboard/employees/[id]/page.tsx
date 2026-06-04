@@ -158,7 +158,7 @@ export default function EmployeeProfilePage({
             )}
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            <Badge variant="outline" className="text-sm px-3 py-1 bg-slate-50">
+            <Badge variant="outline" className="text-sm px-3 py-1 bg-muted/50">
               {employee.role}
             </Badge>
             {employee.isActive ? (
@@ -216,7 +216,7 @@ export default function EmployeeProfilePage({
                       (assignment: Assignment) => (
                         <li
                           key={assignment.id}
-                          className="p-3 border rounded-md bg-slate-50/50"
+                          className="p-3 border rounded-md bg-muted/50"
                         >
                           <div className="flex justify-between items-start">
                             <div>
@@ -284,7 +284,7 @@ export default function EmployeeProfilePage({
             </CardHeader>
 
             <CardContent className="space-y-8">
-              <div className="p-4 border rounded-lg bg-slate-50/50 space-y-4">
+              <div className="p-4 border rounded-lg bg-muted/50 space-y-4">
                 <h3 className="text-sm font-medium">Dodaj nowy dokument</h3>
 
                 <div className="flex flex-col sm:flex-row gap-4 items-end">
@@ -362,7 +362,7 @@ export default function EmployeeProfilePage({
                     {employee.documents.map((doc: EmployeeDocument) => (
                       <div
                         key={doc.id}
-                        className="flex items-center justify-between p-3 border rounded-md bg-background hover:bg-slate-50/50 transition-colors"
+                        className="flex items-center justify-between p-3 border rounded-md bg-background hover:bg-muted/50 transition-colors"
                       >
                         <div className="flex items-center gap-3 overflow-hidden">
                           <FileText className="w-5 h-5 text-muted-foreground shrink-0" />
@@ -413,7 +413,7 @@ export default function EmployeeProfilePage({
                     ))}
                   </div>
                 ) : (
-                  <div className="p-8 text-center border border-dashed rounded-lg bg-slate-50/30">
+                  <div className="p-8 text-center border border-dashed rounded-lg bg-muted/30">
                     <FolderOpen className="w-8 h-8 mx-auto text-muted-foreground mb-3 opacity-30" />
                     <p className="text-sm text-muted-foreground">
                       Teczka pracownika jest pusta.

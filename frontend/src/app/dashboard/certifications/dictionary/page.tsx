@@ -376,7 +376,7 @@ export default function CertificationDictionaryPage() {
           ) : (
             <div className="overflow-x-auto rounded-md border">
               <table className="w-full text-sm">
-                <thead className="bg-slate-50 text-left dark:bg-slate-900">
+                <thead className="bg-muted/50 text-left">
                   <tr>
                     <th className="px-4 py-3 font-medium">Nazwa</th>
                     <th className="px-4 py-3 font-medium">Typ</th>
