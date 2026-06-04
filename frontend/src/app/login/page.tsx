@@ -1,20 +1,10 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useActionState } from "react";
 import { loginAction } from "@/app/actions/auth.actions";
 
 export default function LoginPage() {
-  const router = useRouter();
   const [state, formAction, isPending] = useActionState(loginAction, null);
-
-  // Reakcja na pomyślne logowanie
-  useEffect(() => {
-    if (state?.success) {
-      router.push("/dashboard"); // Przekierowanie po pomyślnym logowaniu
-    }
-  }, [state, router]);
-
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <div className="w-full max-w-md space-y-8 rounded-xl bg-card text-card-foreground p-10 shadow-lg">

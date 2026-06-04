@@ -36,7 +36,17 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <ReactQueryProvider>
-            <FacilityProvider facilities={[]} initialActiveFacilityId="">
+            <FacilityProvider
+              facilities={[]}
+              initialActiveFacilityId=""
+              currentUser={{
+                id: "",
+                email: null,
+                firstName: "",
+                lastName: "",
+                role: "GUEST",
+              }}
+            >
               {children}
             </FacilityProvider>
           </ReactQueryProvider>

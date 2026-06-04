@@ -18,36 +18,32 @@ export async function loginAction(prevState: ActionState, formData: FormData) {
     return { error: "Wypełnij wszystkie pola." };
   }
 
-  try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:2000"}/auth/login`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      },
-    );
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:2000"}/auth/login`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+      cache: "no-store",
+    },
+  );
 
-    if (!response.ok) {
-      return { error: "Błędne poświadczenia. Spróbuj ponownie." };
-    }
-
-    const data = await response.json();
-
-    const cookieStore = await cookies();
-    cookieStore.set("access_token", data.access_token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-      maxAge: 8 * 60 * 60,
-    });
-
-    return { success: true };
-  } catch {
-    // 3. Usuwamy deklarację zmiennej 'error' z bloku catch, skoro i tak zwracamy własną wiadomość
-    return { error: "Błąd połączenia z serwerem." };
+  if (!response.ok) {
+    return { error: "Błędne poświadczenia. Spróbuj ponownie." };
   }
+
+  const data = await response.json();
+
+  const cookieStore = await cookies();
+  cookieStore.set("access_token", data.access_token, {
+    httpOnly: true,
+    secure: process.env.AUTH_COOKIE_SECURE === "true",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 8 * 60 * 60,
+  });
+
+  redirect("/dashboard");
 }
 
 export async function logoutAction() {
