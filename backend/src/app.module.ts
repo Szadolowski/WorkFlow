@@ -13,6 +13,7 @@ import { TimeEventsModule } from './time-events/time-events.module';
 import { TimeEntriesModule } from './time-entries/time-entries.module';
 import { FacilitiesModule } from './facilities/facilities.module';
 import { ContractsModule } from './contracts/contracts.module';
+import { CertificationsModule } from './certifications/certifications.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { ContractsModule } from './contracts/contracts.module';
     TimeEntriesModule,
     FacilitiesModule,
     ContractsModule,
+    CertificationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
