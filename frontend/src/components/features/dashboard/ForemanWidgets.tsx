@@ -2,7 +2,7 @@
 
 import { useDashboardSummary } from "@/hooks/useDashboard";
 import { WidgetCard } from "./WidgetCard";
-import { Clock, Hammer, ShieldAlert, CheckCircle2 } from "lucide-react";
+import { Clock, Hammer, CheckCircle2 } from "lucide-react";
 
 export function ForemanWidgets() {
   const { data: stats, isLoading, isError } = useDashboardSummary();
@@ -39,14 +39,6 @@ export function ForemanWidgets() {
         subtitle="Wymaga Twojego zatwierdzenia"
         icon={Clock}
         statusType="alert"
-        isLoading={isLoading}
-      />
-      <WidgetCard
-        title="Sprzęt u załogi"
-        value={stats?.activeEquipmentCount || 0}
-        subtitle="Oczekujący zwrot do końca tygodnia"
-        icon={ShieldAlert}
-        statusType="neutral"
         isLoading={isLoading}
       />
     </>

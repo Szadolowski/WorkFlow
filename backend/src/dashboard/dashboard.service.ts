@@ -69,17 +69,12 @@ export class DashboardService {
       },
     });
 
-    const activeEquipmentCount = await this.prisma.equipmentAssignment.count({
-      where: { employee: { facilityId }, returnedAt: null },
-    });
-
     return {
       role: 'HR',
       data: {
         activeEmployeesCount,
         activeContractsCount,
         expiringCertsCount,
-        activeEquipmentCount,
       },
     };
   }
@@ -104,17 +99,12 @@ export class DashboardService {
       where: { project: { facilityId }, status: 'PENDING' },
     });
 
-    const activeEquipmentCount = await this.prisma.equipmentAssignment.count({
-      where: { employee: { facilityId }, returnedAt: null },
-    });
-
     return {
       role: 'FOREMAN',
       data: {
         activeProjectsCount,
         presentWorkersCount: presentWorkers.length,
         pendingTimeEntriesCount,
-        activeEquipmentCount,
       },
     };
   }

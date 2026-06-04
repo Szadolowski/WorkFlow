@@ -2,7 +2,7 @@
 
 import { useDashboardSummary } from "@/hooks/useDashboard";
 import { WidgetCard } from "./WidgetCard";
-import { Users, AlertTriangle, FileCheck, HardHat } from "lucide-react";
+import { Users, AlertTriangle, FileCheck } from "lucide-react";
 import Link from "next/link";
 
 export function HrWidgets() {
@@ -45,14 +45,6 @@ export function HrWidgets() {
           isLoading={isLoading}
         />
       </Link>
-      <WidgetCard
-        title="Wypożyczony Sprzęt"
-        value={stats?.activeEquipmentCount || 0}
-        subtitle="Zasoby w terenie u pracowników"
-        icon={HardHat}
-        statusType="neutral"
-        isLoading={isLoading}
-      />
     </>
   );
 }
