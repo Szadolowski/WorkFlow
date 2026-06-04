@@ -14,6 +14,7 @@ import { TimeEntriesModule } from './time-entries/time-entries.module';
 import { FacilitiesModule } from './facilities/facilities.module';
 import { ContractsModule } from './contracts/contracts.module';
 import { CertificationsModule } from './certifications/certifications.module';
+import { AbsencesModule } from './absences/absences.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { CertificationsModule } from './certifications/certifications.module';
     FacilitiesModule,
     ContractsModule,
     CertificationsModule,
+    AbsencesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
