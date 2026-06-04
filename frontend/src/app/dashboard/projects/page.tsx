@@ -43,7 +43,7 @@ export default function ProjectsPage() {
         {/* 2. Mapujemy projekty z użyciem komponentu Link */}
         {projects?.map((project: Project) => (
           <Link href={`/dashboard/projects/${project.id}`} key={project.id}>
-            <div className="border p-4 rounded-lg shadow-sm bg-card text-card-foreground hover:bg-slate-50 cursor-pointer transition-colors h-full">
+            <div className="border p-4 rounded-lg shadow-sm bg-card text-card-foreground hover:bg-muted/50 cursor-pointer transition-colors h-full">
               <h2 className="font-semibold text-lg">{project.name}</h2>
               <p className="text-sm text-muted-foreground mt-1">
                 Kod: {project.internalCode}

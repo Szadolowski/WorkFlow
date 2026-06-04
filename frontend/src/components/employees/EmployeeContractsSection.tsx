@@ -205,7 +205,7 @@ export function EmployeeContractsSection({
             Pracownik nie posiada aktualnej umowy wpisanej do systemu.
           </p>
         ) : (
-          <div className="p-4 border rounded-md bg-slate-50/50 grid grid-cols-2 gap-y-4 dark:bg-slate-900">
+          <div className="p-4 border rounded-md bg-muted/50 grid grid-cols-2 gap-y-4 dark:bg-slate-900">
             <div>
               <p className="text-xs font-medium text-muted-foreground">
                 Rodzaj umowy
@@ -358,7 +358,7 @@ export function EmployeeContractsSection({
             ) : (
               <div className="overflow-x-auto rounded-md border">
                 <table className="w-full text-sm">
-                  <thead className="bg-slate-50 text-left dark:bg-slate-900">
+                  <thead className="bg-muted/50 text-left">
                     <tr>
                       <th className="px-4 py-3 font-medium">Typ</th>
                       <th className="px-4 py-3 font-medium">Kwota / stawka</th>

@@ -109,7 +109,7 @@ export default function ProjectDetailsPage({
               {activeAssignments.map((assignment: Assignment) => (
                 <li
                   key={assignment.employee.id}
-                  className="flex items-center gap-2 text-sm p-2 bg-slate-50 rounded-md border"
+                  className="flex items-center gap-2 text-sm p-2 bg-muted/50 rounded-md border"
                 >
                   <div className="w-2 h-2 rounded-full bg-green-500"></div>
                   <span className="font-medium">
@@ -137,7 +137,7 @@ export default function ProjectDetailsPage({
             {allEmployees.map((employee: Employee) => (
               <label
                 key={employee.id}
-                className="flex items-center space-x-3 p-3 border rounded-md cursor-pointer hover:bg-slate-50 transition-colors"
+                className="flex items-center space-x-3 p-3 border rounded-md cursor-pointer hover:bg-muted/50 transition-colors"
               >
                 <Checkbox
                   checked={selectedIds.includes(employee.id)}
