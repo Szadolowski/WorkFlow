@@ -543,11 +543,12 @@ async function main() {
 
   console.log('Tworzenie umów...');
   const contracts: Contract[] = [];
-  const contractTypes = [
+  const contractTypes: ContractType[] = [
     ContractType.UOP,
     ContractType.UOP,
     ContractType.UZ,
     ContractType.B2B,
+    ContractType.UD,
   ];
 
   for (const [index, worker] of workers.entries()) {
@@ -558,7 +559,7 @@ async function main() {
     const contractType =
       contractTypes[index % contractTypes.length] ?? ContractType.UOP;
 
-    const salaryAmountByContractType = (() => {
+    const salaryAmount = (() => {
       switch (contractType) {
         case ContractType.UOP:
           return 5200 + index * 450;
@@ -576,13 +577,6 @@ async function main() {
           return 0;
       }
     })();
-
-    const baseSalaryAmount = 5200 + index * 450;
-
-    const salaryAmount =
-      contractType === ContractType.UZ || contractType === ContractType.B2B
-        ? Number((baseSalaryAmount / 100).toFixed(2))
-        : baseSalaryAmount;
 
     const contract = await prisma.contract.create({
       data: {
